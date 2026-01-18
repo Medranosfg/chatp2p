@@ -1,0 +1,7 @@
+title: ChatP2P - Chat Privado, Seguro & Descentralizado
+description: Mensajería privada y descentralizada para Android
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+
