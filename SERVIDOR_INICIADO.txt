@@ -1,0 +1,101 @@
+╔════════════════════════════════════════════════════════════════════════════╗
+║                    ✅ SERVIDOR WEB INICIADO                              ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+SERVIDOR CORRIENDO:
+───────────────────
+✅ Servidor HTTP iniciado en puerto 8000
+✅ Ubicación: ChatP2P/
+✅ URL: http://localhost:8000
+
+CÓMO ACCEDER:
+─────────────
+1. Abre tu navegador
+2. Ve a: http://localhost:8000
+3. ¡La app se cargará! 🚀
+
+QUÉ VERÁS:
+──────────
+✅ Pantalla negra con tema verde (#1a4d2e)
+✅ Título "ChatP2P"
+✅ Modal "Crear Usuario"
+✅ Tu wallet automático (0x...)
+✅ Campo para ingresar nombre
+
+CARACTERÍSTICAS:
+────────────────
+✅ Wallet automático (0x...)
+✅ Creación de usuario
+✅ Cambio de nombre
+✅ Eliminación de cuenta
+✅ Copia de wallet
+✅ Chats P2P
+✅ Mensajería en tiempo real
+✅ Firebase Realtime Database
+✅ LocalStorage persistente
+✅ Dark mode + tema verde
+
+ARCHIVOS SERVIDOS:
+──────────────────
+- index.html (interfaz principal)
+- app.js (lógica de la app)
+- styles.css (estilos)
+- logo.svg (logo)
+- app/src/main/assets/ (archivos adicionales)
+
+PASOS PARA USAR:
+────────────────
+
+1. Abre http://localhost:8000 en tu navegador
+
+2. Verás la pantalla de "Crear Usuario"
+
+3. Ingresa tu nombre
+
+4. Haz clic en "Continuar"
+
+5. ¡Ya estás dentro! 🎉
+
+6. Puedes:
+   - Ver tu wallet
+   - Crear chats
+   - Enviar mensajes
+   - Cambiar tu nombre
+   - Eliminar tu cuenta
+
+FIREBASE:
+──────────
+✅ Base de datos: https://p2pchat-60bd1-default-rtdb.firebaseio.com
+✅ Todos los datos se sincronizan en tiempo real
+✅ LocalStorage como respaldo
+
+NAVEGADORES SOPORTADOS:
+────────────────────────
+✅ Chrome
+✅ Firefox
+✅ Safari
+✅ Edge
+✅ Opera
+
+SOLUCIÓN DE PROBLEMAS:
+──────────────────────
+
+Si ves "Cannot GET /":
+  - Asegúrate de estar en http://localhost:8000
+  - No en http://localhost:8000/index.html
+
+Si no carga la app:
+  - Abre la consola (F12)
+  - Busca errores rojos
+  - Reporta el error
+
+Si Firebase no sincroniza:
+  - Verifica tu conexión a internet
+  - Abre la consola (F12)
+  - Busca errores de Firebase
+
+═══════════════════════════════════════════════════════════════════════════════
+
+¡LISTO! El servidor está corriendo.
+
+Abre http://localhost:8000 en tu navegador y disfruta de ChatP2P. 🚀

@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatP2P - Generador de Screenshots</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            padding: 40px;
+            color: white;
+        }
+        
+        h1 { text-align: center; margin-bottom: 20px; font-size: 28px; }
+        p.subtitle { text-align: center; color: #8e8e93; margin-bottom: 40px; }
+        
+        .screenshots-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .screenshot-card {
+            background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%);
+            border-radius: 40px;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 600px;
+        }
+        
+        .screenshot-title {
+            font-size: 24px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        
+        .screenshot-subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .phone-frame {
+            background: #000;
+            border-radius: 30px;
+            width: 260px;
+            height: 520px;
+            padding: 10px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+        }
+        
+        .phone-screen {
+            background: #000;
+            border-radius: 24px;
+            height: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .phone-notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 28px;
+            background: #000;
+            border-radius: 0 0 20px 20px;
+            z-index: 10;
+        }
+        
+        /* Screen 1: Chat List */
+        .screen-chatlist {
+            padding: 40px 12px 12px;
+            height: 100%;
+        }
+        
+        .screen-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .logo-text {
+            font-size: 22px;
+            font-weight: 700;
+            color: #22c55e;
+        }
+        
+        .header-icons {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .icon-btn-demo {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(34, 197, 94, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #22c55e;
+            font-size: 18px;
+        }
+        
+        .chat-item-demo {
+            background: #1c1c1e;
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .chat-avatar-demo {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+        }
+        
+        .chat-info {
+            flex: 1;
+        }
+        
+        .chat-name-demo {
+            font-size: 15px;
+            font-weight: 600;
+            color: #4ade80;
+            margin-bottom: 3px;
+        }
+        
+        .chat-preview-demo {
+            font-size: 13px;
+            color: #636366;
+        }
+        
+        /* Screen 2: Chat */
+        .screen-chat {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .chat-header-demo {
+            padding: 40px 12px 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .back-btn {
+            color: #22c55e;
+            font-size: 20px;
+        }
+        
+        .contact-info-demo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .contact-avatar-demo {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            position: relative;
+        }
+        
+        .online-dot-demo {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 10px;
+            height: 10px;
+            background: #22c55e;
+            border-radius: 50%;
+            border: 2px solid #000;
+        }
+        
+        .contact-name-demo {
+            font-size: 15px;
+            font-weight: 600;
+        }
+        
+        .contact-status-demo {
+            font-size: 11px;
+            color: #22c55e;
+        }
+        
+        .messages-demo {
+            flex: 1;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            overflow: hidden;
+        }
+        
+        .message-demo {
+            max-width: 75%;
+            padding: 10px 14px;
+            border-radius: 18px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        
+        .message-demo.other {
+            background: #2c2c2e;
+            align-self: flex-start;
+            border-bottom-left-radius: 6px;
+        }
+        
+        .message-demo.own {
+            background: #22c55e;
+            align-self: flex-end;
+            border-bottom-right-radius: 6px;
+        }
+        
+        .message-time {
+            font-size: 10px;
+            opacity: 0.7;
+            margin-left: 6px;
+        }
+        
+        .input-demo {
+            padding: 10px 12px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        
+        .input-field-demo {
+            flex: 1;
+            background: #2c2c2e;
+            border-radius: 20px;
+            padding: 10px 14px;
+            font-size: 14px;
+            color: #636366;
+        }
+        
+        .send-btn-demo {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #22c55e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+        }
+        
+        /* Screen 3: Voice Note */
+        .voice-message-demo {
+            background: #22c55e;
+            border-radius: 18px;
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            align-self: flex-end;
+            max-width: 70%;
+        }
+        
+        .play-btn-demo {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .voice-duration {
+            font-size: 14px;
+        }
+        
+        /* Screen 4: Profile */
+        .screen-profile {
+            padding: 40px 12px 12px;
+            height: 100%;
+        }
+        
+        .profile-card-demo {
+            background: #1c1c1e;
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+        
+        .profile-gradient {
+            height: 60px;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+        }
+        
+        .profile-content-demo {
+            padding: 20px;
+            text-align: center;
+            margin-top: -40px;
+        }
+        
+        .profile-avatar-demo {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: #2c2c2e;
+            border: 3px solid #1c1c1e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: 700;
+            color: #22c55e;
+            margin: 0 auto 12px;
+        }
+        
+        .profile-name-demo {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+        
+        .profile-badge-demo {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(34, 197, 94, 0.15);
+            padding: 5px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            color: #22c55e;
+        }
+        
+        .settings-section-demo {
+            background: #1c1c1e;
+            border-radius: 14px;
+            padding: 14px;
+        }
+        
+        .settings-item-demo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .settings-item-demo:last-child {
+            border-bottom: none;
+        }
+        
+        .settings-icon-demo {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+        
+        .settings-text-demo {
+            flex: 1;
+            font-size: 15px;
+        }
+        
+        .download-section {
+            text-align: center;
+            margin-top: 40px;
+            padding: 30px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+        }
+        
+        .download-btn {
+            display: inline-block;
+            background: #22c55e;
+            color: white;
+            padding: 14px 30px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            margin-top: 16px;
+        }
+    </style>
+</head>
+<body>
+    <h1>📱 ChatP2P - Screenshots para App Store</h1>
+    <p class="subtitle">Haz clic derecho en cada screenshot y selecciona "Guardar imagen como..."</p>
+    
+    <div class="screenshots-grid">
+        <!-- Screenshot 1: Lista de Chats -->
+        <div class="screenshot-card">
+            <div class="screenshot-title">Mensajería Privada</div>
+            <div class="screenshot-subtitle">Chats encriptados de extremo a extremo</div>
+            <div class="phone-frame">
+                <div class="phone-screen">
+                    <div class="phone-notch"></div>
+                    <div class="screen-chatlist">
+                        <div class="screen-header">
+                            <div class="logo-text">P2P</div>
+                            <div class="header-icons">
+                                <div class="icon-btn-demo">+</div>
+                                <div class="icon-btn-demo">👤</div>
+                            </div>
+                        </div>
+                        <div class="chat-item-demo">
+                            <div class="chat-avatar-demo">AB</div>
+                            <div class="chat-info">
+                                <div class="chat-name-demo">0x7a3f...8c2d</div>
+                                <div class="chat-preview-demo">¡Hola! ¿Cómo estás?</div>
+                            </div>
+                        </div>
+                        <div class="chat-item-demo">
+                            <div class="chat-avatar-demo">CD</div>
+                            <div class="chat-info">
+                                <div class="chat-name-demo">0x9b4e...1f5a</div>
+                                <div class="chat-preview-demo">🎤 Nota de voz</div>
+                            </div>
+                        </div>
+                        <div class="chat-item-demo">
+                            <div class="chat-avatar-demo">EF</div>
+                            <div class="chat-info">
+                                <div class="chat-name-demo">0x2c8d...4e7b</div>
+                                <div class="chat-preview-demo">📷 Foto</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Screenshot 2: Chat con mensajes -->
+        <div class="screenshot-card">
+            <div class="screenshot-title">Chat en Tiempo Real</div>
+            <div class="screenshot-subtitle">Estado en línea y confirmación de lectura</div>
+            <div class="phone-frame">
+                <div class="phone-screen">
+                    <div class="phone-notch"></div>
+                    <div class="screen-chat">
+                        <div class="chat-header-demo">
+                            <div class="back-btn">←</div>
+                            <div class="contact-info-demo">
+                                <div class="contact-avatar-demo">
+                                    AB
+                                    <div class="online-dot-demo"></div>
+                                </div>
+                                <div>
+                                    <div class="contact-name-demo">0x7a3f...8c2d</div>
+                                    <div class="contact-status-demo">en línea</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="messages-demo">
+                            <div class="message-demo other">¡Hola! ¿Cómo estás?</div>
+                            <div class="message-demo own">¡Muy bien! ¿Y tú? <span class="message-time">✓✓</span></div>
+                            <div class="message-demo other">Perfecto, probando la app 🔒</div>
+                            <div class="message-demo own">Es muy segura 🛡️ <span class="message-time">✓✓</span></div>
+                            <div class="message-demo other">Me encanta la encriptación E2E</div>
+                        </div>
+                        <div class="input-demo">
+                            <div class="input-field-demo">Mensaje...</div>
+                            <div class="send-btn-demo">➤</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Screenshot 3: Notas de voz -->
+        <div class="screenshot-card">
+            <div class="screenshot-title">Notas de Voz</div>
+            <div class="screenshot-subtitle">Envía mensajes de voz encriptados</div>
+            <div class="phone-frame">
+                <div class="phone-screen">
+                    <div class="phone-notch"></div>
+                    <div class="screen-chat">
+                        <div class="chat-header-demo">
+                            <div class="back-btn">←</div>
+                            <div class="contact-info-demo">
+                                <div class="contact-avatar-demo">CD</div>
+                                <div>
+                                    <div class="contact-name-demo">0x9b4e...1f5a</div>
+                                    <div class="contact-status-demo" style="color: #636366;">hace 5 min</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="messages-demo">
+                            <div class="message-demo other">Escucha esto 👇</div>
+                            <div class="voice-message-demo" style="background: #2c2c2e; align-self: flex-start;">
+                                <div class="play-btn-demo">▶</div>
+                                <div class="voice-duration">0:15</div>
+                            </div>
+                            <div class="voice-message-demo">
+                                <div class="play-btn-demo">▶</div>
+                                <div class="voice-duration">0:08</div>
+                                <span class="message-time">✓✓</span>
+                            </div>
+                            <div class="message-demo other">¡Qué buena calidad! 🎧</div>
+                        </div>
+                        <div class="input-demo">
+                            <div style="width: 32px; height: 32px; border-radius: 50%; background: #2c2c2e; display: flex; align-items: center; justify-content: center;">🎤</div>
+                            <div class="input-field-demo">Mensaje...</div>
+                            <div class="send-btn-demo">➤</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Screenshot 4: Perfil -->
+        <div class="screenshot-card">
+            <div class="screenshot-title">Tu Perfil</div>
+            <div class="screenshot-subtitle">Wallet único como identificador</div>
+            <div class="phone-frame">
+                <div class="phone-screen">
+                    <div class="phone-notch"></div>
+                    <div class="screen-profile">
+                        <div class="profile-card-demo">
+                            <div class="profile-gradient"></div>
+                            <div class="profile-content-demo">
+                                <div class="profile-avatar-demo">J</div>
+                                <div class="profile-name-demo">@johndoe</div>
+                                <div class="profile-badge-demo">
+                                    <span style="width: 6px; height: 6px; background: #22c55e; border-radius: 50%;"></span>
+                                    En línea
+                                </div>
+                            </div>
+                        </div>
+                        <div class="settings-section-demo">
+                            <div class="settings-item-demo">
+                                <div class="settings-icon-demo" style="background: rgba(34, 197, 94, 0.15); color: #22c55e;">💳</div>
+                                <div class="settings-text-demo">Tu Wallet</div>
+                            </div>
+                            <div class="settings-item-demo">
+                                <div class="settings-icon-demo" style="background: rgba(59, 130, 246, 0.15); color: #60a5fa;">✏️</div>
+                                <div class="settings-text-demo">Editar perfil</div>
+                            </div>
+                            <div class="settings-item-demo">
+                                <div class="settings-icon-demo" style="background: rgba(239, 68, 68, 0.15); color: #ef4444;">🗑️</div>
+                                <div class="settings-text-demo">Eliminar cuenta</div>
+                            </div>
+                        </div>
+                        <div style="text-align: center; margin-top: 20px; color: #636366; font-size: 12px;">
+                            ChatP2P v11.8<br>
+                            🔒 Encriptación E2E
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="download-section">
+        <h2>📸 Cómo usar estos screenshots</h2>
+        <p style="color: #8e8e93; margin-top: 10px;">
+            1. Abre esta página en Safari o Chrome<br>
+            2. Haz clic derecho en cada tarjeta<br>
+            3. Selecciona "Guardar imagen como..."<br>
+            4. Sube las imágenes a App Store Connect / Google Play Console
+        </p>
+    </div>
+</body>
+</html>

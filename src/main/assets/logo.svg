@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 200">
+  <!-- Móvil izquierdo -->
+  <g>
+    <!-- Marco del móvil -->
+    <rect x="20" y="30" width="70" height="120" rx="8" fill="none" stroke="#2ecc71" stroke-width="3"/>
+    <!-- Pantalla -->
+    <rect x="25" y="40" width="60" height="95" rx="4" fill="#2ecc71" opacity="0.1"/>
+    <!-- Líneas de chat (izquierda) -->
+    <line x1="30" y1="50" x2="50" y2="50" stroke="#2ecc71" stroke-width="2" stroke-linecap="round"/>
+    <line x1="30" y1="60" x2="75" y2="60" stroke="#2ecc71" stroke-width="2" stroke-linecap="round"/>
+    <line x1="30" y1="70" x2="70" y2="70" stroke="#2ecc71" stroke-width="2" stroke-linecap="round"/>
+    <line x1="30" y1="80" x2="60" y2="80" stroke="#2ecc71" stroke-width="2" stroke-linecap="round"/>
+    <line x1="30" y1="90" x2="75" y2="90" stroke="#2ecc71" stroke-width="2" stroke-linecap="round"/>
+    <line x1="30" y1="100" x2="65" y2="100" stroke="#2ecc71" stroke-width="2" stroke-linecap="round"/>
+    <!-- Botón home -->
+    <circle cx="55" cy="145" r="3" fill="#2ecc71"/>
+  </g>
+
+  <!-- Signo de igual en el centro -->
+  <g>
+    <line x1="120" y1="80" x2="180" y2="80" stroke="#2ecc71" stroke-width="4" stroke-linecap="round"/>
+    <line x1="120" y1="100" x2="180" y2="100" stroke="#2ecc71" stroke-width="4" stroke-linecap="round"/>
+  </g>
+
+  <!-- Móvil derecho -->
+  <g>
+    <!-- Marco del móvil -->
+    <rect x="210" y="30" width="70" height="120" rx="8" fill="none" stroke="#2ecc71" stroke-width="3"/>
+    <!-- Pantalla -->
+    <rect x="215" y="40" width="60" height="95" rx="4" fill="#2ecc71" opacity="0.1"/>
+    <!-- Líneas de chat (derecha) -->
+    <line x1="250" y1="50" x2="270" y2="50" stroke="#2ecc71" stroke-width="2" stroke-linecap="round"/>
+    <line x1="225" y1="60" x2="270" y2="60" stroke="#2ecc71" stroke-width="2" stroke-linecap="round"/>
+    <line x1="230" y1="70" x2="270" y2="70" stroke="#2ecc71" stroke-width="2" stroke-linecap="round"/>
+    <line x1="240" y1="80" x2="270" y2="80" stroke="#2ecc71" stroke-width="2" stroke-linecap="round"/>
+    <line x1="225" y1="90" x2="270" y2="90" stroke="#2ecc71" stroke-width="2" stroke-linecap="round"/>
+    <line x1="235" y1="100" x2="270" y2="100" stroke="#2ecc71" stroke-width="2" stroke-linecap="round"/>
+    <!-- Botón home -->
+    <circle cx="245" cy="145" r="3" fill="#2ecc71"/>
+  </g>
+</svg>

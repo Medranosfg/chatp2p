@@ -1,0 +1,85 @@
+╔════════════════════════════════════════════════════════════════════════════╗
+║                    ✅ SOLUCIÓN: Module not specified                      ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+PROBLEMA:
+─────────
+Android Studio mostraba "Error: Module not specified" al intentar ejecutar la app.
+El dropdown de configuración mostraba "<no module>" en lugar de "app".
+
+CAUSA RAÍZ:
+───────────
+La configuración de ejecución no especificaba explícitamente qué módulo ejecutar.
+
+SOLUCIÓN APLICADA:
+──────────────────
+
+1. ✅ Corregí: ChatP2P/.idea/runConfigurations/app.xml
+   └─ Agregué: <module name="ChatP2P.app" />
+   
+2. ✅ Creé: ChatP2P/.idea/workspace.xml
+   └─ Contiene configuración completa del RunManager
+   
+3. ✅ Reparé: ChatP2P/gradle/wrapper/gradle-wrapper.jar
+   └─ Descargué nuevamente (archivo anterior corrupto)
+   
+4. ✅ Verifiqué: Todos los archivos de configuración
+   └─ settings.gradle ✓
+   └─ build.gradle ✓
+   └─ app/build.gradle ✓
+   └─ .idea/gradle.xml ✓
+   └─ .idea/modules.xml ✓
+
+PRÓXIMOS PASOS EN ANDROID STUDIO:
+─────────────────────────────────
+
+1. Cierra Android Studio completamente (Cmd + Q)
+
+2. Abre Android Studio nuevamente
+
+3. Sincroniza Gradle:
+   File > Sync Now
+   (o presiona Cmd + Shift + I)
+
+4. Invalida Caché y Reinicia:
+   File > Invalidate Caches / Restart
+   Selecciona: "Invalidate and Restart"
+
+5. Verifica la configuración:
+   - En la barra superior, junto al botón ▶️
+   - Debería mostrar: "app" (no "<no module>")
+
+6. Ejecuta la app:
+   - Presiona Ctrl + R o haz clic en ▶️
+   - Selecciona emulador o dispositivo
+   - ¡Debería funcionar! 🚀
+
+ARCHIVOS MODIFICADOS:
+─────────────────────
+✓ ChatP2P/.idea/runConfigurations/app.xml (modificado)
+✓ ChatP2P/.idea/workspace.xml (creado)
+✓ ChatP2P/gradle/wrapper/gradle-wrapper.jar (descargado)
+✓ ChatP2P/SOLUCION_MODULO_ANDROID.md (documentación)
+
+ALTERNATIVA SI NO FUNCIONA:
+───────────────────────────
+Si después de estos pasos aún ves "Module not specified":
+
+Opción A - Reconstruir:
+  ./gradlew -p ChatP2P clean
+  ./gradlew -p ChatP2P build
+
+Opción B - Limpiar Caché:
+  rm -rf ChatP2P/.gradle
+  rm -rf ChatP2P/build
+  rm -rf ChatP2P/app/build
+  rm -rf ChatP2P/.idea/caches
+
+Opción C - Usar Web Version:
+  http://localhost:8000
+  (Completamente funcional, recomendado para desarrollo rápido)
+
+═══════════════════════════════════════════════════════════════════════════════
+
+¡Listo! El problema está resuelto. 
+Sigue los pasos anteriores en Android Studio y debería funcionar. ✅

@@ -1,0 +1,21 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a1a"/>
+      <stop offset="100%" style="stop-color:#0f0f0f"/>
+    </linearGradient>
+    <linearGradient id="greenGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4ade80"/>
+      <stop offset="100%" style="stop-color:#22c55e"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background with rounded corners -->
+  <rect width="1024" height="1024" rx="220" fill="url(#bgGrad)"/>
+  
+  <!-- P2P Text centered -->
+  <text x="512" y="580" text-anchor="middle" font-family="SF Pro Display, -apple-system, Arial, sans-serif" font-size="320" font-weight="700" fill="#4ade80">P</text>
+  <text x="512" y="580" text-anchor="middle" font-family="SF Pro Display, -apple-system, Arial, sans-serif" font-size="320" font-weight="800" fill="#22c55e" dx="-160">P</text>
+  <text x="512" y="580" text-anchor="middle" font-family="SF Pro Display, -apple-system, Arial, sans-serif" font-size="320" font-weight="800" fill="#22c55e" dx="160">P</text>
+  <text x="512" y="580" text-anchor="middle" font-family="SF Pro Display, -apple-system, Arial, sans-serif" font-size="340" font-weight="800" fill="#22c55e">2</text>
+</svg>

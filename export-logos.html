@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatP2P - Logo Export Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #1a4d2e 0%, #2d7a4a 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .logos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .logo-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(46, 204, 113, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .logo-card:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(46, 204, 113, 0.6);
+            transform: translateY(-5px);
+        }
+
+        .logo-card h2 {
+            margin-bottom: 15px;
+            font-size: 1.5em;
+            color: #2ecc71;
+        }
+
+        .logo-preview {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 250px;
+        }
+
+        .logo-preview svg {
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+        }
+
+        .logo-info {
+            font-size: 0.95em;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            opacity: 0.9;
+        }
+
+        .logo-info p {
+            margin-bottom: 8px;
+        }
+
+        .export-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            flex: 1;
+            min-width: 120px;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.95em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-svg {
+            background: #2ecc71;
+            color: #1a4d2e;
+        }
+
+        .btn-svg:hover {
+            background: #27ae60;
+            transform: scale(1.05);
+        }
+
+        .btn-png {
+            background: rgba(46, 204, 113, 0.3);
+            color: #2ecc71;
+            border: 2px solid #2ecc71;
+        }
+
+        .btn-png:hover {
+            background: rgba(46, 204, 113, 0.5);
+            transform: scale(1.05);
+        }
+
+        .info-box {
+            background: rgba(46, 204, 113, 0.1);
+            border-left: 4px solid #2ecc71;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 40px;
+            line-height: 1.8;
+        }
+
+        .info-box h3 {
+            margin-bottom: 15px;
+            color: #2ecc71;
+        }
+
+        .info-box ul {
+            margin-left: 20px;
+        }
+
+        .info-box li {
+            margin-bottom: 8px;
+        }
+
+        .color-palette {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .color-swatch {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .color-box {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .color-code {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .logos-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .export-buttons {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔒 ChatP2P Logo Export</h1>
+        <p class="subtitle">Descarga los logos en diferentes formatos y tamaños</p>
+
+        <div class="logos-grid">
+            <!-- Logo Principal -->
+            <div class="logo-card">
+                <h2>Logo Principal</h2>
+                <div class="logo-preview">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" style="width: 200px; height: 200px;">
+                        <defs>
+                            <linearGradient id="gradientPrimary1" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#1a4d2e;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#2d7a4a;stop-opacity:1" />
+                            </linearGradient>
+                            <linearGradient id="gradientAccent1" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#2ecc71;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#27ae60;stop-opacity:1" />
+                            </linearGradient>
+                            <filter id="glow1">
+                                <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                                <feMerge>
+                                    <feMergeNode in="coloredBlur"/>
+                                    <feMergeNode in="SourceGraphic"/>
+                                </feMerge>
+                            </filter>
+                        </defs>
+                        <circle cx="150" cy="150" r="145" fill="none" stroke="url(#gradientPrimary1)" stroke-width="1" opacity="0.3"/>
+                        <g stroke="url(#gradientAccent1)" stroke-width="2" opacity="0.6" stroke-linecap="round">
+                            <path d="M 80 120 Q 150 100 220 120" fill="none"/>
+                            <path d="M 80 180 Q 150 200 220 180" fill="none"/>
+                        </g>
+                        <circle cx="80" cy="120" r="3" fill="url(#gradientAccent1)" filter="url(#glow1)"/>
+                        <circle cx="150" cy="100" r="2.5" fill="url(#gradientAccent1)" opacity="0.7"/>
+                        <circle cx="220" cy="120" r="3" fill="url(#gradientAccent1)" filter="url(#glow1)"/>
+                        <circle cx="80" cy="180" r="3" fill="url(#gradientAccent1)" filter="url(#glow1)"/>
+                        <circle cx="150" cy="200" r="2.5" fill="url(#gradientAccent1)" opacity="0.7"/>
+                        <circle cx="220" cy="180" r="3" fill="url(#gradientAccent1)" filter="url(#glow1)"/>
+                        <g>
+                            <rect x="30" y="80" width="80" height="140" rx="10" fill="none" stroke="url(#gradientPrimary1)" stroke-width="3"/>
+                            <rect x="38" y="95" width="64" height="110" rx="6" fill="url(#gradientPrimary1)" opacity="0.08"/>
+                            <rect x="60" y="95" width="20" height="8" rx="4" fill="url(#gradientPrimary1)" opacity="0.15"/>
+                            <line x1="45" y1="115" x2="65" y2="115" stroke="url(#gradientAccent1)" stroke-width="1.5" stroke-linecap="round" opacity="0.8"/>
+                            <line x1="45" y1="128" x2="75" y2="128" stroke="url(#gradientAccent1)" stroke-width="1.5" stroke-linecap="round" opacity="0.8"/>
+                            <line x1="45" y1="141" x2="70" y2="141" stroke="url(#gradientAccent1)" stroke-width="1.5" stroke-linecap="round" opacity="0.8"/>
+                            <line x1="45" y1="154" x2="75" y2="154" stroke="url(#gradientAccent1)" stroke-width="1.5" stroke-linecap="round" opacity="0.8"/>
+                            <line x1="45" y1="167" x2="65" y2="167" stroke="url(#gradientAccent1)" stroke-width="1.5" stroke-linecap="round" opacity="0.8"/>
+                            <circle cx="70" cy="220" r="2.5" fill="url(#gradientPrimary1)"/>
+                        </g>
+                        <g>
+                            <path d="M 150 110 L 130 130 L 130 160 Q 130 185 150 200 Q 170 185 170 160 L 170 130 Z" fill="url(#gradientAccent1)" opacity="0.9" stroke="url(#gradientPrimary1)" stroke-width="2"/>
+                            <g transform="translate(150, 155)">
+                                <rect x="-12" y="-5" width="24" height="18" rx="2" fill="url(#gradientPrimary1)" stroke="url(#gradientAccent1)" stroke-width="1.5"/>
+                                <path d="M -8 -5 Q -8 -15 0 -15 Q 8 -15 8 -5" fill="none" stroke="url(#gradientAccent1)" stroke-width="2" stroke-linecap="round"/>
+                                <circle cx="0" cy="3" r="1.5" fill="url(#gradientAccent1)"/>
+                            </g>
+                            <circle cx="150" cy="155" r="35" fill="none" stroke="url(#gradientAccent1)" stroke-width="1" opacity="0.3" stroke-dasharray="3,3"/>
+                        </g>
+                        <g>
+                            <rect x="190" y="80" width="80" height="140" rx="10" fill="none" stroke="url(#gradientPrimary1)" stroke-width="3"/>
+                            <rect x="198" y="95" width="64" height="110" rx="6" fill="url(#gradientPrimary1)" opacity="0.08"/>
+                            <rect x="220" y="95" width="20" height="8" rx="4" fill="url(#gradientPrimary1)" opacity="0.15"/>
+                            <line x1="235" y1="115" x2="255" y2="115" stroke="url(#gradientAccent1)" stroke-width="1.5" stroke-linecap="round" opacity="0.8"/>
+                            <line x1="205" y1="128" x2="255" y2="128" stroke="url(#gradientAccent1)" stroke-width="1.5" stroke-linecap="round" opacity="0.8"/>
+                            <line x1="210" y1="141" x2="255" y2="141" stroke="url(#gradientAccent1)" stroke-width="1.5" stroke-linecap="round" opacity="0.8"/>
+                            <line x1="205" y1="154" x2="255" y2="154" stroke="url(#gradientAccent1)" stroke-width="1.5" stroke-linecap="round" opacity="0.8"/>
+                            <line x1="215" y1="167" x2="255" y2="167" stroke="url(#gradientAccent1)" stroke-width="1.5" stroke-linecap="round" opacity="0.8"/>
+                            <circle cx="230" cy="220" r="2.5" fill="url(#gradientPrimary1)"/>
+                        </g>
+                    </svg>
+                </div>
+                <div class="logo-info">
+                    <p><strong>Tamaño:</strong> 300x300px</p>
+                    <p><strong>Uso:</strong> Interfaz web, documentación</p>
+                    <p><strong>Formato:</strong> SVG (escalable)</p>
+                </div>
+                <div class="export-buttons">
+                    <button class="btn-svg" onclick="downloadSVG('logo.svg', 'ChatP2P-Logo')">Descargar SVG</button>
+                    <button class="btn-png" onclick="exportToPNG('logo.svg', 300, 'ChatP2P-Logo')">Exportar PNG</button>
+                </div>
+            </div>
+
+            <!-- Logo App Store -->
+            <div class="logo-card">
+                <h2>App Store & Play Store</h2>
+                <div class="logo-preview" style="background: linear-gradient(135deg, #1a4d2e 0%, #2d7a4a 100%);">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" style="width: 200px; height: 200px;">
+                        <defs>
+                            <linearGradient id="gradientPrimary2" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#1a4d2e;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#2d7a4a;stop-opacity:1" />
+                            </linearGradient>
+                            <linearGradient id="gradientAccent2" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#2ecc71;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#27ae60;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <rect width="1024" height="1024" rx="200" fill="url(#gradientPrimary2)"/>
+                        <circle cx="512" cy="512" r="480" fill="none" stroke="url(#gradientAccent2)" stroke-width="4" opacity="0.2"/>
+                        <g stroke="url(#gradientAccent2)" stroke-width="12" opacity="0.5" stroke-linecap="round">
+                            <path d="M 280 400 Q 512 320 744 400" fill="none"/>
+                            <path d="M 280 624 Q 512 704 744 624" fill="none"/>
+                        </g>
+                        <circle cx="280" cy="400" r="16" fill="url(#gradientAccent2)"/>
+                        <circle cx="512" cy="320" r="12" fill="url(#gradientAccent2)" opacity="0.6"/>
+                        <circle cx="744" cy="400" r="16" fill="url(#gradientAccent2)"/>
+                        <circle cx="280" cy="624" r="16" fill="url(#gradientAccent2)"/>
+                        <circle cx="512" cy="704" r="12" fill="url(#gradientAccent2)" opacity="0.6"/>
+                        <circle cx="744" cy="624" r="16" fill="url(#gradientAccent2)"/>
+                    </svg>
+                </div>
+                <div class="logo-info">
+                    <p><strong>Tamaño:</strong> 1024x1024px</p>
+                    <p><strong>Uso:</strong> App Store, Play Store</p>
+                    <p><strong>Formato:</strong> SVG con fondo redondeado</p>
+                </div>
+                <div class="export-buttons">
+                    <button class="btn-svg" onclick="downloadSVG('logo-appstore.svg', 'ChatP2P-AppStore')">Descargar SVG</button>
+                    <button class="btn-png" onclick="exportToPNG('logo-appstore.svg', 1024, 'ChatP2P-AppStore')">Exportar PNG</button>
+                </div>
+            </div>
+
+            <!-- Logo Simple -->
+            <div class="logo-card">
+                <h2>Favicon & Pequeños Tamaños</h2>
+                <div class="logo-preview">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" style="width: 150px; height: 150px;">
+                        <defs>
+                            <linearGradient id="gradientPrimary3" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#1a4d2e;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#2d7a4a;stop-opacity:1" />
+                            </linearGradient>
+                            <linearGradient id="gradientAccent3" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#2ecc71;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#27ae60;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <circle cx="100" cy="100" r="95" fill="url(#gradientPrimary3)"/>
+                        <line x1="40" y1="100" x2="160" y2="100" stroke="url(#gradientAccent3)" stroke-width="3" opacity="0.6" stroke-linecap="round"/>
+                        <circle cx="40" cy="100" r="5" fill="url(#gradientAccent3)"/>
+                        <g transform="translate(100, 100)">
+                            <path d="M 0 -20 L -15 -5 L -15 10 Q -15 25 0 35 Q 15 25 15 10 L 15 -5 Z" fill="url(#gradientAccent3)" stroke="url(#gradientPrimary3)" stroke-width="1.5"/>
+                            <rect x="-6" y="0" width="12" height="10" rx="1" fill="url(#gradientPrimary3)" stroke="url(#gradientAccent3)" stroke-width="1"/>
+                            <path d="M -4 0 Q -4 -4 0 -4 Q 4 -4 4 0" fill="none" stroke="url(#gradientAccent3)" stroke-width="1" stroke-linecap="round"/>
+                            <circle cx="0" cy="4" r="0.8" fill="url(#gradientAccent3)"/>
+                        </g>
+                        <circle cx="160" cy="100" r="5" fill="url(#gradientAccent3)"/>
+                    </svg>
+                </div>
+                <div class="logo-info">
+                    <p><strong>Tamaño:</strong> 200x200px (escalable)</p>
+                    <p><strong>Uso:</strong> Favicon, iconos pequeños</p>
+                    <p><strong>Formato:</strong> SVG simplificado</p>
+                </div>
+                <div class="export-buttons">
+                    <button class="btn-svg" onclick="downloadSVG('logo-simple.svg', 'ChatP2P-Simple')">Descargar SVG</button>
+                    <button class="btn-png" onclick="exportToPNG('logo-simple.svg', 200, 'ChatP2P-Simple')">Exportar PNG</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Información de Colores -->
+        <div class="info-box">
+            <h3>🎨 Paleta de Colores</h3>
+            <div class="color-palette">
+                <div class="color-swatch">
+                    <div class="color-box" style="background: #1a4d2e;"></div>
+                    <div>
+                        <div><strong>Verde Oscuro</strong></div>
+                        <div class="color-code">#1a4d2e</div>
+                    </div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-box" style="background: #2ecc71;"></div>
+                    <div>
+                        <div><strong>Verde Claro</strong></div>
+                        <div class="color-code">#2ecc71</div>
+                    </div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-box" style="background: #27ae60;"></div>
+                    <div>
+                        <div><strong>Verde Medio</strong></div>
+                        <div class="color-code">#27ae60</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Información de Uso -->
+        <div class="info-box">
+            <h3>📋 Recomendaciones de Uso</h3>
+            <ul>
+                <li><strong>App Store (iOS):</strong> Usar logo-appstore.svg en 1024x1024px</li>
+                <li><strong>Play Store (Android):</strong> Usar logo-appstore.svg en 512x512px mínimo</li>
+                <li><strong>Favicon (Web):</strong> Usar logo-simple.svg en 32x32px</li>
+                <li><strong>Redes Sociales:</strong> Usar logo-appstore.svg en 1200x1200px</li>
+                <li><strong>Documentación:</strong> Usar logo.svg en 300x300px</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function downloadSVG(filename, name) {
+            const link = document.createElement('a');
+            link.href = filename;
+            link.download = `${name}.svg`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function exportToPNG(svgFilename, size, name) {
+            // Crear canvas
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+
+            // Cargar SVG
+            fetch(svgFilename)
+                .then(response => response.text())
+                .then(svgText => {
+                    const img = new Image();
+                    img.onload = function() {
+                        ctx.drawImage(img, 0, 0, size, size);
+                        
+                        // Descargar PNG
+                        canvas.toBlob(blob => {
+                            const url = URL.createObjectURL(blob);
+                            const link = document.createElement('a');
+                            link.href = url;
+                            link.download = `${name}-${size}x${size}.png`;
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                            URL.revokeObjectURL(url);
+                        });
+                    };
+                    img.src = 'data:image/svg+xml;base64,' + btoa(svgText);
+                })
+                .catch(err => {
+                    alert('Error al exportar PNG. Intenta descargar el SVG e usa una herramienta como Inkscape o ImageMagick.');
+                    console.error(err);
+                });
+        }
+    </script>
+</body>
+</html>

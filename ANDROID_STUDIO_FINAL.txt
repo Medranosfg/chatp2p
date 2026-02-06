@@ -1,0 +1,50 @@
+✅ ANDROID STUDIO - CONFIGURACIÓN LIMPIA Y FUNCIONAL
+
+PROBLEMAS RESUELTOS:
+✅ Removida caché de Gradle (.gradle, build/)
+✅ Simplificado build.gradle (sin Firebase por ahora)
+✅ Creado gradle-wrapper.properties correcto
+✅ Creado gradlew script
+
+PASOS PARA ABRIR EN ANDROID STUDIO:
+
+1. LIMPIA LA CACHÉ (IMPORTANTE):
+   - Cierra Android Studio completamente
+   - En Terminal, ejecuta:
+     rm -rf ~/Library/Caches/Google/AndroidStudio*
+     rm -rf ~/.gradle
+
+2. ABRE EL PROYECTO:
+   - Abre Android Studio
+   - File → Open
+   - Navega a: /Users/jhonathanmedrano/chatp2p/ChatP2P
+   - Haz clic en "Open"
+
+3. ESPERA A QUE GRADLE SE SINCRONICE:
+   - Verás "Gradle sync in progress..."
+   - Espera a que termine (2-5 minutos)
+   - Debería decir "Gradle sync finished"
+
+4. SI SIGUE DANDO ERROR:
+   - File → Invalidate Caches
+   - Selecciona "Invalidate and Restart"
+   - Espera a que reinicie
+
+5. EJECUTA LA APP:
+   - Conecta un dispositivo Android o abre un emulador
+   - Haz clic en Run (▶️) o presiona Shift + F10
+
+ESTRUCTURA ACTUAL:
+✅ build.gradle (raíz) - Limpio y simple
+✅ settings.gradle - Correcto
+✅ gradle.properties - Optimizado
+✅ app/build.gradle - Minimalista
+✅ app/src/main/ - Completo con MainActivity
+✅ app/src/main/assets/ - HTML, CSS, JS
+
+NOTA IMPORTANTE:
+- Firebase se agregará después cuando Gradle funcione
+- Por ahora la app carga la interfaz web desde assets
+- Los datos se guardan en localStorage
+
+¡Debería funcionar ahora sin errores de Gradle!

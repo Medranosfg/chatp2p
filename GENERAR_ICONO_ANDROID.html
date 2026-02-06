@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Generador de Icono Android - ChatP2P</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+            background: #1a1a1a;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px;
+            min-height: 100vh;
+        }
+        h1 { color: #2ecc71; margin-bottom: 30px; }
+        .preview-container {
+            display: flex;
+            gap: 40px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+        .preview-box {
+            text-align: center;
+        }
+        .preview-box p {
+            margin-top: 10px;
+            color: #888;
+        }
+        canvas {
+            border-radius: 22%;
+            box-shadow: 0 10px 40px rgba(46, 204, 113, 0.3);
+        }
+        .instructions {
+            background: #2a2a2a;
+            padding: 20px 30px;
+            border-radius: 12px;
+            max-width: 600px;
+            margin-top: 20px;
+        }
+        .instructions h3 { color: #2ecc71; margin-bottom: 15px; }
+        .instructions ol { padding-left: 20px; line-height: 1.8; }
+        .instructions code {
+            background: #333;
+            padding: 2px 8px;
+            border-radius: 4px;
+            color: #2ecc71;
+        }
+        button {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 10px;
+        }
+        button:hover { transform: scale(1.02); }
+    </style>
+</head>
+<body>
+    <h1>🎨 Generador de Icono Android</h1>
+    
+    <div class="preview-container">
+        <div class="preview-box">
+            <canvas id="icon512" width="512" height="512"></canvas>
+            <p>512x512 (Play Store)</p>
+            <button onclick="downloadIcon(512)">Descargar 512px</button>
+        </div>
+        <div class="preview-box">
+            <canvas id="icon192" width="192" height="192"></canvas>
+            <p>192x192 (xxxhdpi)</p>
+            <button onclick="downloadIcon(192)">Descargar 192px</button>
+        </div>
+        <div class="preview-box">
+            <canvas id="icon144" width="144" height="144"></canvas>
+            <p>144x144 (xxhdpi)</p>
+            <button onclick="downloadIcon(144)">Descargar 144px</button>
+        </div>
+        <div class="preview-box">
+            <canvas id="icon96" width="96" height="96"></canvas>
+            <p>96x96 (xhdpi)</p>
+            <button onclick="downloadIcon(96)">Descargar 96px</button>
+        </div>
+    </div>
+    
+    <div class="instructions">
+        <h3>📱 Instrucciones para Android Studio:</h3>
+        <ol>
+            <li>Descarga el icono de <strong>512px</strong></li>
+            <li>En Android Studio: <code>File → New → Image Asset</code></li>
+            <li>Selecciona <code>Launcher Icons (Adaptive and Legacy)</code></li>
+            <li>En "Foreground Layer" selecciona <code>Image</code> y carga el PNG</li>
+            <li>En "Background Layer" pon color <code>#000000</code></li>
+            <li>Click en <code>Next</code> y luego <code>Finish</code></li>
+        </ol>
+    </div>
+
+    <script>
+        function drawIcon(canvas, size) {
+            const ctx = canvas.getContext('2d');
+            const scale = size / 512;
+            
+            // Fondo negro
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, size, size);
+            
+            // Círculo de fondo con gradiente sutil
+            const gradient = ctx.createRadialGradient(
+                size/2, size/2, 0,
+                size/2, size/2, size/2
+            );
+            gradient.addColorStop(0, '#1a1a1a');
+            gradient.addColorStop(1, '#000000');
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.arc(size/2, size/2, size * 0.45, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Borde verde sutil
+            ctx.strokeStyle = 'rgba(46, 204, 113, 0.3)';
+            ctx.lineWidth = 3 * scale;
+            ctx.stroke();
+            
+            // Configurar texto
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            // "Chat" en verde claro
+            ctx.fillStyle = '#4ade80';
+            ctx.font = `bold ${85 * scale}px -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif`;
+            ctx.fillText('Chat', size/2, size * 0.38);
+            
+            // "P2P" en verde más brillante y más grande
+            ctx.fillStyle = '#2ecc71';
+            ctx.font = `900 ${110 * scale}px -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif`;
+            ctx.fillText('P2P', size/2, size * 0.62);
+            
+            // Línea decorativa
+            ctx.strokeStyle = '#2ecc71';
+            ctx.lineWidth = 3 * scale;
+            ctx.lineCap = 'round';
+            ctx.beginPath();
+            ctx.moveTo(size * 0.25, size * 0.48);
+            ctx.lineTo(size * 0.75, size * 0.48);
+            ctx.stroke();
+        }
+        
+        function downloadIcon(size) {
+            const canvas = document.getElementById('icon' + size);
+            const link = document.createElement('a');
+            link.download = `chatp2p_icon_${size}x${size}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+        
+        // Dibujar todos los iconos
+        [512, 192, 144, 96].forEach(size => {
+            drawIcon(document.getElementById('icon' + size), size);
+        });
+    </script>
+</body>
+</html>

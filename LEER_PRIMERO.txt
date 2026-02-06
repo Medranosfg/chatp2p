@@ -1,0 +1,144 @@
+╔════════════════════════════════════════════════════════════════════════════╗
+║                                                                            ║
+║                    ✅ CHATP2P v8.0 - VERSIÓN WEB                          ║
+║                                                                            ║
+║                    ¡LISTA PARA USAR EN TU NAVEGADOR!                      ║
+║                                                                            ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+🚀 COMIENZA AQUÍ (3 PASOS):
+
+1️⃣  HAZ DOBLE CLIC EN: index.html
+    └─ Se abrirá en tu navegador
+
+2️⃣  CREA UN USUARIO
+    └─ Ingresa un nombre
+    └─ Verás tu billetera en VERDE BRILLANTE
+    └─ Haz clic en "Continuar"
+
+3️⃣  ¡LISTO!
+    └─ Tu app está funcionando
+    └─ Tu billetera se guardó automáticamente
+    └─ Tu usuario se guardó automáticamente
+
+═══════════════════════════════════════════════════════════════════════════
+
+✨ LO QUE VERÁS:
+
+🎨 Color Verde Brillante (#2ecc71)
+   ├─ Título "ChatP2P"
+   ├─ Botones (+, ⚙️, ←, ➤)
+   ├─ Dirección de billetera
+   ├─ Botón "Continuar"
+   └─ Mensajes propios
+
+💰 Dirección de Billetera
+   ├─ Se genera automáticamente
+   ├─ Se muestra en verde brillante
+   ├─ Se puede copiar al portapapeles
+   └─ Se guarda automáticamente
+
+═══════════════════════════════════════════════════════════════════════════
+
+🎯 FUNCIONES PRINCIPALES:
+
+✅ Crear Usuario
+   └─ Ingresa nombre → Verás billetera → Continuar
+
+✅ Ver Billetera
+   └─ Haz clic en ⚙️ → Verás billetera en verde
+
+✅ Copiar Billetera
+   └─ Haz clic en "Copiar" → Se copia al portapapeles
+
+✅ Cambiar Usuario
+   └─ Haz clic en ⚙️ → "Cambiar Usuario" → Ingresa nuevo nombre
+
+✅ Borrar Usuario
+   └─ Haz clic en ⚙️ → "Borrar Usuario" → Confirma
+
+✅ Chat P2P
+   └─ Haz clic en + → Ingresa wallet → Inicia chat
+
+═══════════════════════════════════════════════════════════════════════════
+
+📁 ARCHIVOS IMPORTANTES:
+
+index.html          ← ABRE ESTE ARCHIVO
+styles.css          ← Estilos (color verde)
+app.js              ← Lógica de la app
+
+═══════════════════════════════════════════════════════════════════════════
+
+💾 ALMACENAMIENTO:
+
+Tu navegador guarda automáticamente:
+├─ Tu billetera
+├─ Tu usuario
+├─ Tus conversaciones
+└─ Tus mensajes
+
+Todo se guarda en localStorage (tu navegador)
+
+═══════════════════════════════════════════════════════════════════════════
+
+🌐 NAVEGADORES SOPORTADOS:
+
+✅ Chrome
+✅ Firefox
+✅ Safari
+✅ Edge
+✅ Opera
+✅ Navegadores móviles
+
+═══════════════════════════════════════════════════════════════════════════
+
+🔧 SOLUCIÓN DE PROBLEMAS:
+
+Si no se abre:
+└─ Abre tu navegador → Presiona Ctrl+O → Selecciona index.html
+
+Si no ves el color verde:
+└─ Actualiza la página (F5) → Limpia caché (Ctrl+Shift+Delete)
+
+Si no aparece la billetera:
+└─ Abre consola (F12) → Verifica errores → Intenta crear usuario
+
+Si pierdes tus datos:
+└─ No limpies el caché del navegador
+└─ Los datos se guardan en localStorage
+
+═══════════════════════════════════════════════════════════════════════════
+
+✅ CHECKLIST:
+
+□ Abriste index.html
+□ Ves el color verde brillante
+□ Creaste un usuario
+□ Ves tu billetera en verde
+□ Copiaste tu billetera
+□ Cerraste y reabriste la app
+□ Tu usuario sigue ahí
+□ Tu billetera sigue ahí
+□ ¡Todo funciona!
+
+═══════════════════════════════════════════════════════════════════════════
+
+🎉 ¡LISTO!
+
+Tu ChatP2P v8.0 está completamente funcional con:
+- ✅ Color verde brillante visible
+- ✅ Dirección de billetera clara
+- ✅ Usuarios guardados automáticamente
+- ✅ Billetera guardada automáticamente
+- ✅ Todas las características implementadas
+
+Abre index.html en tu navegador y comienza a usar. 🚀
+
+═══════════════════════════════════════════════════════════════════════════
+
+¿Preguntas? Consulta los archivos .md en la carpeta
+
+¡Disfruta! 💚
+
+═══════════════════════════════════════════════════════════════════════════

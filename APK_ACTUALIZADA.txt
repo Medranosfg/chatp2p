@@ -1,0 +1,114 @@
+╔════════════════════════════════════════════════════════════════════════════╗
+║                    ✅ APK ACTUALIZADA CON VERSIÓN NUEVA                   ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+ACTUALIZACIÓN REALIZADA:
+────────────────────────
+✅ Copié la versión NUEVA de la app web a los assets de Android
+✅ index.html - Versión nueva
+✅ app.js - Versión nueva con wallet automático
+✅ styles.css - Versión nueva con tema verde
+✅ logo.svg - Logo actualizado
+✅ APK recompilado exitosamente
+
+ARCHIVOS ACTUALIZADOS:
+──────────────────────
+✅ ChatP2P/app/src/main/assets/index.html (NUEVA)
+✅ ChatP2P/app/src/main/assets/app.js (NUEVA)
+✅ ChatP2P/app/src/main/assets/styles.css (NUEVA)
+✅ ChatP2P/app/src/main/assets/logo.svg (NUEVA)
+✅ ChatP2P/src/main/assets/index.html (NUEVA)
+✅ ChatP2P/src/main/assets/app.js (NUEVA)
+✅ ChatP2P/src/main/assets/styles.css (NUEVA)
+✅ ChatP2P/src/main/assets/logo.svg (NUEVA)
+
+APK COMPILADO:
+───────────────
+✅ Ubicación: ChatP2P/build/outputs/apk/debug/ChatP2P-debug.apk
+✅ Tamaño: 3.3 MB
+✅ Estado: Listo para instalar
+
+CÓMO EJECUTAR:
+──────────────
+
+1. Abre Android Studio
+   - Abre el proyecto ChatP2P
+
+2. Sincroniza Gradle
+   - File > Sync Now
+   - (o Cmd + Shift + I)
+
+3. Configura un Emulador
+   - Tools > Device Manager
+   - Crea nuevo emulador (Pixel 6, Android 14)
+   - Inicia el emulador
+
+4. Ejecuta la App
+   - Presiona Ctrl + R
+   - o haz clic en ▶️ (Run)
+
+5. Selecciona el Emulador
+   - Elige el emulador que creaste
+   - Haz clic en OK
+
+6. ¡La app se ejecutará! 🚀
+
+QUÉ VERÁS:
+──────────
+✅ Pantalla negra con tema verde (#1a4d2e)
+✅ Título "ChatP2P"
+✅ Modal "Crear Usuario"
+✅ Tu wallet automático (0x...)
+✅ Campo para ingresar nombre
+✅ Botón "Continuar"
+
+CARACTERÍSTICAS NUEVAS:
+───────────────────────
+✅ Wallet automático (0x...)
+✅ Creación de usuario
+✅ Cambio de nombre
+✅ Eliminación de cuenta
+✅ Copia de wallet
+✅ Chats P2P
+✅ Mensajería en tiempo real
+✅ Firebase Realtime Database
+✅ LocalStorage persistente
+✅ Dark mode + tema verde (#1a4d2e)
+
+ESPECIFICACIONES:
+─────────────────
+Package:        com.chatp2p
+Versión:        8.0
+Min SDK:        26 (Android 8.0)
+Target SDK:     34 (Android 14)
+Java:           17
+Gradle:         9.0.0
+AGP:            8.5.0
+Tamaño APK:     3.3 MB
+
+INSTALACIÓN MANUAL:
+───────────────────
+adb install ChatP2P/build/outputs/apk/debug/ChatP2P-debug.apk
+
+SOLUCIÓN DE PROBLEMAS:
+──────────────────────
+
+Si ves "Gradle sync failed":
+  File > Invalidate Caches / Restart
+  Selecciona "Invalidate and Restart"
+
+Si no hay emulador:
+  Tools > Device Manager
+  Crea uno nuevo
+  Inicia el emulador
+
+Si la app no se ejecuta:
+  Abre Logcat (View > Tool Windows > Logcat)
+  Busca errores rojos
+  Reporta el error específico
+
+═══════════════════════════════════════════════════════════════════════════════
+
+¡LISTO! La APK está actualizada con la versión NUEVA de la app.
+
+Sigue los pasos anteriores y debería funcionar correctamente. 🚀

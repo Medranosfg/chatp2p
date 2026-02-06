@@ -1,0 +1,145 @@
+╔════════════════════════════════════════════════════════════════╗
+║              COMIENZA AQUÍ - VERIFICACIÓN                      ║
+╚════════════════════════════════════════════════════════════════╝
+
+PASO 1: VERIFICAR SETUP
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Abre en tu navegador:
+  http://localhost:8000/verify-setup.html
+
+Espera a que termine. Deberías ver:
+  ✅ Firebase SDK
+  ✅ Firebase Inicializado
+  ✅ Conexión Firebase
+  ✅ Escribir en Firebase
+  ✅ Leer de Firebase
+  ✅ Escribir Mensajes
+  ✅ Escribir Chats
+  ✅ Listener Tiempo Real
+
+Si ves ❌ PERMISSION_DENIED → Ve al PASO 2
+Si ves todos ✅ → Ve al PASO 3
+
+═══════════════════════════════════════════════════════════════
+
+PASO 2: ARREGLAR FIREBASE (si es necesario)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Abre: https://console.firebase.google.com
+2. Selecciona proyecto: p2pchat-60bd1
+3. Ve a: Realtime Database → Rules
+4. Reemplaza TODO con esto:
+
+{
+  "rules": {
+    ".read": true,
+    ".write": true
+  }
+}
+
+5. Haz clic en "Publish"
+6. Espera confirmación
+7. Vuelve a verify-setup.html y recarga (F5)
+
+═══════════════════════════════════════════════════════════════
+
+PASO 3: PROBAR MENSAJES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Abre en tu navegador:
+  http://localhost:8000/test-messages.html
+
+Deberías ver:
+  - Dos usuarios con wallets
+  - Ambos dicen "✅ Conectado a Firebase"
+  - Puedes escribir mensajes
+  - Los mensajes llegan en tiempo real
+
+Prueba:
+  1. Usuario 1 escribe "Hola"
+  2. Usuario 2 recibe "Hola" instantáneamente
+
+═══════════════════════════════════════════════════════════════
+
+PASO 4: PROBAR APP PRINCIPAL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Abre en tu navegador:
+  http://localhost:8000
+
+Prueba 1 (Un usuario):
+  1. Aparece modal "Crear Usuario"
+  2. Se muestra tu wallet (0x...)
+  3. Escribe tu nombre
+  4. Haz clic en "Continuar"
+  5. Ves la pantalla de chats
+
+Prueba 2 (Dos usuarios):
+  1. Abre la app en DOS ventanas diferentes
+  2. En Ventana 1:
+     - Crea usuario "Alice"
+     - Copia tu wallet
+  3. En Ventana 2:
+     - Crea usuario "Bob"
+     - Copia tu wallet
+  4. En Ventana 1:
+     - Haz clic en ➕
+     - Pega wallet de Bob
+     - Haz clic en "Iniciar"
+  5. En Ventana 2:
+     - Haz clic en ➕
+     - Pega wallet de Alice
+     - Haz clic en "Iniciar"
+  6. En Ventana 1:
+     - Escribe "Hola Bob"
+     - Presiona Enter
+  7. En Ventana 2:
+     - Deberías ver "Hola Bob" aparecer
+
+═══════════════════════════════════════════════════════════════
+
+DEBUGGING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Si algo no funciona:
+
+1. Abre la consola: Presiona F12 → Console
+2. Envía un mensaje
+3. Busca en la consola:
+   ✅ "Mensaje guardado en Firebase" = OK
+   ❌ "PERMISSION_DENIED" = Arreglar reglas (PASO 2)
+   ❌ "Firebase not initialized" = Refrescar página
+
+═══════════════════════════════════════════════════════════════
+
+ARCHIVOS IMPORTANTES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Verificación:
+  • verify-setup.html - Verifica todo
+  • test-messages.html - Prueba mensajes
+  • firebase-test.html - Prueba Firebase
+
+Documentación:
+  • VERIFICAR_FUNCIONAMIENTO.md - Guía completa
+  • STATUS_FINAL.md - Estado actual
+  • DEBUG_FIREBASE_MESSAGES.md - Debugging
+
+App:
+  • index.html - App principal
+  • app.js - Lógica
+
+═══════════════════════════════════════════════════════════════
+
+¿LISTO?
+
+1. Abre: http://localhost:8000/verify-setup.html
+2. Espera a que termine
+3. Si ves ❌ PERMISSION_DENIED → Arregla reglas
+4. Si ves todos ✅ → Prueba test-messages.html
+5. Si funciona → Prueba la app principal
+
+¡Eso es todo!
+
+═══════════════════════════════════════════════════════════════

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generar Icono P2P para iOS</title>
+    <style>
+        body { 
+            font-family: -apple-system, sans-serif; 
+            background: #1a1a1a; 
+            color: white; 
+            padding: 40px; 
+            text-align: center; 
+        }
+        canvas { 
+            border-radius: 22%; 
+            margin: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+        button { 
+            background: #22c55e; 
+            color: white; 
+            border: none; 
+            padding: 16px 32px; 
+            border-radius: 12px; 
+            cursor: pointer; 
+            font-size: 18px; 
+            font-weight: 600;
+            margin: 10px; 
+        }
+        button:hover { background: #16a34a; }
+        h1 { color: #4ade80; margin-bottom: 10px; }
+        .instructions {
+            background: #262626;
+            padding: 24px;
+            border-radius: 16px;
+            margin: 30px auto;
+            max-width: 600px;
+            text-align: left;
+        }
+        .instructions h3 { color: #4ade80; margin-top: 0; }
+        .instructions ol { line-height: 2; }
+        .step { color: #22c55e; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>🎨 Icono P2P para iOS</h1>
+    <p>Descarga el icono 1024x1024 para tu app</p>
+    
+    <canvas id="iconCanvas" width="1024" height="1024"></canvas>
+    
+    <div>
+        <button onclick="downloadIcon()">📱 Descargar Icono (1024x1024)</button>
+    </div>
+    
+    <div class="instructions">
+        <h3>📋 Cómo agregar el icono en Xcode:</h3>
+        <ol>
+            <li><span class="step">Paso 1:</span> Haz clic en "Descargar Icono" arriba</li>
+            <li><span class="step">Paso 2:</span> Abre tu proyecto en Xcode</li>
+            <li><span class="step">Paso 3:</span> En el navegador izquierdo, busca y haz clic en <strong>Assets.xcassets</strong></li>
+            <li><span class="step">Paso 4:</span> Haz clic en <strong>AppIcon</strong></li>
+            <li><span class="step">Paso 5:</span> Arrastra el archivo <strong>AppIcon.png</strong> descargado al cuadro que dice "1024x1024"</li>
+            <li><span class="step">Paso 6:</span> Compila y ejecuta (Cmd+R)</li>
+        </ol>
+        <p style="color: #a3a3a3; margin-top: 20px;">
+            💡 El icono aparecerá en tu iPhone después de instalar la app.
+        </p>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('iconCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        function drawIcon() {
+            const size = 1024;
+            
+            // Background gradient
+            const bgGrad = ctx.createLinearGradient(0, 0, size, size);
+            bgGrad.addColorStop(0, '#1a1a1a');
+            bgGrad.addColorStop(1, '#0f0f0f');
+            
+            // Draw rounded rectangle background
+            const radius = size * 0.22;
+            ctx.beginPath();
+            ctx.moveTo(radius, 0);
+            ctx.lineTo(size - radius, 0);
+            ctx.quadraticCurveTo(size, 0, size, radius);
+            ctx.lineTo(size, size - radius);
+            ctx.quadraticCurveTo(size, size, size - radius, size);
+            ctx.lineTo(radius, size);
+            ctx.quadraticCurveTo(0, size, 0, size - radius);
+            ctx.lineTo(0, radius);
+            ctx.quadraticCurveTo(0, 0, radius, 0);
+            ctx.closePath();
+            ctx.fillStyle = bgGrad;
+            ctx.fill();
+            
+            // P2P text
+            const fontSize = size * 0.38;
+            ctx.font = `800 ${fontSize}px -apple-system, SF Pro Display, Arial, sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            const centerY = size * 0.52;
+            const spacing = size * 0.20;
+            
+            // First P (lighter green)
+            ctx.fillStyle = '#4ade80';
+            ctx.fillText('P', size/2 - spacing, centerY);
+            
+            // 2 (main green)
+            ctx.fillStyle = '#22c55e';
+            ctx.fillText('2', size/2, centerY);
+            
+            // Second P (lighter green)
+            ctx.fillStyle = '#4ade80';
+            ctx.fillText('P', size/2 + spacing, centerY);
+        }
+        
+        // Draw the icon
+        drawIcon();
+        
+        function downloadIcon() {
+            const link = document.createElement('a');
+            link.download = 'AppIcon.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+    </script>
+</body>
+</html>

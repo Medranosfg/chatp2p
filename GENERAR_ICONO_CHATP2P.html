@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Icono ChatP2P para Android</title>
+    <style>
+        body {
+            font-family: -apple-system, sans-serif;
+            background: #111;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px;
+        }
+        h1 { color: #2ecc71; }
+        .preview-container {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        .preview-box {
+            text-align: center;
+        }
+        .preview-box p {
+            margin-top: 10px;
+            color: #888;
+            font-size: 14px;
+        }
+        canvas {
+            border-radius: 22%;
+            box-shadow: 0 10px 40px rgba(46, 204, 113, 0.4);
+        }
+        #iconSmall {
+            width: 100px;
+            height: 100px;
+        }
+        button {
+            background: #2ecc71;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px;
+        }
+        button:hover { background: #27ae60; }
+        .info {
+            background: #222;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 30px;
+            max-width: 500px;
+        }
+        .info h3 { color: #2ecc71; }
+        .info ol { line-height: 2; }
+    </style>
+</head>
+<body>
+    <h1>🎨 Icono ChatP2P</h1>
+    
+    <div class="preview-container">
+        <div class="preview-box">
+            <canvas id="icon" width="1024" height="1024"></canvas>
+            <p>1024x1024 (para exportar)</p>
+        </div>
+        <div class="preview-box">
+            <canvas id="iconSmall" width="1024" height="1024"></canvas>
+            <p>Vista previa del icono</p>
+        </div>
+    </div>
+    
+    <button onclick="download()">📥 Descargar PNG (1024x1024)</button>
+    
+    <div class="info">
+        <h3>📱 Cómo usar en Android Studio:</h3>
+        <ol>
+            <li>Descarga el PNG haciendo clic en el botón</li>
+            <li>En Android Studio: <strong>File → New → Image Asset</strong></li>
+            <li>Selecciona "Launcher Icons (Adaptive and Legacy)"</li>
+            <li>En Foreground Layer → Image → selecciona el PNG descargado</li>
+            <li>En Background Layer → Color → pon <strong>#000000</strong></li>
+            <li>Click Next → Finish</li>
+            <li>Rebuild el proyecto</li>
+        </ol>
+    </div>
+
+    <script>
+        function drawIcon(canvas) {
+            const ctx = canvas.getContext('2d');
+            const size = canvas.width;
+            
+            // Fondo negro
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, size, size);
+            
+            // Configurar texto
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            // Escala para diferentes tamaños
+            const scale = size / 1024;
+            
+            // "Chat" arriba - estilo elegante
+            ctx.fillStyle = '#4ade80';
+            ctx.font = `600 ${180 * scale}px -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif`;
+            ctx.fillText('Chat', size/2, size * 0.38);
+            
+            // "P2P" abajo - más grande y bold
+            const gradient = ctx.createLinearGradient(0, size * 0.5, 0, size * 0.8);
+            gradient.addColorStop(0, '#22c55e');
+            gradient.addColorStop(1, '#16a34a');
+            ctx.fillStyle = gradient;
+            ctx.font = `900 ${260 * scale}px -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif`;
+            ctx.fillText('P2P', size/2, size * 0.65);
+        }
+        
+        // Dibujar en ambos canvas
+        const mainCanvas = document.getElementById('icon');
+        const smallCanvas = document.getElementById('iconSmall');
+        
+        drawIcon(mainCanvas);
+        drawIcon(smallCanvas);
+        
+        function download() {
+            const link = document.createElement('a');
+            link.download = 'chatp2p_icon.png';
+            link.href = mainCanvas.toDataURL('image/png');
+            link.click();
+        }
+    </script>
+</body>
+</html>

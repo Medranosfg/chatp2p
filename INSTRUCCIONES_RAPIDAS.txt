@@ -1,0 +1,130 @@
+╔════════════════════════════════════════════════════════════════════════════╗
+║                    CHATP2P v8.0 - INSTRUCCIONES RÁPIDAS                   ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+🚀 EN 3 PASOS:
+
+1️⃣  ABRE EL ARCHIVO
+    └─ Haz doble clic en: ChatP2P/index.html
+    └─ Se abrirá en tu navegador
+
+2️⃣  CREA UN USUARIO
+    └─ Ingresa un nombre (ej: "Juan")
+    └─ Verás tu billetera en VERDE BRILLANTE
+    └─ Haz clic en "Continuar"
+
+3️⃣  ¡LISTO!
+    └─ Tu app está funcionando
+    └─ Todo en verde brillante
+    └─ Billetera visible y copiable
+
+═══════════════════════════════════════════════════════════════════════════
+
+✨ LO QUE VERÁS:
+
+🎨 Color Verde Brillante (#2ecc71)
+   ├─ Título "ChatP2P"
+   ├─ Botones (+, ⚙️, ←, ➤)
+   ├─ Dirección de billetera
+   ├─ Botón "Continuar"
+   ├─ Botón "Copiar"
+   └─ Mensajes propios
+
+💰 Dirección de Billetera
+   ├─ Se genera automáticamente
+   ├─ Se muestra en verde brillante
+   ├─ Se puede copiar al portapapeles
+   └─ Formato: 0x + 40 caracteres
+
+═══════════════════════════════════════════════════════════════════════════
+
+🎯 FUNCIONES PRINCIPALES:
+
+✅ Crear Usuario
+   └─ Ingresa nombre → Verás billetera → Continuar
+
+✅ Ver Billetera
+   └─ Haz clic en ⚙️ → Verás billetera en verde
+
+✅ Copiar Billetera
+   └─ Haz clic en "Copiar" → Se copia al portapapeles
+
+✅ Cambiar Usuario
+   └─ Haz clic en ⚙️ → "Cambiar Usuario" → Ingresa nuevo nombre
+
+✅ Borrar Usuario
+   └─ Haz clic en ⚙️ → "Borrar Usuario" → Confirma
+
+✅ Chat P2P
+   └─ Haz clic en + → Ingresa wallet → Inicia chat
+
+═══════════════════════════════════════════════════════════════════════════
+
+🌐 NAVEGADORES SOPORTADOS:
+
+✅ Chrome
+✅ Firefox
+✅ Safari
+✅ Edge
+✅ Opera
+✅ Navegadores móviles
+
+═══════════════════════════════════════════════════════════════════════════
+
+🔧 SI NO FUNCIONA:
+
+Problema: No se abre el archivo
+Solución: Abre tu navegador → Presiona Ctrl+O → Selecciona index.html
+
+Problema: No se ve el color verde
+Solución: Actualiza la página (F5) → Limpia caché (Ctrl+Shift+Delete)
+
+Problema: No aparece la billetera
+Solución: Abre consola (F12) → Verifica errores → Intenta crear usuario
+
+Problema: Firebase no funciona
+Solución: Verifica conexión a Internet → Intenta en otro navegador
+
+═══════════════════════════════════════════════════════════════════════════
+
+📁 ARCHIVOS IMPORTANTES:
+
+index.html          ← ABRE ESTE ARCHIVO
+styles.css          ← Estilos (color verde)
+app.js              ← Lógica de la app
+MEJORAS_APLICADAS.md ← Cambios realizados
+
+═══════════════════════════════════════════════════════════════════════════
+
+💡 CONSEJOS:
+
+1. Copia tu billetera para compartir con otros usuarios
+2. Prueba crear múltiples usuarios
+3. Prueba cambiar usuario
+4. Prueba borrar usuario
+5. Prueba crear conversaciones
+
+═══════════════════════════════════════════════════════════════════════════
+
+✅ CHECKLIST:
+
+□ Abriste index.html
+□ Ves el color verde brillante
+□ Creaste un usuario
+□ Ves tu billetera en verde
+□ Copiaste tu billetera
+□ Abriste configuración
+□ Viste la billetera en configuración
+□ Probaste cambiar usuario
+□ Probaste borrar usuario
+□ ¡Todo funciona!
+
+═══════════════════════════════════════════════════════════════════════════
+
+🎉 ¡LISTO!
+
+Tu ChatP2P v8.0 está completamente funcional.
+
+Abre ChatP2P/index.html y comienza a usar. 🚀
+
+═══════════════════════════════════════════════════════════════════════════

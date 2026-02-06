@@ -1,0 +1,2252 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>ChatP2P</title>
+    <style>
+        /* ============================================
+           Dark Theme - Black & Green (Matrix Style)
+           ============================================ */
+        :root {
+            /* Safe Areas */
+            --safe-top: env(safe-area-inset-top, 20px);
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+            
+            /* Green Palette - Darker/Muted Style */
+            --green-primary: #10b981;
+            --green-dark: #059669;
+            --green-light: #34d399;
+            --green-ultra-light: rgba(34, 197, 94, 0.15);
+            
+            /* Pure Black */
+            --gray-50: #000000;
+            --gray-100: #0a0a0a;
+            --gray-200: #1a1a1a;
+            --gray-300: #2a2a2a;
+            --gray-800: #E5E5E7;
+            --gray-900: #F2F2F7;
+            
+            /* Message Bubble Colors - Green */
+            --bubble-sent-start: #22c55e;
+            --bubble-sent-end: #16a34a;
+            --bubble-received: #1a1a1a;
+            --bubble-received-text: #FFFFFF;
+            
+            /* Background - Pure Black */
+            --bg-primary: #000000;
+            --bg-secondary: #0a0a0a;
+            --bg-tertiary: #1a1a1a;
+            --bg-elevated: #0a0a0a;
+            
+            /* Glass Effects - Dark */
+            --glass-bg: rgba(10, 10, 10, 0.8);
+            --glass-border: rgba(34, 197, 94, 0.2);
+            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.9);
+            
+            /* Text Colors - Green Tint */
+            --text-primary: #FFFFFF;
+            --text-secondary: #8e8e93;
+            --text-tertiary: #4ade80;
+            --text-on-green: #000000;
+            
+            /* Borders & Separators - Green */
+            --border-light: rgba(34, 197, 94, 0.2);
+            --separator: rgba(34, 197, 94, 0.3);
+            
+            /* Shadows - Dark with Green Glow */
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.9);
+            --shadow-md: 0 4px 12px rgba(34, 197, 94, 0.2);
+            --shadow-lg: 0 10px 40px rgba(34, 197, 94, 0.3);
+            --shadow-bubble: 0 2px 8px rgba(34, 197, 94, 0.4);
+            
+            /* Spring Animation Timing */
+            --spring-smooth: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --spring-gentle: cubic-bezier(0.32, 0.72, 0, 1);
+        }
+        
+        /* ============================================
+           Base Styles - Premium Foundation
+           ============================================ */
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            -webkit-tap-highlight-color: transparent; 
+        }
+        
+        html, body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', sans-serif; 
+            background: var(--bg-primary);
+            color: var(--text-primary); 
+            height: 100%; 
+            width: 100%;
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            font-size: 17px;
+            position: fixed;
+            inset: 0;
+            letter-spacing: -0.01em;
+        }
+        
+        .container { 
+            display: flex; 
+            flex-direction: column; 
+            width: 100%;
+            height: 100%;
+            padding-top: max(env(safe-area-inset-top, 47px), 47px);
+            background: var(--bg-primary);
+        }
+        
+        .screen { 
+            display: none; 
+            flex: 1; 
+            flex-direction: column; 
+            min-height: 0; 
+            overflow: hidden; 
+        }
+        .screen.active { 
+            display: flex; 
+            animation: screenFadeIn 0.3s var(--spring-gentle);
+        }
+        
+        @keyframes screenFadeIn {
+            from { opacity: 0; transform: scale(0.98); }
+            to { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="screen active" id="homeScreen">
+            <div class="header header-home">
+                <div class="header-left">
+                    <div class="logo">
+                        <svg width="55" height="32" viewBox="0 0 55 32">
+                            <text x="0" y="26" font-family="-apple-system" font-size="28" font-weight="600" fill="#22c55e">P</text>
+                            <text x="14" y="26" font-family="-apple-system" font-size="28" font-weight="700" fill="#16a34a">2</text>
+                            <text x="30" y="26" font-family="-apple-system" font-size="28" font-weight="600" fill="#22c55e">P</text>
+                        </svg>
+                    </div>
+                    <span class="user-tag" id="userDisplay">Cargando...</span>
+                </div>
+                <div class="header-actions">
+                    <button class="icon-btn" onclick="openModal('newChatModal')" aria-label="Nuevo chat">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    </button>
+                    <button class="icon-btn" onclick="openModal('settingsModal')" aria-label="Configuración">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a4 4 0 014-4h8a4 4 0 014 4v1"/></svg>
+                    </button>
+                </div>
+            </div>
+            <div class="chats-list" id="chatsList"></div>
+        </div>
+
+        <div class="screen" id="chatScreen">
+            <div class="header header-chat">
+                <div class="header-left" style="flex-direction: row; align-items: center; gap: 12px;">
+                    <button class="icon-btn" onclick="goBack()" aria-label="Volver">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                    </button>
+                    <div class="chat-header-info">
+                        <div class="chat-header-text">
+                            <span class="chat-title" id="chatTitle">Chat</span>
+                        </div>
+                    </div>
+                </div>
+                <button class="icon-btn icon-btn-danger" onclick="deleteChat()" aria-label="Eliminar chat">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6"/></svg>
+                </button>
+            </div>
+            <div class="messages-area" id="messagesArea"></div>
+            <div class="input-area" id="inputArea">
+                <div class="input-row">
+                    <div class="media-buttons">
+                        <button class="media-btn" onclick="startVoiceNote()" id="micButton" aria-label="Grabar nota de voz">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                                <path d="M12 2C10.34 2 9 3.34 9 5V12C9 13.66 10.34 15 12 15C13.66 15 15 13.66 15 12V5C15 3.34 13.66 2 12 2Z" fill="currentColor"/>
+                                <path d="M17 10V12C17 14.76 14.76 17 12 17C9.24 17 7 14.76 7 12V10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                <path d="M12 17V21M12 21H9M12 21H15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
+                        <button class="media-btn" onclick="capturePhoto()" aria-label="Tomar foto">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                                <path d="M3 8C3 6.89543 3.89543 6 5 6H6.5C6.77614 6 7.05229 5.89464 7.27639 5.72361L8.72361 4.27639C8.94771 4.04536 9.22386 4 9.5 4H14.5C14.7761 4 15.0523 4.04536 15.2764 4.27639L16.7236 5.72361C16.9477 5.89464 17.2239 6 17.5 6H19C20.1046 6 21 6.89543 21 8V18C21 19.1046 20.1046 20 19 20H5C3.89543 20 3 19.1046 3 18V8Z" stroke="currentColor" stroke-width="1.5"/>
+                                <circle cx="12" cy="13" r="4" stroke="currentColor" stroke-width="1.5"/>
+                            </svg>
+                        </button>
+                        <button class="media-btn" onclick="openVideoRecorder()" aria-label="Grabar video">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                                <rect x="2" y="5" width="14" height="14" rx="3" stroke="currentColor" stroke-width="1.5"/>
+                                <path d="M16 10L21 7V17L16 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="input-row">
+                    <textarea class="message-input" id="messageInput" placeholder="Mensaje..." rows="1" aria-label="Escribe un mensaje"></textarea>
+                    <button class="send-btn" onclick="sendMessage()" aria-label="Enviar mensaje">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                            <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Crear Usuario -->
+    <div class="modal" id="createUserModal">
+        <div class="modal-content modal-card" style="padding: 40px 30px;">
+            <h2 class="modal-title" style="font-size: 28px; font-weight: 700; margin-bottom: 8px;">Bienvenido</h2>
+            <p class="modal-subtitle" style="color: var(--text-muted); margin-bottom: 24px;">Tu wallet única</p>
+            <div class="wallet-display" id="walletDisplay" style="font-size: 11px; padding: 12px 16px; margin-bottom: 32px;"></div>
+            <input type="text" id="userInput" class="apple-input" placeholder="Nombre de usuario" style="margin-bottom: 8px;">
+            <p class="input-hint" style="font-size: 12px; color: var(--text-muted); margin-bottom: 24px;">3-20 caracteres</p>
+            <button class="apple-btn apple-btn-primary" onclick="createUser()">Continuar</button>
+        </div>
+    </div>
+
+    <!-- MODAL: Nuevo Chat - iOS 26 Style -->
+    <div class="modal" id="newChatModal">
+        <div class="modal-content new-chat-sheet">
+            <!-- Glass Header -->
+            <div class="new-chat-header">
+                <div class="glass-pill"></div>
+                <button class="close-pill" onclick="closeModal('newChatModal')">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                        <path d="M18 6L6 18M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Hero Section -->
+            <div class="new-chat-hero">
+                <h2 class="hero-title">Nueva Conversación</h2>
+                <p class="hero-subtitle">Conecta de forma privada y segura</p>
+            </div>
+            
+            <!-- Search Section -->
+            <div class="search-section">
+                <div class="search-container">
+                    <div class="search-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"/>
+                            <path d="M21 21l-4.35-4.35"/>
+                        </svg>
+                    </div>
+                    <input type="text" id="contactInput" class="search-input" placeholder="@usuario o dirección wallet" autocomplete="off" autocorrect="off" spellcheck="false">
+                    <div class="search-clear" id="searchClear" onclick="clearSearchInput()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <circle cx="12" cy="12" r="10" fill="rgba(142, 142, 147, 0.3)"/>
+                            <path d="M15 9l-6 6M9 9l6 6" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="search-hint">
+                    <span class="hint-icon">💡</span>
+                    <span>Busca por nombre de usuario o pega una wallet</span>
+                </div>
+            </div>
+            
+            <!-- Status/Error Section -->
+            <div class="status-section" id="contactError"></div>
+            
+            <!-- Action Button -->
+            <div class="action-section">
+                <button class="liquid-btn" onclick="startChat()">
+                    <span class="btn-text">Iniciar Chat</span>
+                    <span class="btn-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </span>
+                </button>
+            </div>
+            
+            <!-- Security Badge -->
+            <div class="security-badge">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="11" width="18" height="11" rx="2"/>
+                    <path d="M7 11V7a5 5 0 0110 0v4"/>
+                </svg>
+                <span>Encriptación de extremo a extremo</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Configuración - Estilo Minimalista Steve Jobs -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content settings-sheet">
+            <!-- Header minimalista -->
+            <div class="sheet-header">
+                <div class="drag-indicator"></div>
+                <button class="sheet-close" onclick="closeModal('settingsModal')">Listo</button>
+            </div>
+            
+            <!-- Perfil Ultra Minimalista -->
+            <div class="profile-minimal">
+                <div class="profile-avatar-minimal" id="profileAvatar">
+                    <span class="avatar-letter" id="avatarLetter">?</span>
+                </div>
+                <h2 class="profile-name-minimal" id="profileName">Usuario</h2>
+                <button class="edit-minimal" onclick="openModal('changeUserModal')">Editar nombre</button>
+            </div>
+            
+            <!-- Wallet - Simple y Claro -->
+            <div class="wallet-minimal">
+                <div class="wallet-label">Wallet</div>
+                <div class="wallet-value" id="walletSettings">0x...</div>
+                <button class="copy-minimal" onclick="copyWallet()">Copiar</button>
+            </div>
+            
+            <!-- Acción Destructiva - Separada y Clara -->
+            <div class="danger-zone">
+                <button class="delete-account-minimal" onclick="openModal('deleteUserModal')">
+                    Eliminar cuenta
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Cambiar Nombre -->
+    <div class="modal" id="changeUserModal">
+        <div class="modal-content modal-card">
+            <h2 class="modal-title">Cambiar Nombre</h2>
+            <input type="text" id="newUserInput" class="apple-input" placeholder="Nuevo nombre">
+            <div class="modal-actions">
+                <button class="apple-btn apple-btn-secondary" onclick="closeModal('changeUserModal')">Cancelar</button>
+                <button class="apple-btn apple-btn-primary" onclick="changeUser()">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Eliminar Cuenta -->
+    <div class="modal" id="deleteUserModal">
+        <div class="modal-content modal-card">
+            <div class="modal-icon" style="font-size: 48px;">⚠️</div>
+            <h2 class="modal-title" style="color: #ef4444;">Eliminar Cuenta</h2>
+            <p class="modal-subtitle">Esta acción es permanente. Se eliminarán todos tus datos, chats y mensajes.</p>
+            <div class="modal-actions">
+                <button class="apple-btn apple-btn-secondary" onclick="closeModal('deleteUserModal')">Cancelar</button>
+                <button class="apple-btn apple-btn-danger" onclick="deleteUser()">Sí, eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Perfil de Contacto -->
+    <div class="modal" id="contactProfileModal">
+        <div class="modal-content contact-profile-sheet">
+            <div class="sheet-header">
+                <div class="drag-indicator"></div>
+                <button class="sheet-close" onclick="closeModal('contactProfileModal')">Cerrar</button>
+            </div>
+            <div class="contact-profile-card">
+                <div class="contact-profile-bg"></div>
+                <div class="contact-profile-content">
+                    <div class="contact-avatar-large">
+                        <span class="avatar-letter" id="contactProfileLetter">?</span>
+                    </div>
+                    <h2 class="contact-name-large" id="contactProfileName">Contacto</h2>
+                    <div id="contactProfileStatus">
+                        <span class="contact-offline-badge">
+                            <span style="width: 6px; height: 6px; border-radius: 50%; background: var(--text-muted);"></span>
+                            Desconectado
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="contact-wallet-section">
+                <div class="contact-wallet-label">Wallet</div>
+                <div class="contact-wallet-address" id="contactProfileWallet">0x...</div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* ============================================
+           Header Styles - iOS 26 Premium
+           ============================================ */
+        .header { 
+            padding: 12px 20px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            flex-shrink: 0;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        
+        .header-home { 
+            background: rgba(0, 0, 0, 0.95);
+            padding: 16px 20px 14px;
+            border-bottom: 1px solid var(--border-light);
+        }
+        
+        .header-chat { 
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--separator);
+        }
+        
+        .header-left { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 3px; 
+        }
+        
+        .header-actions { 
+            display: flex; 
+            gap: 10px; 
+        }
+        
+        .logo svg { 
+            filter: drop-shadow(0 2px 12px rgba(34, 197, 94, 0.25)); 
+        }
+        
+        .logo svg text {
+            fill: var(--green-primary) !important;
+        }
+        
+        .user-tag { 
+            font-size: 13px; 
+            color: #dc2626; 
+            font-weight: 600;
+            letter-spacing: -0.01em;
+        }
+        
+        .chat-title { 
+            font-size: 17px; 
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+        
+        /* Icon Buttons - Refined */
+        .icon-btn { 
+            width: 36px; 
+            height: 36px; 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            background: var(--green-ultra-light);
+            border: none; 
+            color: var(--green-primary); 
+            cursor: pointer; 
+            transition: all 0.2s var(--spring-gentle);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .icon-btn:active { 
+            transform: scale(0.88); 
+            background: var(--green-primary);
+            color: black;
+            box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);
+        }
+        
+        .icon-btn-danger { 
+            color: #FF3B30; 
+            background: rgba(255, 59, 48, 0.08);
+        }
+        
+        .icon-btn-danger:active {
+            background: #FF3B30;
+            color: white;
+        }
+        
+        /* ============================================
+           Chat List - iOS 26 Premium Cards
+           ============================================ */
+        .chats-list { 
+            flex: 1; 
+            overflow-y: auto; 
+            padding: 16px 16px; 
+            padding-bottom: calc(16px + env(safe-area-inset-bottom)); 
+            -webkit-overflow-scrolling: touch;
+            background: transparent;
+        }
+        
+        .chat-item { 
+            background: var(--bg-secondary);
+            border-radius: 18px; 
+            padding: 0; 
+            margin-bottom: 12px; 
+            display: flex; 
+            align-items: center; 
+            overflow: hidden; 
+            transition: all 0.25s var(--spring-gentle);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-light);
+        }
+        
+        .chat-item:active {
+            transform: scale(0.98);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .chat-item-content { 
+            flex: 1; 
+            padding: 16px 18px; 
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            transition: background 0.2s ease;
+        }
+        
+        .chat-item-content:active { 
+            background: var(--gray-50);
+        }
+        
+        .chat-delete-btn { 
+            width: 56px; 
+            height: 100%; 
+            min-height: 72px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            background: rgba(255, 59, 48, 0.08);
+            border: none; 
+            color: #FF3B30;
+            cursor: pointer; 
+            transition: all 0.2s ease;
+        }
+        
+        .chat-delete-btn:active { 
+            background: rgba(255, 59, 48, 0.15);
+            transform: scale(0.95);
+        }
+        
+        .chat-avatar { 
+            width: 52px; 
+            height: 52px; 
+            min-width: 52px; 
+            border-radius: 50%; 
+            background: linear-gradient(135deg, var(--green-primary) 0%, var(--green-dark) 100%);
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 20px; 
+            font-weight: 600;
+            color: white;
+            box-shadow: 0 2px 12px rgba(16, 185, 129, 0.25);
+            letter-spacing: -0.02em;
+        }
+        
+        .chat-text { 
+            flex: 1; 
+            min-width: 0; 
+        }
+        
+        .chat-name { 
+            font-size: 17px; 
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+            letter-spacing: -0.02em;
+        }
+        
+        .chat-preview { 
+            font-size: 15px; 
+            color: var(--text-secondary);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        /* Empty State - Elegant */
+        .empty-state { 
+            flex: 1; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 60px 40px; 
+            text-align: center;
+        }
+        
+        .empty-state-icon { 
+            width: 100px; 
+            height: 100px; 
+            margin-bottom: 24px; 
+            background: linear-gradient(135deg, 
+                rgba(34, 197, 94, 0.08) 0%, 
+                rgba(34, 197, 94, 0.02) 100%);
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .empty-state-icon svg { 
+            width: 48px; 
+            height: 48px; 
+            stroke: var(--green-primary);
+            opacity: 0.7;
+        }
+        
+        .empty-state-title { 
+            font-size: 22px; 
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+        }
+        
+        .empty-state-text { 
+            font-size: 15px; 
+            color: var(--text-secondary);
+            line-height: 1.5;
+            max-width: 280px;
+        }
+        
+        /* ============================================
+           Messages - iMessage Bubble Design
+           ============================================ */
+        .messages-area { 
+            flex: 1; 
+            overflow-y: auto; 
+            padding: 16px 16px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 3px;
+            -webkit-overflow-scrolling: touch; 
+            min-height: 0;
+            background: transparent;
+        }
+        
+        .message { 
+            display: flex; 
+            opacity: 0; 
+            transform: translateY(10px) scale(0.95);
+            animation: messageBounceIn 0.4s var(--spring-smooth) forwards;
+            margin-bottom: 2px;
+        }
+        
+        .message.own { 
+            justify-content: flex-end; 
+        }
+        
+        @keyframes messageBounceIn { 
+            to { 
+                opacity: 1; 
+                transform: translateY(0) scale(1);
+            } 
+        }
+        
+        .bubble { 
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 20px;
+            font-size: 17px;
+            line-height: 1.35;
+            word-wrap: break-word;
+            word-break: break-word;
+            overflow-wrap: break-word;
+            white-space: pre-wrap;
+            position: relative;
+            letter-spacing: -0.01em;
+        }
+        
+        /* Received Messages - Light Gray */
+        .message.other .bubble { 
+            background: var(--bubble-received);
+            color: var(--bubble-received-text);
+            border-bottom-left-radius: 4px;
+            box-shadow: var(--shadow-bubble);
+        }
+        
+        /* Sent Messages - Blue Gradient */
+        .message.own .bubble { 
+            background: linear-gradient(135deg, var(--bubble-sent-start) 0%, var(--bubble-sent-end) 100%);
+            color: var(--text-on-blue);
+            border-bottom-right-radius: 4px;
+            box-shadow: 0 2px 12px rgba(0, 122, 255, 0.25);
+        }
+        
+        /* Message Tail Effect */
+        .message.other .bubble::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: -8px;
+            width: 20px;
+            height: 20px;
+            background: var(--bubble-received);
+            border-bottom-right-radius: 16px;
+            transform: translateY(0);
+        }
+        
+        .message.other .bubble::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: -10px;
+            width: 10px;
+            height: 20px;
+            background: var(--gray-50);
+            border-bottom-right-radius: 10px;
+        }
+        
+        .message.own .bubble::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: -8px;
+            width: 20px;
+            height: 20px;
+            background: var(--bubble-sent-end);
+            border-bottom-left-radius: 16px;
+        }
+        
+        .message.own .bubble::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: -10px;
+            width: 10px;
+            height: 20px;
+            background: var(--gray-50);
+            border-bottom-left-radius: 10px;
+        }
+        
+        .encryption-badge { 
+            font-size: 10px; 
+            margin-left: 6px; 
+            opacity: 0.6;
+        }
+        
+        /* Typing Indicator - Refined */
+        .typing-indicator { 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+            padding: 10px 16px; 
+            background: var(--bubble-received);
+            border-radius: 18px;
+            border-bottom-left-radius: 4px;
+            font-size: 14px; 
+            color: var(--text-secondary);
+            box-shadow: var(--shadow-bubble);
+            max-width: fit-content;
+        }
+        
+        .typing-dots { 
+            display: flex; 
+            gap: 4px; 
+        }
+        
+        .typing-dots span { 
+            width: 8px; 
+            height: 8px; 
+            background: var(--text-secondary);
+            border-radius: 50%; 
+            animation: typingBounce 1.4s infinite ease-in-out;
+        }
+        
+        .typing-dots span:nth-child(1) { animation-delay: 0s; }
+        .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes typingBounce { 
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.5; } 
+            30% { transform: translateY(-6px); opacity: 1; } 
+        }
+        
+        /* ============================================
+           Input Area - Glassmorphic Premium Design
+           ============================================ */
+        .input-area { 
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 10px 12px; 
+            padding-bottom: calc(10px + env(safe-area-inset-bottom)); 
+            display: flex; 
+            flex-direction: column; 
+            gap: 10px; 
+            flex-shrink: 0; 
+            border-top: 1px solid var(--border-light);
+            box-shadow: 0 -2px 20px rgba(0, 0, 0, 0.04);
+        }
+        
+        .input-row { 
+            display: flex; 
+            align-items: flex-end; 
+            gap: 10px; 
+        }
+        
+        .media-buttons { 
+            display: flex; 
+            gap: 6px; 
+        }
+        
+        .media-btn { 
+            width: 34px; 
+            height: 34px; 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            border: none; 
+            background: var(--gray-100);
+            color: var(--text-secondary);
+            cursor: pointer; 
+            transition: all 0.2s var(--spring-gentle);
+        }
+        
+        .media-btn:active { 
+            background: var(--gray-200);
+            color: var(--text-primary);
+            transform: scale(0.9);
+        }
+        
+        .message-input { 
+            flex: 1; 
+            min-width: 0; 
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-light);
+            border-radius: 20px; 
+            padding: 10px 16px; 
+            color: var(--text-primary);
+            font-size: 17px; 
+            outline: none; 
+            resize: none; 
+            max-height: 120px; 
+            line-height: 1.35;
+            font-family: inherit;
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow-sm);
+            letter-spacing: -0.01em;
+        }
+        
+        .message-input::placeholder { 
+            color: var(--text-tertiary);
+        }
+        
+        .message-input:focus { 
+            background: var(--bg-elevated);
+            border-color: var(--green-primary);
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+        }
+        
+        .send-btn { 
+            width: 34px; 
+            height: 34px; 
+            min-width: 34px; 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            border: none; 
+            background: linear-gradient(135deg, var(--green-primary) 0%, var(--green-dark) 100%);
+            color: black; 
+            cursor: pointer; 
+            transition: all 0.2s var(--spring-gentle);
+            box-shadow: 0 2px 12px rgba(34, 197, 94, 0.35);
+        }
+        
+        .send-btn:active { 
+            transform: scale(0.88);
+            box-shadow: 0 1px 6px rgba(34, 197, 94, 0.4);
+        }
+        
+        .action-btn { 
+            width: 40px; 
+            height: 40px; 
+            min-width: 40px; 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            border: none; 
+            cursor: pointer; 
+            transition: all 0.2s var(--spring-gentle);
+        }
+        
+        .action-btn:active { 
+            transform: scale(0.88);
+        }
+        
+        .camera-btn { 
+            background: rgba(34, 197, 94, 0.1);
+            color: var(--green-primary);
+        }
+        
+        .video-btn { 
+            background: rgba(88, 86, 214, 0.1);
+            color: #5856D6;
+        }
+        
+        .mic-btn { 
+            background: rgba(255, 149, 0, 0.1);
+            color: #FF9500;
+        }
+    </style>
+
+    <style>
+        /* ============================================
+           Modal Base - iOS 26 Premium
+           ============================================ */
+        .modal { 
+            display: none; 
+            position: fixed; 
+            inset: 0; 
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px);
+            z-index: 1000; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 20px;
+            animation: modalFadeIn 0.3s ease;
+        }
+        
+        .modal.active { 
+            display: flex; 
+        }
+        
+        @keyframes modalFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .modal-card { 
+            background: var(--bg-secondary);
+            border-radius: 24px; 
+            padding: 32px 28px; 
+            width: 100%; 
+            max-width: 340px;
+            box-shadow: var(--shadow-lg);
+            animation: modalSlideUp 0.4s var(--spring-gentle);
+            border: 1px solid var(--border-light);
+        }
+        
+        @keyframes modalSlideUp {
+            from { 
+                opacity: 0;
+                transform: translateY(20px) scale(0.95);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        .modal-icon { 
+            font-size: 52px; 
+            text-align: center; 
+            margin-bottom: 16px;
+        }
+        
+        .modal-title { 
+            font-size: 24px; 
+            font-weight: 700;
+            text-align: center; 
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+            color: var(--text-primary);
+        }
+        
+        .modal-subtitle { 
+            font-size: 15px; 
+            color: var(--text-secondary);
+            text-align: center; 
+            margin-bottom: 24px; 
+            line-height: 1.5;
+        }
+        
+        .modal-actions { 
+            display: flex; 
+            gap: 12px; 
+            margin-top: 24px;
+        }
+        
+        .input-label { 
+            display: block; 
+            font-size: 13px; 
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 8px; 
+            text-transform: uppercase; 
+            letter-spacing: 0.5px;
+        }
+        
+        .input-hint { 
+            font-size: 13px; 
+            color: var(--text-tertiary);
+            margin-bottom: 20px;
+        }
+        
+        .error { 
+            color: #FF3B30;
+            font-size: 13px; 
+            margin-top: 8px; 
+            display: none;
+        }
+        
+        .apple-input { 
+            width: 100%; 
+            padding: 14px 16px; 
+            border-radius: 12px; 
+            border: 1px solid var(--border-light);
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            font-size: 17px; 
+            outline: none; 
+            margin-bottom: 8px;
+            transition: all 0.2s ease;
+            font-family: inherit;
+            letter-spacing: -0.01em;
+        }
+        
+        .apple-input:focus { 
+            border-color: var(--green-primary);
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+            background: var(--bg-secondary);
+        }
+        
+        .apple-btn { 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 14px 20px; 
+            border-radius: 12px; 
+            font-size: 17px; 
+            font-weight: 600;
+            cursor: pointer; 
+            border: none; 
+            transition: all 0.2s var(--spring-gentle);
+            flex: 1;
+            letter-spacing: -0.01em;
+        }
+        
+        .apple-btn:active { 
+            transform: scale(0.96);
+        }
+        
+        .apple-btn-primary { 
+            background: linear-gradient(135deg, var(--green-primary) 0%, var(--green-dark) 100%);
+            color: black;
+            box-shadow: 0 2px 12px rgba(34, 197, 94, 0.3);
+        }
+        
+        .apple-btn-primary:active {
+            box-shadow: 0 1px 6px rgba(34, 197, 94, 0.4);
+        }
+        
+        .apple-btn-secondary { 
+            background: var(--gray-100);
+            color: var(--text-primary);
+        }
+        
+        .apple-btn-danger { 
+            background: #FF3B30;
+            color: white;
+            box-shadow: 0 2px 12px rgba(255, 59, 48, 0.3);
+        }
+        
+        .wallet-display { 
+            background: var(--gray-100);
+            border-radius: 14px; 
+            padding: 16px; 
+            font-size: 12px; 
+            font-family: 'SF Mono', 'Menlo', monospace;
+            color: var(--green-primary);
+            word-break: break-all; 
+            margin-bottom: 20px;
+            border: 1px solid var(--border-light);
+            line-height: 1.5;
+        }
+    </style>
+
+    <style>
+        /* ============================================
+           Settings Sheet - iOS 26 Premium Style
+           ============================================ */
+        .settings-sheet { 
+            background: linear-gradient(180deg, var(--gray-50) 0%, var(--bg-secondary) 100%);
+            border-radius: 24px 24px 0 0; 
+            width: 100%; 
+            max-width: 100%; 
+            position: fixed; 
+            bottom: 0; 
+            left: 0; 
+            right: 0; 
+            max-height: 85vh; 
+            overflow-y: auto; 
+            padding: 0 0 calc(24px + env(safe-area-inset-bottom));
+            animation: slideUp 0.4s var(--spring-gentle);
+            box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.15);
+            border: 1px solid var(--border-light);
+            border-bottom: none;
+        }
+        
+        @keyframes slideUp { 
+            from { transform: translateY(100%); opacity: 0.8; } 
+            to { transform: translateY(0); opacity: 1; } 
+        }
+        
+        .sheet-header { 
+            display: flex; 
+            justify-content: flex-end; 
+            align-items: center;
+            padding: 16px 20px 12px;
+            position: sticky;
+            top: 0;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            z-index: 10;
+            border-bottom: 1px solid var(--border-light);
+        } center; padding: 12px 20px; position: sticky; top: 0; background: var(--bg-secondary); z-index: 10; }
+        
+        .drag-indicator { 
+            position: absolute; 
+            left: 50%; 
+            transform: translateX(-50%);
+            top: 8px;
+            width: 40px; 
+            height: 5px; 
+            background: var(--gray-300);
+            border-radius: 3px;
+        }
+        
+        .sheet-close { 
+            background: none; 
+            border: none; 
+            color: var(--green-primary);
+            font-size: 17px; 
+            font-weight: 600;
+            cursor: pointer; 
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+        
+        .sheet-close:active {
+            background: var(--green-ultra-light);
+            transform: scale(0.95);
+        }
+        
+        /* ============================================
+           Profile Card Premium
+           ============================================ */
+        /* Perfil Minimalista - Estilo Steve Jobs */
+        .profile-minimal {
+            padding: 60px 24px 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .profile-avatar-minimal {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: var(--gray-900);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            border: 3px solid var(--green-primary);
+        }
+        
+        .profile-avatar-minimal .avatar-letter {
+            font-size: 42px;
+            font-weight: 600;
+            color: var(--green-primary);
+        }
+        
+        .profile-name-minimal {
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+        
+        .edit-minimal {
+            background: none;
+            border: none;
+            color: var(--green-primary);
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: background 0.2s ease;
+        }
+        
+        .edit-minimal:active {
+            background: rgba(34, 197, 94, 0.1);
+        }
+        
+        /* Wallet Minimalista */
+        .wallet-minimal {
+            margin: 0 24px 40px;
+            padding: 24px;
+            background: #000;
+            border-radius: 16px;
+            text-align: center;
+            border: 1px solid var(--border-light);
+        }
+        
+        .wallet-label {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 500;
+        }
+        
+        .wallet-value {
+            font-family: 'SF Mono', monospace;
+            font-size: 14px;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            word-break: break-all;
+            line-height: 1.6;
+        }
+        
+        .copy-minimal {
+            background: var(--green-primary);
+            color: #000;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s ease;
+        }
+        
+        .copy-minimal:active {
+            opacity: 0.7;
+        }
+        
+        /* Zona de Peligro */
+        .danger-zone {
+            margin: 0 24px 40px;
+        }
+        
+        .delete-account-minimal {
+            width: 100%;
+            background: none;
+            border: 2px solid rgba(239, 68, 68, 0.3);
+            color: #ef4444;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .delete-account-minimal:active {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: #ef4444;
+        }
+        
+        /* Versión Minimalista */
+        .version-minimal {
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-muted);
+            padding-bottom: 20px;
+        }
+        
+        /* ============================================
+           Chat Header Contact Info
+           ============================================ */
+        .chat-header-info { 
+            position: relative; 
+            margin: 16px 16px 24px;
+            border-radius: 24px; 
+            overflow: hidden; 
+            background: var(--bg-secondary);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-light);
+        }
+        
+        .profile-bg-gradient { 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            right: 0; 
+            height: 100px;
+            background: linear-gradient(135deg, var(--green-primary) 0%, var(--green-dark) 100%);
+        }
+        
+        .profile-content { 
+            position: relative; 
+            padding: 24px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            text-align: center;
+        }
+        
+        .profile-avatar-large { 
+            position: relative; 
+            width: 90px; 
+            height: 90px; 
+            margin-top: 20px; 
+            margin-bottom: 16px;
+        }
+        
+        .profile-avatar-large .avatar-letter { 
+            width: 90px; 
+            height: 90px; 
+            border-radius: 50%; 
+            background: linear-gradient(135deg, var(--gray-800) 0%, var(--gray-900) 100%);
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 36px; 
+            font-weight: 700;
+            color: var(--green-primary);
+            border: 4px solid var(--bg-secondary);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+        
+        .avatar-ring { 
+            position: absolute; 
+            inset: -4px; 
+            border-radius: 50%; 
+            border: 2px solid rgba(34, 197, 94, 0.4);
+            animation: pulse-ring 2s infinite;
+        }
+        
+        @keyframes pulse-ring { 
+            0%, 100% { opacity: 1; transform: scale(1); } 
+            50% { opacity: 0.5; transform: scale(1.05); } 
+        }
+        
+        .profile-details { 
+            margin-bottom: 16px;
+        }
+        
+        .profile-name-large { 
+            font-size: 26px; 
+            font-weight: 700;
+            margin-bottom: 10px; 
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+        }
+        
+        .profile-status-badge { 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 8px; 
+            background: rgba(34, 197, 94, 0.1);
+            padding: 6px 16px; 
+            border-radius: 20px; 
+            font-size: 13px; 
+            color: var(--green-primary);
+            font-weight: 500;
+        }
+        
+        .status-dot-pulse { 
+            width: 8px; 
+            height: 8px; 
+            border-radius: 50%; 
+            background: var(--green-primary);
+            animation: pulse-dot 1.5s infinite;
+        }
+        
+        @keyframes pulse-dot { 
+            0%, 100% { 
+                opacity: 1; 
+                box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4);
+            } 
+            50% { 
+                opacity: 0.8; 
+                box-shadow: 0 0 0 6px rgba(34, 197, 94, 0);
+            } 
+        }
+        
+        .edit-profile-btn { 
+            display: flex; 
+            align-items: center; 
+            gap: 6px; 
+            background: var(--gray-100);
+            border: none; 
+            border-radius: 12px; 
+            padding: 10px 20px; 
+            color: var(--text-primary);
+            font-size: 15px; 
+            font-weight: 500;
+            cursor: pointer; 
+            transition: all 0.2s var(--spring-gentle);
+        }
+        
+        .edit-profile-btn:active { 
+            transform: scale(0.95);
+            background: var(--green-ultra-light);
+            color: var(--green-primary);
+        }
+        
+        /* ============================================
+           Chat Header Contact Info
+           ============================================ */
+        .chat-header-info { 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            cursor: pointer; 
+            padding: 6px 10px; 
+            border-radius: 12px; 
+            transition: background 0.2s ease;
+        }
+        
+        .chat-header-info:active { 
+            background: rgba(34, 197, 94, 0.08);
+        }
+        
+        .contact-avatar-small { 
+            position: relative; 
+            width: 36px; 
+            height: 36px; 
+            min-width: 36px; 
+            border-radius: 50%; 
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 15px; 
+            font-weight: 700;
+            color: white;
+            box-shadow: 0 2px 8px rgba(220, 38, 38, 0.35);
+        }
+        
+        .online-dot { 
+            position: absolute; 
+            bottom: 0; 
+            right: 0; 
+            width: 10px; 
+            height: 10px; 
+            border-radius: 50%; 
+            background: #34C759;
+            border: 2px solid var(--bg-secondary);
+        }
+        
+        .chat-header-text { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 2px;
+        }
+        
+        .contact-status { 
+            font-size: 12px; 
+            color: var(--text-secondary);
+        }
+        
+        .online-status { 
+            color: #34C759;
+            font-weight: 500;
+        }
+        
+        .typing-status { 
+            color: var(--green-primary);
+            font-weight: 600;
+            animation: pulse 1s infinite;
+        }
+        
+        /* Contact Profile Modal */
+        .contact-profile-sheet { 
+            background: linear-gradient(180deg, var(--gray-50) 0%, var(--bg-secondary) 100%);
+            border-radius: 24px 24px 0 0; 
+            width: 100%; 
+            max-width: 100%; 
+            position: fixed; 
+            bottom: 0; 
+            left: 0; 
+            right: 0; 
+            max-height: 70vh; 
+            overflow-y: auto; 
+            padding: 0 0 calc(24px + env(safe-area-inset-bottom));
+            animation: slideUp 0.4s var(--spring-gentle);
+            box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.15);
+            border: 1px solid var(--border-light);
+            border-bottom: none;
+        }
+        
+        .contact-profile-card { 
+            position: relative; 
+            margin: 16px; 
+            border-radius: 20px; 
+            overflow: hidden; 
+            background: var(--bg-secondary);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-light);
+        }
+        
+        .contact-profile-bg { 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            right: 0; 
+            height: 80px;
+            background: linear-gradient(135deg, var(--green-primary) 0%, var(--green-dark) 100%);
+        }
+        
+        .contact-profile-content { 
+            position: relative; 
+            padding: 20px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            text-align: center;
+        }
+        
+        .contact-avatar-large { 
+            position: relative; 
+            width: 80px; 
+            height: 80px; 
+            margin-top: 15px; 
+            margin-bottom: 12px;
+        }
+        
+        .contact-avatar-large .avatar-letter { 
+            width: 80px; 
+            height: 80px; 
+            border-radius: 50%; 
+            background: linear-gradient(135deg, var(--gray-800) 0%, var(--gray-900) 100%);
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 32px; 
+            font-weight: 700;
+            color: var(--green-primary);
+            border: 3px solid var(--bg-secondary);
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
+        }
+        
+        .contact-name-large { 
+            font-size: 22px; 
+            font-weight: 700;
+            margin-bottom: 8px; 
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+        }
+        
+        .contact-online-badge { 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 6px; 
+            background: rgba(52, 199, 89, 0.1);
+            padding: 5px 12px; 
+            border-radius: 16px; 
+            font-size: 12px; 
+            color: #34C759;
+            font-weight: 500;
+        }
+        
+        .contact-offline-badge { 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 6px; 
+            background: var(--gray-100);
+            padding: 5px 12px; 
+            border-radius: 16px; 
+            font-size: 12px; 
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        
+        .contact-wallet-section { 
+            margin: 0 16px 16px; 
+            background: var(--bg-secondary);
+            border-radius: 16px; 
+            padding: 16px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-light);
+        }
+        
+        .contact-wallet-label { 
+            font-size: 11px; 
+            color: var(--text-secondary);
+            text-transform: uppercase; 
+            letter-spacing: 0.5px; 
+            margin-bottom: 8px;
+        }
+        
+        .contact-wallet-address { 
+            font-family: 'SF Mono', 'Menlo', monospace;
+            font-size: 12px; 
+            color: var(--green-primary);
+            word-break: break-all; 
+            line-height: 1.5;
+        }
+        
+        /* ============================================
+           Settings Sections
+           ============================================ */
+        .settings-section { 
+            margin: 0 16px 24px;
+        }
+        
+        .section-header { 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+            font-size: 13px; 
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase; 
+            letter-spacing: 0.5px; 
+            margin-bottom: 12px; 
+            padding: 0 4px;
+        }
+        
+        .wallet-card { 
+            background: var(--bg-secondary);
+            border-radius: 16px; 
+            padding: 18px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 14px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-light);
+        }
+        
+        .wallet-address { 
+            font-family: 'SF Mono', 'Menlo', monospace;
+            font-size: 13px; 
+            color: var(--green-primary);
+            word-break: break-all; 
+            line-height: 1.5;
+        }
+        
+        .copy-btn { 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 8px; 
+            background: var(--gray-100);
+            border: none; 
+            border-radius: 12px; 
+            padding: 12px; 
+            color: var(--text-primary);
+            font-size: 15px; 
+            font-weight: 500;
+            cursor: pointer; 
+            transition: all 0.2s var(--spring-gentle);
+        }
+        
+        .copy-btn:active { 
+            transform: scale(0.96);
+            background: var(--green-ultra-light);
+            color: var(--green-primary);
+        }
+        
+        .settings-list { 
+            background: var(--bg-secondary);
+            border-radius: 16px; 
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-light);
+        }
+        
+        .settings-item { 
+            display: flex; 
+            align-items: center; 
+            gap: 14px; 
+            width: 100%; 
+            padding: 16px 18px; 
+            background: none; 
+            border: none; 
+            color: var(--text-primary);
+            font-size: 17px; 
+            cursor: pointer; 
+            text-align: left; 
+            border-bottom: 1px solid var(--separator);
+            transition: background 0.2s ease;
+        }
+        
+        .settings-item:last-child { 
+            border-bottom: none;
+        }
+        
+        .settings-item:active { 
+            background: var(--gray-50);
+        }
+        
+        .settings-item.danger span { 
+            color: #FF3B30;
+        }
+        
+        .item-icon { 
+            width: 36px; 
+            height: 36px; 
+            border-radius: 10px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+        }
+        
+        .settings-item span { 
+            flex: 1;
+        }
+        
+        .chevron { 
+            opacity: 0.4;
+        }
+        
+        .app-info { 
+            text-align: center; 
+            padding: 24px; 
+            color: var(--text-tertiary);
+            font-size: 13px;
+        }
+        
+        .encrypted-badge { 
+            margin-top: 6px; 
+            color: var(--green-primary);
+            font-weight: 500;
+        }
+    </style>
+
+    <style>
+        /* ============================================
+           NEW CHAT MODAL - iOS 26 Premium Glass Style
+           ============================================ */
+        .new-chat-sheet {
+            background: linear-gradient(180deg, 
+                rgba(0, 0, 0, 0.98) 0%, 
+                rgba(10, 10, 10, 0.98) 100%);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border-radius: 32px 32px 0 0;
+            width: 100%;
+            max-width: 100%;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 0 0 calc(28px + env(safe-area-inset-bottom));
+            animation: sheetSlideUp 0.5s var(--spring-gentle);
+            border: 1px solid var(--border-light);
+            border-bottom: none;
+            box-shadow: 0 -10px 60px rgba(0, 0, 0, 0.12);
+            transition: transform 0.3s var(--spring-gentle);
+        }
+        
+        .new-chat-sheet.keyboard-open {
+            transform: translateY(-35%);
+        }
+        
+        @keyframes sheetSlideUp {
+            from { 
+                transform: translateY(100%); 
+                opacity: 0.6;
+            }
+            to { 
+                transform: translateY(0); 
+                opacity: 1;
+            }
+        }
+        
+        /* Glass Header */
+        .new-chat-header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 14px 20px 10px;
+            position: relative;
+        }
+        
+        .glass-pill {
+            width: 40px;
+            height: 5px;
+            background: var(--gray-300);
+            border-radius: 3px;
+        }
+        
+        .close-pill {
+            position: absolute;
+            right: 16px;
+            top: 12px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--gray-100);
+            border: none;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s var(--spring-gentle);
+        }
+        
+        .close-pill:active {
+            transform: scale(0.88);
+            background: var(--gray-200);
+        }
+        
+        /* Hero Section */
+        .new-chat-hero {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 24px 28px;
+            position: relative;
+        }
+        
+        .hero-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+            letter-spacing: -0.5px;
+        }
+        
+        .hero-subtitle {
+            font-size: 15px;
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+        
+        /* Search Section */
+        .search-section {
+            padding: 0 20px 24px;
+        }
+        
+        .search-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            color: var(--text-tertiary);
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 16px 48px 16px 48px;
+            border-radius: 16px;
+            border: 1px solid var(--border-light);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 17px;
+            font-weight: 400;
+            outline: none;
+            transition: all 0.25s ease;
+            font-family: inherit;
+            box-shadow: var(--shadow-sm);
+            letter-spacing: -0.01em;
+        }
+        
+        .search-input::placeholder {
+            color: var(--text-tertiary);
+        }
+        
+        .search-input:focus {
+            background: var(--bg-elevated);
+            border-color: var(--green-primary);
+            box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.1);
+        }
+        
+        .search-clear {
+            position: absolute;
+            right: 14px;
+            width: 24px;
+            height: 24px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-tertiary);
+            transition: transform 0.2s ease;
+        }
+        
+        .search-clear:active {
+            transform: scale(0.9);
+        }
+        
+        .search-clear.visible {
+            display: flex;
+        }
+        
+        .search-hint {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 14px;
+            padding: 0 4px;
+        }
+        
+        .hint-icon {
+            font-size: 14px;
+        }
+        
+        .search-hint span:last-child {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        
+        /* Status Section */
+        .status-section {
+            padding: 0 20px;
+            min-height: 24px;
+        }
+        
+        .status-section:not(:empty) {
+            padding: 14px 20px;
+            margin: 0 20px 16px;
+            border-radius: 14px;
+            font-size: 14px;
+            font-weight: 500;
+            text-align: center;
+        }
+        
+        .status-section.error {
+            background: rgba(255, 59, 48, 0.1);
+            color: #FF3B30;
+        }
+        
+        .status-section.success {
+            background: rgba(52, 199, 89, 0.1);
+            color: #34C759;
+        }
+        
+        .status-section.loading {
+            background: rgba(34, 197, 94, 0.1);
+            color: var(--green-primary);
+        }
+        
+        /* Action Section */
+        .action-section {
+            padding: 12px 20px 20px;
+        }
+        
+        .liquid-btn {
+            width: 100%;
+            padding: 18px 24px;
+            border-radius: 16px;
+            border: none;
+            background: linear-gradient(135deg, var(--green-primary) 0%, var(--green-dark) 100%);
+            color: black;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.25s var(--spring-gentle);
+            box-shadow: 0 4px 20px rgba(34, 197, 94, 0.35);
+            position: relative;
+            overflow: hidden;
+            letter-spacing: -0.01em;
+        }
+        
+        .liquid-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50%;
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0.1) 0%, transparent 100%);
+            pointer-events: none;
+        }
+        
+        .liquid-btn:active {
+            transform: scale(0.97);
+            box-shadow: 0 2px 12px rgba(0, 122, 255, 0.4);
+        }
+        
+        .btn-icon {
+            display: flex;
+            align-items: center;
+            transition: transform 0.2s ease;
+        }
+        
+        .liquid-btn:active .btn-icon {
+            transform: translateX(4px);
+        }
+        
+        /* Security Badge */
+        .security-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 16px 20px 0;
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+        
+        .security-badge svg {
+            opacity: 0.5;
+        }
+    </style>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
+    <script>
+        // Timeout de seguridad: si Firebase no carga en 5 segundos, continuar sin él
+        setTimeout(function() {
+            if (typeof firebase === 'undefined' || !window.firebaseReady) {
+                console.warn('⚠️ Firebase no se cargó en 5 segundos - continuando sin conexión');
+                window.firebaseReady = false;
+                // Forzar que la app continúe
+                if (typeof init === 'function') {
+                    console.log('🔄 Forzando inicialización de la app sin Firebase');
+                }
+            }
+        }, 5000);
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyAb-8rW57MqPcFMOyr4_zaDJhyE9nAcXPs",
+            authDomain: "p2pchat-60bd1.firebaseapp.com",
+            projectId: "p2pchat-60bd1",
+            storageBucket: "p2pchat-60bd1.firebasestorage.app",
+            messagingSenderId: "529094305865",
+            databaseURL: "https://p2pchat-60bd1-default-rtdb.firebaseio.com",
+            appId: "1:529094305865:android:bededccf3c76c671cff798"
+        };
+        try { 
+            if (typeof firebase !== 'undefined') {
+                firebase.initializeApp(firebaseConfig); 
+                window.firebaseReady = true;
+                console.log('✅ Firebase inicializado correctamente');
+            } else {
+                window.firebaseReady = false;
+                console.warn('⚠️ Firebase no está disponible');
+            }
+        } catch (e) { 
+            window.firebaseReady = false;
+            console.error('❌ Error inicializando Firebase:', e);
+        }
+    </script>
+    <script src="app.js"></script>
+    <script>
+        // Update profile UI when settings modal opens
+        const originalOpenModal = window.openModal;
+        window.openModal = function(id) {
+            if (id === 'settingsModal') {
+                const name = localStorage.getItem('userName') || 'Usuario';
+                document.getElementById('profileName').textContent = '@' + name;
+                document.getElementById('avatarLetter').textContent = name.charAt(0).toUpperCase();
+            }
+            originalOpenModal(id);
+        };
+        
+        // Keyboard handling perfecto para iOS
+        (function() {
+            const messageInput = document.getElementById('messageInput');
+            const messagesArea = document.getElementById('messagesArea');
+            const inputArea = document.getElementById('inputArea');
+            const chatScreen = document.getElementById('chatScreen');
+            let isKeyboardVisible = false;
+            let currentKeyboardHeight = 0;
+            
+            // Auto-resize textarea
+            if (messageInput) {
+                messageInput.addEventListener('input', function() {
+                    this.style.height = 'auto';
+                    this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+                });
+                
+                messageInput.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        sendMessage();
+                        this.style.height = 'auto';
+                    }
+                });
+            }
+            
+            // Bloquear scroll del body
+            document.addEventListener('touchmove', function(e) {
+                const target = e.target;
+                const isScrollable = target.closest('.messages-area') || 
+                                    target.closest('.chats-list') || 
+                                    target.closest('.settings-sheet') ||
+                                    target.closest('.modal-card') ||
+                                    target.closest('.new-chat-sheet');
+                if (!isScrollable) {
+                    e.preventDefault();
+                }
+            }, { passive: false });
+            
+            // Función principal para ajustar el layout
+            function adjustLayout(keyboardHeight) {
+                currentKeyboardHeight = keyboardHeight;
+                const isChatVisible = chatScreen && chatScreen.style.display !== 'none';
+                
+                if (keyboardHeight > 50 && isChatVisible) {
+                    isKeyboardVisible = true;
+                    
+                    // Posicionar input area justo encima del teclado
+                    inputArea.style.cssText = `
+                        position: fixed !important;
+                        bottom: ${keyboardHeight}px !important;
+                        left: 0 !important;
+                        right: 0 !important;
+                        padding: 8px 12px !important;
+                        padding-bottom: 8px !important;
+                        background: var(--bg-primary) !important;
+                        border-top: 1px solid var(--separator) !important;
+                        z-index: 9999 !important;
+                    `;
+                    
+                    // Ajustar área de mensajes
+                    if (messagesArea) {
+                        const inputHeight = inputArea.offsetHeight || 100;
+                        messagesArea.style.cssText = `
+                            padding-bottom: ${keyboardHeight + inputHeight + 20}px !important;
+                        `;
+                        // Scroll al final
+                        requestAnimationFrame(() => {
+                            messagesArea.scrollTop = messagesArea.scrollHeight;
+                        });
+                    }
+                } else if (keyboardHeight <= 50 && isKeyboardVisible) {
+                    isKeyboardVisible = false;
+                    
+                    // Restaurar estilos
+                    inputArea.style.cssText = '';
+                    if (messagesArea) {
+                        messagesArea.style.cssText = '';
+                    }
+                }
+                
+                // Siempre forzar scroll a 0
+                window.scrollTo(0, 0);
+                document.body.scrollTop = 0;
+                document.documentElement.scrollTop = 0;
+            }
+            
+            // Usar visualViewport API
+            if (window.visualViewport) {
+                const updateViewport = () => {
+                    const keyboardHeight = Math.max(0, window.innerHeight - window.visualViewport.height);
+                    adjustLayout(keyboardHeight);
+                };
+                
+                window.visualViewport.addEventListener('resize', updateViewport);
+                window.visualViewport.addEventListener('scroll', () => {
+                    window.scrollTo(0, 0);
+                });
+            }
+            
+            // Eventos de focus/blur como respaldo
+            if (messageInput) {
+                messageInput.addEventListener('focus', function() {
+                    setTimeout(() => {
+                        if (window.visualViewport) {
+                            const kh = Math.max(0, window.innerHeight - window.visualViewport.height);
+                            adjustLayout(kh);
+                        }
+                        if (messagesArea) {
+                            messagesArea.scrollTop = messagesArea.scrollHeight;
+                        }
+                    }, 350);
+                });
+                
+                messageInput.addEventListener('blur', function() {
+                    setTimeout(() => {
+                        adjustLayout(0);
+                    }, 150);
+                });
+            }
+            
+            // Prevenir zoom
+            document.addEventListener('gesturestart', e => e.preventDefault());
+            document.addEventListener('gesturechange', e => e.preventDefault());
+            document.addEventListener('gestureend', e => e.preventDefault());
+            
+            // Modal de nuevo chat
+            const contactInput = document.getElementById('contactInput');
+            const newChatSheet = document.querySelector('.new-chat-sheet');
+            
+            if (contactInput) {
+                contactInput.addEventListener('focus', function() {
+                    if (newChatSheet) newChatSheet.classList.add('keyboard-open');
+                    window.scrollTo(0, 0);
+                });
+                
+                contactInput.addEventListener('blur', function() {
+                    if (newChatSheet) newChatSheet.classList.remove('keyboard-open');
+                    window.scrollTo(0, 0);
+                });
+            }
+            
+            // Modal de crear usuario - manejo de teclado
+            const userInput = document.getElementById('userInput');
+            const createUserModal = document.getElementById('createUserModal');
+            
+            if (userInput && createUserModal) {
+                userInput.addEventListener('focus', function() {
+                    const modalCard = createUserModal.querySelector('.modal-card');
+                    if (modalCard) {
+                        modalCard.style.cssText = `
+                            position: fixed !important;
+                            top: 10% !important;
+                            left: 50% !important;
+                            transform: translateX(-50%) !important;
+                            transition: all 0.3s ease !important;
+                        `;
+                    }
+                    window.scrollTo(0, 0);
+                });
+                
+                userInput.addEventListener('blur', function() {
+                    const modalCard = createUserModal.querySelector('.modal-card');
+                    if (modalCard) {
+                        modalCard.style.cssText = '';
+                    }
+                    window.scrollTo(0, 0);
+                });
+            }
+            
+            // Modal de cambiar nombre - manejo de teclado
+            const newUserInput = document.getElementById('newUserInput');
+            const changeUserModal = document.getElementById('changeUserModal');
+            
+            if (newUserInput && changeUserModal) {
+                newUserInput.addEventListener('focus', function() {
+                    const modalCard = changeUserModal.querySelector('.modal-card');
+                    if (modalCard) {
+                        modalCard.style.cssText = `
+                            position: fixed !important;
+                            top: 10% !important;
+                            left: 50% !important;
+                            transform: translateX(-50%) !important;
+                            transition: all 0.3s ease !important;
+                        `;
+                    }
+                    window.scrollTo(0, 0);
+                });
+                
+                newUserInput.addEventListener('blur', function() {
+                    const modalCard = changeUserModal.querySelector('.modal-card');
+                    if (modalCard) {
+                        modalCard.style.cssText = '';
+                    }
+                    window.scrollTo(0, 0);
+                });
+            }
+        })();
+    </script>
+</body>
+</html>

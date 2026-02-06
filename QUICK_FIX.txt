@@ -1,0 +1,58 @@
+╔════════════════════════════════════════════════════════════════╗
+║         FIREBASE MESSAGE DELIVERY - QUICK FIX                  ║
+╚════════════════════════════════════════════════════════════════╝
+
+PROBLEM: Messages not arriving between users
+
+SOLUTION IN 3 STEPS:
+
+1️⃣  TEST FIREBASE RULES
+   → Open: http://localhost:8000/test-firebase-rules.html
+   → Click "Run All Tests"
+   → Look for ❌ PERMISSION_DENIED errors
+
+2️⃣  FIX FIREBASE RULES (if needed)
+   → Go to: https://console.firebase.google.com
+   → Select: p2pchat-60bd1
+   → Go to: Realtime Database → Rules
+   → Replace with:
+   
+   {
+     "rules": {
+       ".read": true,
+       ".write": true
+     }
+   }
+   
+   → Click "Publish"
+
+3️⃣  TEST MESSAGE DELIVERY
+   → Open app in 2 windows: http://localhost:8000
+   → Create user in each
+   → Create chat between them
+   → Send message from one window
+   → Check if it appears in the other
+
+═══════════════════════════════════════════════════════════════
+
+DEBUGGING:
+
+Check Console (F12):
+  ✅ "Mensaje guardado en Firebase" = SUCCESS
+  ❌ "PERMISSION_DENIED" = Fix rules (Step 2)
+  ❌ "Firebase not initialized" = Refresh page
+
+Check Firebase Console:
+  → https://console.firebase.google.com
+  → p2pchat-60bd1 → Realtime Database → Data
+  → Look for /messages/ and /chats/ entries
+
+═══════════════════════════════════════════════════════════════
+
+FILES:
+  • test-firebase-rules.html - Comprehensive test
+  • firebase-test.html - Basic test
+  • FIREBASE_FIX_INSTRUCTIONS.md - Full guide
+  • DEBUG_FIREBASE_MESSAGES.md - Detailed debugging
+
+═══════════════════════════════════════════════════════════════

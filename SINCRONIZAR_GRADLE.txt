@@ -1,0 +1,103 @@
+╔════════════════════════════════════════════════════════════════════════════╗
+║                                                                            ║
+║                    🔧 SINCRONIZAR GRADLE - PASO A PASO                    ║
+║                                                                            ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+🚀 PASOS PARA SINCRONIZAR:
+
+1️⃣  ABRE ANDROID STUDIO
+    └─ Abre la aplicación
+
+2️⃣  ABRE EL PROYECTO
+    └─ File → Open
+    └─ Selecciona la carpeta ChatP2P
+    └─ Haz clic en "Open"
+
+3️⃣  LIMPIA EL CACHÉ (IMPORTANTE)
+    └─ File → Invalidate Caches
+    └─ Selecciona "Invalidate and Restart"
+    └─ Android Studio se reiniciará
+
+4️⃣  SINCRONIZA GRADLE
+    └─ Después del reinicio, verás un mensaje
+    └─ Haz clic en "Sync Now"
+    └─ O presiona Ctrl+Shift+S (Windows/Linux) o Cmd+Shift+S (Mac)
+
+5️⃣  ESPERA A QUE TERMINE
+    └─ Gradle descargará dependencias
+    └─ Verás "Gradle sync finished" cuando esté listo
+    └─ Esto puede tomar 5-10 minutos
+
+6️⃣  EJECUTA LA APP
+    └─ Haz clic en "Run" (botón play verde)
+    └─ O presiona Shift+F10
+    └─ Selecciona emulador o dispositivo
+
+═══════════════════════════════════════════════════════════════════════════
+
+⚠️  SI PERSISTE EL ERROR:
+
+1. Cierra Android Studio completamente
+2. Abre Terminal/CMD
+3. Navega a la carpeta ChatP2P:
+   └─ cd /ruta/a/ChatP2P
+
+4. Ejecuta estos comandos:
+   └─ ./gradlew clean
+   └─ ./gradlew build
+
+5. Abre Android Studio nuevamente
+6. File → Open → Selecciona ChatP2P
+7. Espera a que sincronice
+
+═══════════════════════════════════════════════════════════════════════════
+
+🔍 VERIFICAR GRADLE:
+
+1. Abre Terminal/CMD
+2. Navega a ChatP2P:
+   └─ cd /ruta/a/ChatP2P
+
+3. Verifica la versión de Gradle:
+   └─ ./gradlew --version
+
+4. Debe mostrar Gradle 8.0 o superior
+
+═══════════════════════════════════════════════════════════════════════════
+
+📋 CHECKLIST:
+
+□ Abriste Android Studio
+□ Abriste el proyecto ChatP2P
+□ Limpiaste el caché (Invalidate Caches)
+□ Sincronizaste Gradle (Sync Now)
+□ Esperaste a que termine
+□ Verás "Gradle sync finished"
+□ Hiciste clic en "Run"
+□ La app se ejecutó
+
+═══════════════════════════════════════════════════════════════════════════
+
+💡 CONSEJOS:
+
+1. Si ves errores, no hagas clic en "Run" hasta que sincronice
+2. Espera a que veas "Gradle sync finished"
+3. Si sigue fallando, limpia el caché nuevamente
+4. Reinicia Android Studio si es necesario
+
+═══════════════════════════════════════════════════════════════════════════
+
+🎉 CUANDO FUNCIONE:
+
+Verás:
+✅ "Gradle sync finished"
+✅ Sin errores en la consola
+✅ Botón "Run" disponible
+✅ Proyecto listo para ejecutar
+
+═══════════════════════════════════════════════════════════════════════════
+
+¡Sigue estos pasos y funcionará! 🚀
+
+═══════════════════════════════════════════════════════════════════════════

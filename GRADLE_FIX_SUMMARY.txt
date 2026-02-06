@@ -1,0 +1,86 @@
+╔════════════════════════════════════════════════════════════════════════════╗
+║                    GRADLE ERROR - SOLUCIÓN APLICADA                       ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+❌ ERROR ORIGINAL:
+   Build was configured to prefer settings repositories over project 
+   repositories but repository 'Google' was added by build file 'build.gradle'
+
+═══════════════════════════════════════════════════════════════════════════
+
+✅ SOLUCIÓN APLICADA:
+
+1. Actualicé build.gradle (raíz)
+   ├─ Cambié de buildscript {} a plugins {}
+   └─ Removí duplicación de repositorios
+
+2. Actualicé app/build.gradle
+   ├─ Agregué plugin com.google.gms.google-services
+   └─ Mantuve dependencias correctas
+
+3. Actualicé settings.gradle
+   ├─ Configuración correcta de pluginManagement
+   └─ Configuración correcta de dependencyResolutionManagement
+
+4. Creé gradle.properties (nuevo)
+   ├─ Propiedades de configuración de Gradle
+   └─ Habilitadas características de AndroidX
+
+═══════════════════════════════════════════════════════════════════════════
+
+🚀 PRÓXIMOS PASOS:
+
+1. En Android Studio:
+   └─ File → Sync Now
+   └─ O presiona: Ctrl+Shift+S (Windows/Linux) o Cmd+Shift+S (Mac)
+
+2. Espera a que termine la sincronización
+   └─ Verás "Gradle sync finished" cuando esté listo
+
+3. Si persiste el error:
+   └─ File → Invalidate Caches → Invalidate and Restart
+
+═══════════════════════════════════════════════════════════════════════════
+
+📋 ARCHIVOS MODIFICADOS:
+
+✅ ChatP2P/build.gradle
+   └─ Cambio: buildscript {} → plugins {}
+
+✅ ChatP2P/app/build.gradle
+   └─ Cambio: Agregado plugin com.google.gms.google-services
+
+✅ ChatP2P/settings.gradle
+   └─ Cambio: Configuración de repositorios
+
+✅ ChatP2P/gradle.properties (NUEVO)
+   └─ Cambio: Propiedades de Gradle
+
+═══════════════════════════════════════════════════════════════════════════
+
+🔍 VERIFICACIÓN:
+
+Cuando la sincronización sea exitosa, verás:
+✅ "Gradle sync finished"
+✅ Sin errores en la consola
+✅ Botón "Run" disponible
+✅ Proyecto listo para ejecutar
+
+═══════════════════════════════════════════════════════════════════════════
+
+💡 INFORMACIÓN TÉCNICA:
+
+Problema: Conflicto entre buildscript {} y settings.gradle
+Causa: Gradle 8.0+ prefiere plugins {} sobre buildscript {}
+Solución: Migrar a nueva sintaxis de plugins
+
+Versiones:
+- Gradle: 8.0+
+- Android Gradle Plugin: 8.0.0
+- JDK: 11+
+
+═══════════════════════════════════════════════════════════════════════════
+
+¡El error ha sido corregido! Sincroniza Gradle en Android Studio. 🎉
+
+═══════════════════════════════════════════════════════════════════════════

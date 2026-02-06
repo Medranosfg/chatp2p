@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatP2P - Logo Preview</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            padding: 40px 20px;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        h1 { text-align: center; margin-bottom: 40px; color: #1a4d2e; }
+        .preview-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+        .preview-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .preview-card h2 { margin-bottom: 20px; color: #2ecc71; font-size: 1.3em; }
+        .preview-area {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .preview-area img, .preview-area svg { max-width: 100%; height: auto; }
+        .size-info { font-size: 0.9em; color: #666; margin-bottom: 15px; }
+        .white-bg { background: white; min-height: 200px; }
+        .dark-bg { background: #1a1a1a; min-height: 200px; }
+        .gradient-bg { background: linear-gradient(135deg, #1a4d2e 0%, #2d7a4a 100%); min-height: 200px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 ChatP2P Logo - Vista Previa</h1>
+        
+        <div class="preview-grid">
+            <!-- App Store Preview -->
+            <div class="preview-card">
+                <h2>App Store (iOS)</h2>
+                <div class="size-info">1024x1024px - Fondo Blanco</div>
+                <div class="preview-area white-bg">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" style="width: 200px; height: 200px;">
+                        <defs>
+                            <linearGradient id="gp1" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#1a4d2e;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#2d7a4a;stop-opacity:1" />
+                            </linearGradient>
+                            <linearGradient id="ga1" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#2ecc71;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#27ae60;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <rect width="1024" height="1024" rx="200" fill="url(#gp1)"/>
+                        <circle cx="512" cy="512" r="480" fill="none" stroke="url(#ga1)" stroke-width="4" opacity="0.2"/>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Play Store Preview -->
+            <div class="preview-card">
+                <h2>Play Store (Android)</h2>
+                <div class="size-info">512x512px - Fondo Transparente</div>
+                <div class="preview-area white-bg">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" style="width: 150px; height: 150px;">
+                        <defs>
+                            <linearGradient id="gp2" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#1a4d2e;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#2d7a4a;stop-opacity:1" />
+                            </linearGradient>
+                            <linearGradient id="ga2" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#2ecc71;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#27ae60;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <rect width="1024" height="1024" rx="200" fill="url(#gp2)"/>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Favicon Preview -->
+            <div class="preview-card">
+                <h2>Favicon (Web)</h2>
+                <div class="size-info">32x32px - Fondo Transparente</div>
+                <div class="preview-area white-bg">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" style="width: 100px; height: 100px;">
+                        <defs>
+                            <linearGradient id="gp3" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#1a4d2e;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#2d7a4a;stop-opacity:1" />
+                            </linearGradient>
+                            <linearGradient id="ga3" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#2ecc71;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#27ae60;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <circle cx="100" cy="100" r="95" fill="url(#gp3)"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
