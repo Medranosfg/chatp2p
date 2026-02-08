@@ -1,6 +1,7 @@
 import UIKit
 import WebKit
 import AVFoundation
+import UserNotifications
 
 // MARK: - SecureView para protección anti-captura
 class SecureView: UIView {
@@ -93,6 +94,8 @@ class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, WKSc
         // Agregar handler para mensajes de JavaScript
         let contentController = WKUserContentController()
         contentController.add(self, name: "iosNative")
+        contentController.add(self, name: "requestNotificationPermission")
+        contentController.add(self, name: "getFCMToken")
         config.userContentController = contentController
         
         let prefs = WKWebpagePreferences()
@@ -261,18 +264,63 @@ class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, WKSc
     
     // MARK: - WKScriptMessageHandler (JavaScript Bridge)
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-        guard let body = message.body as? [String: Any],
-              let action = body["action"] as? String else { return }
+        print("🔔 iOS recibió mensaje: \(message.name)")
         
-        print("🎤 iOS recibió acción: \(action)")
-        
-        switch action {
-        case "startVoiceRecording":
-            startNativeRecording()
-        case "stopVoiceRecording":
-            stopNativeRecording()
+        switch message.name {
+        case "iosNative":
+            guard let body = message.body as? [String: Any],
+                  let action = body["action"] as? String else { return }
+            
+            print("🎤 iOS recibió acción: \(action)")
+            
+            switch action {
+            case "startVoiceRecording":
+                startNativeRecording()
+            case "stopVoiceRecording":
+                stopNativeRecording()
+            default:
+                break
+            }
+            
+        case "requestNotificationPermission":
+            requestNotificationPermission()
+            
+        case "getFCMToken":
+            getAPNsToken()
+            
         default:
             break
+        }
+    }
+    
+    // MARK: - Push Notifications
+    func requestNotificationPermission() {
+        print("🔔 Solicitando permiso de notificaciones...")
+        
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { [weak self] granted, error in
+            DispatchQueue.main.async {
+                print("🔔 Permiso de notificaciones: \(granted)")
+                
+                if granted {
+                    UIApplication.shared.registerForRemoteNotifications()
+                }
+                
+                // Notificar a JavaScript
+                self?.webView.evaluateJavaScript("window.onNotificationPermissionResult && window.onNotificationPermissionResult(\(granted))")
+            }
+        }
+    }
+    
+    func getAPNsToken() {
+        // Registrar para notificaciones remotas
+        UIApplication.shared.registerForRemoteNotifications()
+        
+        // Escuchar cuando llegue el token
+        NotificationCenter.default.addObserver(forName: NSNotification.Name("APNsTokenReceived"), object: nil, queue: .main) { [weak self] notification in
+            if let token = notification.object as? String {
+                print("🔔 Token APNs recibido: \(token)")
+                self?.webView.evaluateJavaScript("window.onFCMToken && window.onFCMToken('\(token)')")
+            }
         }
     }
     
