@@ -304,6 +304,20 @@
                 <button class="copy-minimal" onclick="copyWallet()">Copiar</button>
             </div>
             
+            <!-- Notificaciones -->
+            <div class="notifications-section">
+                <div class="notification-toggle-row">
+                    <div class="notification-info">
+                        <span class="notification-label">Notificaciones</span>
+                        <span class="notification-desc">Recibe alertas de nuevos mensajes</span>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="notificationToggle" onchange="toggleNotifications(this.checked)">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+            
             <!-- Acción Destructiva - Separada y Clara -->
             <div class="danger-zone">
                 <button class="delete-account-minimal" onclick="openModal('deleteUserModal')">
@@ -1258,6 +1272,83 @@
             border-color: #ef4444;
         }
         
+        /* Notificaciones Toggle */
+        .notifications-section {
+            margin: 0 24px 24px;
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 16px;
+        }
+        
+        .notification-toggle-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .notification-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        
+        .notification-label {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        
+        .notification-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+        
+        .toggle-switch {
+            position: relative;
+            width: 51px;
+            height: 31px;
+            flex-shrink: 0;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--gray-100);
+            transition: 0.3s;
+            border-radius: 31px;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 27px;
+            width: 27px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .toggle-switch input:checked + .toggle-slider {
+            background-color: var(--green);
+        }
+        
+        .toggle-switch input:checked + .toggle-slider:before {
+            transform: translateX(20px);
+        }
+        
         /* Versión Minimalista */
         .version-minimal {
             text-align: center;
@@ -2118,6 +2209,124 @@
                 });
             }
         })();
+    </script>
+    
+    <!-- Notificaciones Push -->
+    <script>
+        // Estado de notificaciones
+        let notificationsEnabled = localStorage.getItem('notificationsEnabled') === 'true';
+        
+        // Inicializar toggle al cargar
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggle = document.getElementById('notificationToggle');
+            if (toggle) {
+                toggle.checked = notificationsEnabled;
+            }
+        });
+        
+        // Toggle notificaciones
+        async function toggleNotifications(enabled) {
+            if (enabled) {
+                // Solicitar permiso
+                const permission = await requestNotificationPermission();
+                if (permission === 'granted') {
+                    notificationsEnabled = true;
+                    localStorage.setItem('notificationsEnabled', 'true');
+                    // Registrar token FCM
+                    await registerFCMToken();
+                } else {
+                    // Permiso denegado, desactivar toggle
+                    const toggle = document.getElementById('notificationToggle');
+                    if (toggle) toggle.checked = false;
+                    notificationsEnabled = false;
+                    localStorage.setItem('notificationsEnabled', 'false');
+                }
+            } else {
+                notificationsEnabled = false;
+                localStorage.setItem('notificationsEnabled', 'false');
+                // Eliminar token de Firebase
+                await unregisterFCMToken();
+            }
+        }
+        
+        // Solicitar permiso de notificaciones
+        async function requestNotificationPermission() {
+            // Para Android nativo
+            if (typeof AndroidNative !== 'undefined' && AndroidNative.requestNotificationPermission) {
+                return await AndroidNative.requestNotificationPermission();
+            }
+            
+            // Para web/PWA
+            if ('Notification' in window) {
+                const permission = await Notification.requestPermission();
+                return permission;
+            }
+            
+            return 'denied';
+        }
+        
+        // Registrar token FCM en Firebase
+        async function registerFCMToken() {
+            if (!window.firebaseReady || typeof firebase === 'undefined') return;
+            
+            try {
+                // Para Android nativo
+                if (typeof AndroidNative !== 'undefined' && AndroidNative.getFCMToken) {
+                    const token = await AndroidNative.getFCMToken();
+                    if (token) {
+                        await saveFCMToken(token);
+                    }
+                    return;
+                }
+                
+                // Para web con Firebase Messaging
+                if (firebase.messaging) {
+                    const messaging = firebase.messaging();
+                    const token = await messaging.getToken();
+                    if (token) {
+                        await saveFCMToken(token);
+                    }
+                }
+            } catch (e) {
+                console.warn('Error registrando FCM:', e);
+            }
+        }
+        
+        // Guardar token en Firebase
+        async function saveFCMToken(token) {
+            if (!window.firebaseReady || typeof firebase === 'undefined') return;
+            
+            try {
+                const db = firebase.database();
+                const wallet = localStorage.getItem('wallet');
+                if (wallet && token) {
+                    await db.ref('fcmTokens/' + wallet).set({
+                        token: token,
+                        platform: typeof AndroidNative !== 'undefined' ? 'android' : 'web',
+                        updatedAt: Date.now()
+                    });
+                    console.log('✅ Token FCM guardado');
+                }
+            } catch (e) {
+                console.warn('Error guardando token:', e);
+            }
+        }
+        
+        // Eliminar token de Firebase
+        async function unregisterFCMToken() {
+            if (!window.firebaseReady || typeof firebase === 'undefined') return;
+            
+            try {
+                const db = firebase.database();
+                const wallet = localStorage.getItem('wallet');
+                if (wallet) {
+                    await db.ref('fcmTokens/' + wallet).remove();
+                    console.log('✅ Token FCM eliminado');
+                }
+            } catch (e) {
+                console.warn('Error eliminando token:', e);
+            }
+        }
     </script>
 </body>
 </html>
