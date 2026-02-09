@@ -1,0 +1,40 @@
+{
+  "rules": {
+    "users": {
+      "$wallet": {
+        ".read": true,
+        ".write": "$wallet === auth.uid || !data.exists() || true"
+      }
+    },
+    "usernames": {
+      ".read": true,
+      "$username": {
+        ".write": true
+      }
+    },
+    "chats": {
+      "$wallet": {
+        ".read": true,
+        ".write": true
+      }
+    },
+    "messages": {
+      "$chatKey": {
+        ".read": true,
+        ".write": true
+      }
+    },
+    "fcmTokens": {
+      "$wallet": {
+        ".read": true,
+        ".write": true
+      }
+    },
+    "online": {
+      ".read": true,
+      "$wallet": {
+        ".write": true
+      }
+    }
+  }
+}

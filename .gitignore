@@ -28,5 +28,15 @@ proguard/
 .DS_Store
 Thumbs.db
 
-# Firebase
-google-services.json
+# Keystore & certificates
+release-key.jks
+*.jks
+upload_certificate.pem
+*.pem
+
+# Node modules
+node_modules/
+functions/node_modules/
+
+# Firebase local
+.firebaserc

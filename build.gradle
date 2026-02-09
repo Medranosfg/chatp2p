@@ -1,6 +1,6 @@
 plugins {
     id 'com.android.application' version '8.13.2'
-    id 'com.google.gms.google-services' version '4.4.2'
+    id 'com.google.gms.google-services' version '4.4.4'
 }
 
 android {
@@ -11,19 +11,18 @@ android {
         applicationId "com.chatp2p.app"
         minSdk 26
         targetSdk 35
-        versionCode 4
-        versionName "2.0.0"
+        versionCode 5
+        versionName "2.0.1"
         
         vectorDrawables.useSupportLibrary = true
     }
 
     signingConfigs {
         release {
-            // Configurar después de crear el keystore
-            // storeFile file('release-key.jks')
-            // storePassword 'TU_PASSWORD'
-            // keyAlias 'chatp2p'
-            // keyPassword 'TU_KEY_PASSWORD'
+            storeFile file('release-key.jks')
+            storePassword 'ChatP2P2026'
+            keyAlias 'chatp2p'
+            keyPassword 'ChatP2P2026'
         }
     }
 
@@ -32,7 +31,7 @@ android {
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            // signingConfig signingConfigs.release
+            signingConfig signingConfigs.release
         }
         debug {
             minifyEnabled false
@@ -69,6 +68,7 @@ dependencies {
     implementation 'androidx.core:core:1.13.1'
     
     // Firebase
-    implementation platform('com.google.firebase:firebase-bom:33.0.0')
+    implementation platform('com.google.firebase:firebase-bom:34.9.0')
     implementation 'com.google.firebase:firebase-messaging'
+    implementation 'com.google.firebase:firebase-analytics'
 }

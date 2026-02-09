@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "529094305865",
+    "firebase_url": "https://p2pchat-60bd1-default-rtdb.firebaseio.com",
+    "project_id": "p2pchat-60bd1",
+    "storage_bucket": "p2pchat-60bd1.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:529094305865:android:f818da87acf14bf8cff798",
+        "android_client_info": {
+          "package_name": "com.chatp2p.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD_fQ3w92hzC6Y45tyYewozrGWbzMCaN7w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:529094305865:android:bededccf3c76c671cff798",
+        "android_client_info": {
+          "package_name": "com.chatprivadoseguro"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD_fQ3w92hzC6Y45tyYewozrGWbzMCaN7w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -42,6 +42,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import com.google.firebase.messaging.FirebaseMessaging;
+
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "ChatP2P";
@@ -253,6 +255,36 @@ public class MainActivity extends AppCompatActivity {
         @JavascriptInterface
         public void log(String message) {
             Log.d(TAG, "JS: " + message);
+        }
+        @JavascriptInterface
+        public String requestNotificationPermission() {
+            Log.d(TAG, "🔔 requestNotificationPermission() llamado");
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.POST_NOTIFICATIONS) 
+                    != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(MainActivity.this, 
+                        new String[]{Manifest.permission.POST_NOTIFICATIONS}, 200);
+                    return "pending";
+                }
+            }
+            return "granted";
+        }
+        @JavascriptInterface
+        public void getFCMToken() {
+            Log.d(TAG, "🔔 getFCMToken() llamado");
+            FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        String token = task.getResult();
+                        Log.d(TAG, "🔔 Token FCM: " + token);
+                        runOnUiThread(() -> {
+                            webView.evaluateJavascript(
+                                "if(typeof saveFCMToken === 'function') saveFCMToken('" + token + "');", 
+                                null
+                            );
+                        });
+                    }
+                });
         }
     }
     
