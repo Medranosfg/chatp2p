@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Build;
@@ -251,6 +252,21 @@ public class MainActivity extends AppCompatActivity {
         public void stopVoiceNote() { 
             Log.d(TAG, "🎤 stopVoiceNote() llamado desde JavaScript");
             runOnUiThread(() -> stopNativeVoiceRecording()); 
+        }
+        @JavascriptInterface
+        public void playAudio(String base64Data) {
+            Log.d(TAG, "🔊 playAudio() llamado, data length: " + (base64Data != null ? base64Data.length() : 0));
+            runOnUiThread(() -> playNativeAudio(base64Data));
+        }
+        @JavascriptInterface
+        public void stopAudio() {
+            Log.d(TAG, "🔊 stopAudio() llamado");
+            runOnUiThread(() -> stopNativeAudio());
+        }
+        @JavascriptInterface
+        public void openVideoUrl(String url) {
+            Log.d(TAG, "🎥 openVideoUrl() llamado: " + url);
+            runOnUiThread(() -> playVideoInApp(url));
         }
         @JavascriptInterface
         public void log(String message) {
@@ -617,9 +633,179 @@ public class MainActivity extends AppCompatActivity {
         }
     }
     
+    // ============================================
+    // REPRODUCCIÓN NATIVA DE AUDIO
+    // ============================================
+    private MediaPlayer mediaPlayer;
+    private String currentPlaybackFile;
+    
+    private void playNativeAudio(String base64Data) {
+        Log.d(TAG, "🔊 playNativeAudio()");
+        
+        // Detener reproducción anterior
+        stopNativeAudio();
+        
+        new Thread(() -> {
+            try {
+                // Extraer base64 puro (quitar prefijo data:audio/...)
+                String pureBase64 = base64Data;
+                if (base64Data.contains(",")) {
+                    pureBase64 = base64Data.split(",")[1];
+                }
+                
+                byte[] audioBytes = Base64.decode(pureBase64, Base64.DEFAULT);
+                Log.d(TAG, "🔊 Audio decodificado: " + audioBytes.length + " bytes");
+                
+                // Guardar en archivo temporal
+                File tempFile = new File(getCacheDir(), "playback_temp.m4a");
+                java.io.FileOutputStream fos = new java.io.FileOutputStream(tempFile);
+                fos.write(audioBytes);
+                fos.close();
+                currentPlaybackFile = tempFile.getAbsolutePath();
+                
+                Log.d(TAG, "🔊 Archivo temporal creado: " + currentPlaybackFile);
+                
+                runOnUiThread(() -> {
+                    try {
+                        mediaPlayer = new MediaPlayer();
+                        mediaPlayer.setDataSource(currentPlaybackFile);
+                        mediaPlayer.setOnPreparedListener(mp -> {
+                            Log.d(TAG, "🔊 MediaPlayer preparado, reproduciendo...");
+                            mp.start();
+                            webView.evaluateJavascript("if(typeof onNativeAudioStarted === 'function') onNativeAudioStarted();", null);
+                        });
+                        mediaPlayer.setOnCompletionListener(mp -> {
+                            Log.d(TAG, "🔊 Reproducción completada");
+                            webView.evaluateJavascript("if(typeof onNativeAudioEnded === 'function') onNativeAudioEnded();", null);
+                            stopNativeAudio();
+                        });
+                        mediaPlayer.setOnErrorListener((mp, what, extra) -> {
+                            Log.e(TAG, "🔊 Error MediaPlayer: " + what + " extra: " + extra);
+                            webView.evaluateJavascript("if(typeof onNativeAudioEnded === 'function') onNativeAudioEnded();", null);
+                            return false;
+                        });
+                        mediaPlayer.prepareAsync();
+                    } catch (Exception e) {
+                        Log.e(TAG, "🔊 Error preparando MediaPlayer: " + e.getMessage(), e);
+                    }
+                });
+                
+            } catch (Exception e) {
+                Log.e(TAG, "🔊 Error decodificando audio: " + e.getMessage(), e);
+            }
+        }).start();
+    }
+    
+    private void stopNativeAudio() {
+        if (mediaPlayer != null) {
+            try {
+                if (mediaPlayer.isPlaying()) {
+                    mediaPlayer.stop();
+                }
+                mediaPlayer.release();
+            } catch (Exception e) {}
+            mediaPlayer = null;
+        }
+        if (currentPlaybackFile != null) {
+            try { new File(currentPlaybackFile).delete(); } catch (Exception e) {}
+            currentPlaybackFile = null;
+        }
+    }
+    
+    // ============================================
+    // REPRODUCTOR DE VIDEO IN-APP
+    // ============================================
+    private void playVideoInApp(String url) {
+        Log.d(TAG, "🎥 playVideoInApp: " + url);
+        
+        // Crear overlay fullscreen con VideoView
+        android.widget.FrameLayout overlay = new android.widget.FrameLayout(this);
+        overlay.setBackgroundColor(android.graphics.Color.BLACK);
+        overlay.setLayoutParams(new android.widget.FrameLayout.LayoutParams(
+            android.widget.FrameLayout.LayoutParams.MATCH_PARENT,
+            android.widget.FrameLayout.LayoutParams.MATCH_PARENT
+        ));
+        
+        // VideoView centrado
+        android.widget.VideoView videoView = new android.widget.VideoView(this);
+        android.widget.FrameLayout.LayoutParams videoParams = new android.widget.FrameLayout.LayoutParams(
+            android.widget.FrameLayout.LayoutParams.MATCH_PARENT,
+            android.widget.FrameLayout.LayoutParams.MATCH_PARENT,
+            android.view.Gravity.CENTER
+        );
+        videoView.setLayoutParams(videoParams);
+        
+        // Botón cerrar
+        android.widget.ImageButton closeBtn = new android.widget.ImageButton(this);
+        closeBtn.setBackgroundColor(android.graphics.Color.TRANSPARENT);
+        closeBtn.setImageResource(android.R.drawable.ic_menu_close_clear_cancel);
+        closeBtn.setColorFilter(android.graphics.Color.WHITE);
+        closeBtn.setPadding(32, 32, 32, 32);
+        android.widget.FrameLayout.LayoutParams closeParams = new android.widget.FrameLayout.LayoutParams(
+            160, 160, android.view.Gravity.TOP | android.view.Gravity.END
+        );
+        closeParams.topMargin = 80;
+        closeParams.rightMargin = 32;
+        closeBtn.setLayoutParams(closeParams);
+        
+        // Loading indicator
+        android.widget.ProgressBar progress = new android.widget.ProgressBar(this);
+        android.widget.FrameLayout.LayoutParams progressParams = new android.widget.FrameLayout.LayoutParams(
+            android.widget.FrameLayout.LayoutParams.WRAP_CONTENT,
+            android.widget.FrameLayout.LayoutParams.WRAP_CONTENT,
+            android.view.Gravity.CENTER
+        );
+        progress.setLayoutParams(progressParams);
+        
+        overlay.addView(videoView);
+        overlay.addView(progress);
+        overlay.addView(closeBtn);
+        
+        // Agregar al contenido de la actividad
+        android.widget.FrameLayout rootView = (android.widget.FrameLayout) getWindow().getDecorView().findViewById(android.R.id.content);
+        rootView.addView(overlay);
+        
+        // Cerrar al tocar X
+        closeBtn.setOnClickListener(v -> {
+            videoView.stopPlayback();
+            rootView.removeView(overlay);
+        });
+        
+        // Tocar video para pausar/reanudar
+        videoView.setOnClickListener(v -> {
+            if (videoView.isPlaying()) {
+                videoView.pause();
+            } else {
+                videoView.start();
+            }
+        });
+        
+        videoView.setOnPreparedListener(mp -> {
+            Log.d(TAG, "🎥 Video preparado, reproduciendo");
+            progress.setVisibility(android.view.View.GONE);
+            mp.setLooping(false);
+            videoView.start();
+        });
+        
+        videoView.setOnErrorListener((mp, what, extra) -> {
+            Log.e(TAG, "🎥 Error reproduciendo video: " + what);
+            progress.setVisibility(android.view.View.GONE);
+            rootView.removeView(overlay);
+            return true;
+        });
+        
+        videoView.setOnCompletionListener(mp -> {
+            Log.d(TAG, "🎥 Video completado");
+        });
+        
+        // Reproducir desde URL
+        videoView.setVideoURI(Uri.parse(url));
+    }
+    
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        stopNativeAudio();
         if (isRecordingAudio && audioRecorder != null) {
             try { audioRecorder.stop(); audioRecorder.release(); } catch (Exception e) {}
         }

@@ -64,7 +64,7 @@ extension UIView {
     }
 }
 
-class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, WKScriptMessageHandler, AVAudioRecorderDelegate {
+class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, WKScriptMessageHandler, AVAudioRecorderDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     var webView: WKWebView!
     
@@ -278,6 +278,8 @@ class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, WKSc
                 startNativeRecording()
             case "stopVoiceRecording":
                 stopNativeRecording()
+            case "recordVideo":
+                openNativeVideoRecorder()
             default:
                 break
             }
@@ -428,6 +430,85 @@ class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, WKSc
     }
     
 
+    
+    // MARK: - Native Video Recording
+    func openNativeVideoRecorder() {
+        print("📹 Abriendo grabador de video nativo")
+        
+        guard UIImagePickerController.isSourceTypeAvailable(.camera) else {
+            print("📹 Cámara no disponible")
+            webView.evaluateJavaScript("alert('Cámara no disponible')")
+            return
+        }
+        
+        let picker = UIImagePickerController()
+        picker.sourceType = .camera
+        picker.mediaTypes = ["public.movie"]
+        picker.cameraCaptureMode = .video
+        picker.videoQuality = .typeHigh  // Máxima calidad
+        picker.videoMaximumDuration = 30
+        picker.delegate = self
+        picker.allowsEditing = false
+        
+        present(picker, animated: true)
+    }
+    
+    // MARK: - UIImagePickerControllerDelegate
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        picker.dismiss(animated: true)
+        
+        guard let videoURL = info[.mediaURL] as? URL else {
+            print("📹 No se obtuvo URL del video")
+            return
+        }
+        
+        print("📹 Video grabado: \(videoURL)")
+        
+        // Leer el video y convertir a base64 para subir a Storage via JavaScript
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            guard let videoData = try? Data(contentsOf: videoURL) else {
+                print("📹 Error leyendo video")
+                return
+            }
+            
+            print("📹 Video size: \(videoData.count) bytes (\(videoData.count / 1024 / 1024)MB)")
+            
+            let base64 = videoData.base64EncodedString()
+            
+            DispatchQueue.main.async {
+                // Enviar al JavaScript como blob para subir a Storage
+                let js = """
+                (function() {
+                    var b64 = '\(base64)';
+                    var byteChars = atob(b64);
+                    var byteArray = new Uint8Array(byteChars.length);
+                    for (var i = 0; i < byteChars.length; i++) {
+                        byteArray[i] = byteChars.charCodeAt(i);
+                    }
+                    var blob = new Blob([byteArray], {type: 'video/mp4'});
+                    if (typeof sendMedia === 'function') {
+                        sendMedia(blob, 'video');
+                    }
+                })();
+                """
+                self?.webView.evaluateJavaScript(js) { result, error in
+                    if let error = error {
+                        print("📹 Error enviando video a JS: \(error)")
+                    } else {
+                        print("📹 Video enviado a JavaScript correctamente")
+                    }
+                }
+            }
+            
+            // Limpiar archivo temporal
+            try? FileManager.default.removeItem(at: videoURL)
+        }
+    }
+    
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        picker.dismiss(animated: true)
+        print("📹 Grabación cancelada")
+    }
     
     // MARK: - Screenshot Detection
     @objc func userWillTakeScreenshot() {

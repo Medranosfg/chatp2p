@@ -372,13 +372,19 @@ function renderChats() {
     for (const [contact, data] of Object.entries(chats)) {
         const shortWallet = contact.substring(0, 10) + '...' + contact.substring(contact.length - 8);
         
+        // Cifrar preview del último mensaje
+        let preview = data.lastMessage || 'Sin mensajes';
+        if (preview && preview !== 'Sin mensajes' && !preview.startsWith('📷') && !preview.startsWith('🎥') && !preview.startsWith('🎤')) {
+            preview = generateFakeHash(preview);
+        }
+        
         const div = document.createElement('div');
         div.className = 'chat-item';
         div.innerHTML = `
             <div class="chat-item-content" onclick="openChat('${contact}')">
                 <div class="chat-text">
                     <div class="chat-name" style="font-family: 'SF Mono', monospace; font-size: 14px;">${shortWallet}</div>
-                    <div class="chat-preview">${data.lastMessage || 'Sin mensajes'}</div>
+                    <div class="chat-preview" style="font-family: 'SF Mono', monospace; font-size: 11px; color: #10b981; opacity: 0.7;">${preview}</div>
                 </div>
             </div>
         `;
@@ -705,6 +711,17 @@ function deleteChat() {
             const db = firebase.database();
             const key = [wallet, contactToDelete].sort().join('_');
             
+            // Borrar archivos de Storage antes de borrar mensajes
+            db.ref('messages/' + key).once('value').then((snap) => {
+                const messages = snap.val() || {};
+                const storage = firebase.storage();
+                for (const [id, msg] of Object.entries(messages)) {
+                    if (msg && msg.storagePath) {
+                        storage.ref(msg.storagePath).delete().catch(() => {});
+                    }
+                }
+            }).catch(() => {});
+            
             db.ref('chats/' + wallet + '/' + contactToDelete).remove();
             db.ref('chats/' + contactToDelete + '/' + wallet).remove();
             db.ref('messages/' + key).remove();
@@ -777,7 +794,33 @@ function updateReadChecks() {
             check.style.color = '#15803d';
             check.style.fontWeight = '800';
             check.style.letterSpacing = '-2px';
+            
+            // Iniciar timer de cifrado visual para mensajes leídos
+            if (!check._cipherScheduled) {
+                check._cipherScheduled = true;
+                setTimeout(() => {
+                    const bubble = check.closest('.bubble');
+                    if (bubble) {
+                        const textSpan = bubble.querySelector('.msg-text');
+                        if (textSpan && !textSpan._ciphered) {
+                            cipherTextElement(textSpan);
+                        }
+                    }
+                }, 10000);
+            }
         }
+    });
+    
+    // También cifrar mensajes recibidos (no propios) después de 10s de ser leídos
+    const receivedTexts = document.querySelectorAll('.message.other .msg-text');
+    receivedTexts.forEach(textSpan => {
+        if (textSpan._cipherScheduled || textSpan._ciphered) return;
+        textSpan._cipherScheduled = true;
+        setTimeout(() => {
+            if (!textSpan._ciphered) {
+                cipherTextElement(textSpan);
+            }
+        }, 10000);
     });
 }
 
@@ -839,6 +882,74 @@ async function renderMessages(messages) {
 }
 
 // ============================================
+// ============================================
+// EFECTO CIFRADO VISUAL - HASH PROTECTION
+// ============================================
+// Registro global de mensajes cifrados (por timestamp) para persistir entre re-renders y reinicios
+const _savedCiphered = localStorage.getItem('cipheredMessages');
+const cipheredMessages = new Set(_savedCiphered ? JSON.parse(_savedCiphered) : []);
+
+function saveCipheredMessages() {
+    localStorage.setItem('cipheredMessages', JSON.stringify([...cipheredMessages]));
+}
+
+function generateFakeHash(text) {
+    let hash = '0x';
+    for (let i = 0; i < 20; i++) {
+        hash += Math.floor(Math.random() * 16).toString(16);
+    }
+    return hash;
+}
+
+function applyCipherStyle(textSpan, hashText) {
+    textSpan.textContent = hashText;
+    textSpan.style.fontFamily = "'SF Mono', 'Courier New', monospace";
+    textSpan.style.fontSize = '12px';
+    textSpan.style.color = '#10b981';
+    textSpan.style.opacity = '0.7';
+    textSpan.style.wordBreak = 'break-all';
+}
+
+function cipherTextElement(textSpan) {
+    if (textSpan._ciphered) return;
+    textSpan._ciphered = true;
+    textSpan._realText = textSpan.textContent;
+    const ts = textSpan.getAttribute('data-ts');
+    if (ts) { cipheredMessages.add(ts); saveCipheredMessages(); }
+    applyCipherStyle(textSpan, generateFakeHash(textSpan._realText));
+}
+
+function decipherTextElement(textSpan) {
+    if (!textSpan._ciphered || !textSpan._realText) return;
+    textSpan.textContent = textSpan._realText;
+    textSpan.style.fontFamily = '';
+    textSpan.style.fontSize = '';
+    textSpan.style.color = '';
+    textSpan.style.opacity = '';
+    textSpan.style.wordBreak = '';
+}
+
+function setupHoldToReveal(bubble, textSpan) {
+    const reveal = () => {
+        decipherTextElement(textSpan);
+    };
+    const hide = () => {
+        if (textSpan._ciphered && textSpan._realText) {
+            applyCipherStyle(textSpan, generateFakeHash(textSpan._realText));
+        }
+    };
+    
+    bubble.addEventListener('touchstart', (e) => {
+        if (textSpan._ciphered) { e.preventDefault(); reveal(); }
+    }, { passive: false });
+    bubble.addEventListener('touchend', hide);
+    bubble.addEventListener('touchcancel', hide);
+    bubble.addEventListener('mousedown', () => { if (textSpan._ciphered) reveal(); });
+    bubble.addEventListener('mouseup', hide);
+    bubble.addEventListener('mouseleave', hide);
+}
+
+// ============================================
 // CREAR MENSAJES POR TIPO
 // ============================================
 async function createTextMessage(msg, isOwn, sharedKey) {
@@ -851,8 +962,33 @@ async function createTextMessage(msg, isOwn, sharedKey) {
     }
     
     const textSpan = document.createElement('span');
+    textSpan.className = 'msg-text';
+    textSpan.setAttribute('data-ts', (msg.timestamp || 0).toString());
     textSpan.textContent = text;
     bubble.appendChild(textSpan);
+    
+    setupHoldToReveal(bubble, textSpan);
+    
+    // Cifrado visual
+    const tsKey = (msg.timestamp || 0).toString();
+    textSpan._realText = text;
+    
+    if (isOwn || cipheredMessages.has(tsKey)) {
+        // Propios: cifrar inmediatamente. Ya cifrados: mantener cifrado.
+        textSpan._ciphered = true;
+        if (!cipheredMessages.has(tsKey)) {
+            cipheredMessages.add(tsKey);
+            saveCipheredMessages();
+        }
+        applyCipherStyle(textSpan, generateFakeHash(text));
+    } else {
+        // Recibidos: mostrar texto claro 7 segundos, luego cifrar
+        setTimeout(() => {
+            if (!textSpan._ciphered) {
+                cipherTextElement(textSpan);
+            }
+        }, 7000);
+    }
     
     // Meta: hora + check
     const meta = document.createElement('span');
@@ -876,13 +1012,14 @@ async function createTextMessage(msg, isOwn, sharedKey) {
 
 async function createPhotoMessage(msg, isOwn) {
     const container = document.createElement('div');
-    container.style.cssText = 'position: relative; display: inline-block;';
+    container.style.cssText = 'position: relative; display: inline-block; width: 200px; height: 200px; border-radius: 12px; overflow: hidden; cursor: pointer; background: #1a1a1a;';
     
     const img = document.createElement('img');
     img.src = msg.data;
-    img.style.cssText = 'max-width: 200px; border-radius: 12px; cursor: pointer; -webkit-touch-callout: none;';
-    img.onclick = () => openMediaViewer(msg.data, 'photo');
+    img.style.cssText = 'width: 100%; height: 100%; object-fit: cover; filter: blur(40px); -webkit-touch-callout: none;';
     container.appendChild(img);
+    
+    container.onclick = () => openMediaViewer(msg.data, 'photo');
     
     if (isOwn) {
         const check = createReadCheck(msg.timestamp);
@@ -897,10 +1034,13 @@ async function createVideoMessage(msg, isOwn) {
     const container = document.createElement('div');
     container.style.cssText = 'position: relative; max-width: 200px; cursor: pointer;';
     
+    const videoSrc = msg.storageUrl || msg.data;
+    
     const video = document.createElement('video');
-    video.src = msg.data;
+    video.src = videoSrc;
     video.style.cssText = 'max-width: 200px; border-radius: 12px;';
     video.preload = 'metadata';
+    video.setAttribute('crossorigin', 'anonymous');
     container.appendChild(video);
     
     const playIcon = document.createElement('div');
@@ -914,7 +1054,7 @@ async function createVideoMessage(msg, isOwn) {
         container.appendChild(check);
     }
     
-    container.onclick = () => openMediaViewer(msg.data, 'video');
+    container.onclick = () => openMediaViewer(videoSrc, 'video');
     return container;
 }
 
@@ -970,7 +1110,32 @@ async function createVoiceMessage(msg, isOwn) {
     
     playBtn.onclick = async () => {
         if (!audio) {
-            audio = new Audio(msg.data);
+            audio = document.createElement('audio');
+            audio.setAttribute('preload', 'auto');
+            audio.setAttribute('playsinline', '');
+            audio.style.display = 'none';
+            document.body.appendChild(audio);
+            
+            try {
+                if (msg.data && msg.data.startsWith('data:')) {
+                    const parts = msg.data.split(',');
+                    const mime = parts[0].match(/:(.*?);/)[1];
+                    const b64 = parts[1];
+                    const byteChars = atob(b64);
+                    const byteArray = new Uint8Array(byteChars.length);
+                    for (let i = 0; i < byteChars.length; i++) {
+                        byteArray[i] = byteChars.charCodeAt(i);
+                    }
+                    const blob = new Blob([byteArray], { type: mime });
+                    audio.src = URL.createObjectURL(blob);
+                } else {
+                    audio.src = msg.data;
+                }
+            } catch (e) {
+                console.error('Error creating audio blob:', e);
+                audio.src = msg.data;
+            }
+            
             audio.onended = () => {
                 playing = false;
                 playBtn.innerHTML = '<svg width="16" height="18" viewBox="0 0 16 18" fill="white"><path d="M14.5 7.5C15.5 8.1 15.5 9.9 14.5 10.5L3 17.5C2 18.1 0.75 17.35 0.75 16.15V1.85C0.75 0.65 2 -0.1 3 0.5L14.5 7.5Z"/></svg>';
@@ -981,6 +1146,12 @@ async function createVoiceMessage(msg, isOwn) {
                     const m = Math.floor(c / 60);
                     const s = c % 60;
                     duration.textContent = m + ':' + (s < 10 ? '0' : '') + s;
+                }
+            };
+            audio.onerror = (e) => {
+                console.error('Audio error:', e);
+                if (audio.src !== msg.data) {
+                    audio.src = msg.data;
                 }
             };
         }
@@ -1628,7 +1799,12 @@ function capturePhoto() {
     // Función para actualizar el zoom
     function updateZoom(zoom) {
         currentZoom = Math.max(1, Math.min(5, zoom));
-        video.style.transform = `scale(${currentZoom})`;
+        // Mantener efecto espejo en cámara frontal al hacer zoom
+        if (currentFacingMode === 'user') {
+            video.style.transform = `scaleX(-1) scale(${currentZoom})`;
+        } else {
+            video.style.transform = `scale(${currentZoom})`;
+        }
         zoomIndicator.textContent = currentZoom.toFixed(1) + 'x';
         zoomIndicator.style.opacity = '1';
         
@@ -1759,12 +1935,35 @@ function switchCamera(video) {
 }
 
 function takePhoto(video, overlay) {
-    // Flash effect
-    const flash = document.createElement('div');
-    flash.style.cssText = 'position: absolute; inset: 0; background: white; opacity: 0; pointer-events: none; transition: opacity 0.1s;';
-    overlay.appendChild(flash);
-    requestAnimationFrame(() => { flash.style.opacity = '0.8'; setTimeout(() => flash.style.opacity = '0', 100); });
-    
+    // Flash frontal estilo Snapchat: pantalla blanca pura al máximo brillo
+    if (currentFacingMode === 'user') {
+        const screenFlash = document.createElement('div');
+        screenFlash.style.cssText = 'position: fixed; inset: 0; z-index: 9999; pointer-events: none; opacity: 0; background: #FFFFFF;';
+        document.body.appendChild(screenFlash);
+        
+        // Brillo máximo instantáneo
+        screenFlash.style.transition = 'none';
+        screenFlash.style.opacity = '1';
+        
+        // Capturar después de que la pantalla ilumine la cara
+        setTimeout(() => {
+            doCapture(video, overlay);
+            // Fade out rápido
+            screenFlash.style.transition = 'opacity 0.2s ease-out';
+            screenFlash.style.opacity = '0';
+            setTimeout(() => screenFlash.remove(), 250);
+        }, 250);
+    } else {
+        // Cámara trasera: flash visual normal
+        const flash = document.createElement('div');
+        flash.style.cssText = 'position: absolute; inset: 0; background: white; opacity: 0; pointer-events: none; transition: opacity 0.1s;';
+        overlay.appendChild(flash);
+        requestAnimationFrame(() => { flash.style.opacity = '0.8'; setTimeout(() => flash.style.opacity = '0', 100); });
+        doCapture(video, overlay);
+    }
+}
+
+function doCapture(video, overlay) {
     const canvas = document.createElement('canvas');
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
@@ -1779,10 +1978,93 @@ function takePhoto(video, overlay) {
     
     if (cameraStream) cameraStream.getTracks().forEach(t => t.stop());
     
-    canvas.toBlob(blob => {
-        sendMedia(blob, 'photo');
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+    showPhotoPreview(dataUrl, canvas, overlay);
+}
+
+function showPhotoPreview(dataUrl, canvas, overlay) {
+    // Guardar el HTML original del overlay para restaurar al repetir
+    if (!overlay._originalHTML) {
+        overlay._originalHTML = overlay.innerHTML;
+    }
+    
+    // Limpiar todo el overlay
+    overlay.innerHTML = '';
+    
+    // Imagen de preview
+    const previewImg = document.createElement('img');
+    previewImg.src = dataUrl;
+    previewImg.style.cssText = 'position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: #000;';
+    overlay.appendChild(previewImg);
+    
+    // Controles de preview
+    const previewControls = document.createElement('div');
+    previewControls.style.cssText = 'position: absolute; bottom: 0; left: 0; right: 0; padding: 20px 30px 50px; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(transparent, rgba(0,0,0,0.7)); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);';
+    
+    // Botón Repetir
+    const retakeBtn = document.createElement('button');
+    retakeBtn.textContent = 'Repetir';
+    retakeBtn.style.cssText = 'background: none; border: none; color: white; font-size: 17px; font-weight: 500; padding: 12px 20px; cursor: pointer; font-family: -apple-system, sans-serif;';
+    retakeBtn.onclick = () => {
+        // Restaurar overlay completo desde el HTML original
+        overlay.innerHTML = overlay._originalHTML;
+        const video = overlay.querySelector('video');
+        if (video) {
+            video.setAttribute('autoplay', true);
+            video.setAttribute('playsinline', true);
+            video.setAttribute('muted', true);
+            startCamera(video);
+        }
+        // Re-asignar eventos a los botones restaurados
+        const buttons = overlay.querySelectorAll('button');
+        buttons.forEach(btn => {
+            // Botón cerrar (X)
+            if (btn.querySelector('path[d="M18 6L6 18M6 6l12 12"]')) {
+                btn.onclick = () => closeCameraOverlay(overlay);
+            }
+            // Botón captura (círculo blanco grande)
+            if (btn.style.width === '72px') {
+                btn.onclick = () => {
+                    const v = overlay.querySelector('video');
+                    if (v) takePhoto(v, overlay);
+                };
+            }
+            // Botón cambiar cámara
+            if (btn.querySelector('polyline')) {
+                btn.onclick = () => {
+                    currentFacingMode = currentFacingMode === 'environment' ? 'user' : 'environment';
+                    const v = overlay.querySelector('video');
+                    if (v) startCamera(v);
+                };
+            }
+        });
+    };
+    
+    // Botón Enviar
+    const sendBtn = document.createElement('button');
+    sendBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg>';
+    sendBtn.style.cssText = 'width: 56px; height: 56px; border-radius: 28px; background: #22c55e; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 15px rgba(34,197,94,0.4); transition: transform 0.15s;';
+    sendBtn.onmousedown = () => sendBtn.style.transform = 'scale(0.92)';
+    sendBtn.onmouseup = () => sendBtn.style.transform = 'scale(1)';
+    sendBtn.onclick = () => {
+        canvas.toBlob(blob => {
+            sendMedia(blob, 'photo');
+            closeCameraOverlay(overlay);
+        }, 'image/jpeg', 0.9);
+    };
+    
+    // Botón Cancelar
+    const cancelBtn = document.createElement('button');
+    cancelBtn.textContent = 'Cancelar';
+    cancelBtn.style.cssText = 'background: none; border: none; color: white; font-size: 17px; font-weight: 500; padding: 12px 20px; cursor: pointer; font-family: -apple-system, sans-serif;';
+    cancelBtn.onclick = () => {
         closeCameraOverlay(overlay);
-    }, 'image/jpeg', 0.9);
+    };
+    
+    previewControls.appendChild(retakeBtn);
+    previewControls.appendChild(sendBtn);
+    previewControls.appendChild(cancelBtn);
+    overlay.appendChild(previewControls);
 }
 
 function closeCameraOverlay(overlay) {
@@ -1812,6 +2094,13 @@ function openVideoRecorder() {
     // En Android, usar grabador de video nativo
     if (typeof AndroidNative !== 'undefined') {
         AndroidNative.recordVideo();
+        return;
+    }
+    
+    // En iOS, usar grabador nativo via Swift (máxima calidad)
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    if (isIOS && window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.iosNative) {
+        window.webkit.messageHandlers.iosNative.postMessage({action: 'recordVideo'});
         return;
     }
     
@@ -2381,12 +2670,109 @@ function sendMedia(blob, type) {
     const id = Date.now();
     
     if (type === 'photo') {
-        compressImage(blob, 0.7, 1200).then(compressedBlob => {
+        compressImage(blob, 0.92, 2048).then(compressedBlob => {
             sendMediaToFirebase(compressedBlob || blob, type, key, id);
         });
+    } else if (type === 'video') {
+        // Videos van a Firebase Storage (sin límite de tamaño)
+        uploadToStorage(blob, type, key, id);
     } else {
         sendMediaToFirebase(blob, type, key, id);
     }
+}
+
+function compressVideo(blob, maxSize) {
+    return new Promise((resolve) => {
+        // Crear video element para re-codificar a menor resolución
+        const video = document.createElement('video');
+        video.muted = true;
+        video.playsInline = true;
+        video.src = URL.createObjectURL(blob);
+        
+        video.onloadedmetadata = () => {
+            // Reducir resolución
+            const scale = Math.min(1, 720 / Math.max(video.videoWidth, video.videoHeight));
+            const width = Math.round(video.videoWidth * scale);
+            const height = Math.round(video.videoHeight * scale);
+            
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            
+            // Usar MediaRecorder para re-codificar
+            const stream = canvas.captureStream(30); // 30fps
+            const chunks = [];
+            
+            let mimeType = 'video/webm;codecs=vp8';
+            if (!MediaRecorder.isTypeSupported(mimeType)) {
+                mimeType = 'video/webm';
+                if (!MediaRecorder.isTypeSupported(mimeType)) {
+                    mimeType = 'video/mp4';
+                }
+            }
+            
+            const recorder = new MediaRecorder(stream, { 
+                mimeType: mimeType,
+                videoBitsPerSecond: 800000 // 800kbps
+            });
+            
+            recorder.ondataavailable = (e) => {
+                if (e.data.size > 0) chunks.push(e.data);
+            };
+            
+            recorder.onstop = () => {
+                const compressedBlob = new Blob(chunks, { type: mimeType });
+                URL.revokeObjectURL(video.src);
+                resolve(compressedBlob);
+            };
+            
+            recorder.start();
+            video.currentTime = 0;
+            video.play();
+            
+            // Dibujar frames en el canvas
+            const drawFrame = () => {
+                if (!video.paused && !video.ended) {
+                    ctx.drawImage(video, 0, 0, width, height);
+                    requestAnimationFrame(drawFrame);
+                }
+            };
+            
+            video.onplay = drawFrame;
+            
+            video.onended = () => {
+                setTimeout(() => recorder.stop(), 100);
+            };
+            
+            // Timeout de seguridad: máximo 15 segundos de procesamiento
+            setTimeout(() => {
+                if (recorder.state === 'recording') {
+                    video.pause();
+                    recorder.stop();
+                }
+            }, 15000);
+        };
+        
+        video.onerror = () => resolve(null);
+    });
+}
+
+function showToast(message) {
+    // Verificar si ya existe la función showToast global
+    const existing = document.querySelector('.toast-notification');
+    if (existing) existing.remove();
+    
+    const toast = document.createElement('div');
+    toast.className = 'toast-notification';
+    toast.textContent = message;
+    toast.style.cssText = 'position: fixed; top: 80px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.85); color: white; padding: 12px 24px; border-radius: 25px; font-size: 14px; z-index: 10000; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); animation: toastIn 0.3s ease;';
+    document.body.appendChild(toast);
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.3s';
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
 }
 
 function compressImage(blob, quality, maxSize) {
@@ -2445,6 +2831,58 @@ function sendMediaToFirebase(blob, type, key, id) {
         }
     };
     reader.readAsDataURL(blob);
+}
+
+// Subir video a Firebase Storage y guardar URL en Database
+function uploadToStorage(blob, type, key, id) {
+    if (!window.firebaseReady || typeof firebase === 'undefined') return;
+    
+    try {
+        const storage = firebase.storage();
+        const ext = type === 'video' ? 'mp4' : 'jpg';
+        const path = 'media/' + key + '/' + id + '.' + ext;
+        const storageRef = storage.ref(path);
+        
+        showToast('Enviando video...');
+        
+        const uploadTask = storageRef.put(blob);
+        
+        uploadTask.on('state_changed',
+            (snapshot) => {
+                const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+                console.log('📤 Upload: ' + progress + '%');
+            },
+            (error) => {
+                console.error('❌ Error subiendo:', error);
+                showToast('Error al enviar video');
+            },
+            () => {
+                uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                    console.log('✅ Video subido:', downloadURL);
+                    
+                    const db = firebase.database();
+                    const newMsgRef = db.ref('messages/' + key).push();
+                    
+                    const msg = {
+                        from: wallet,
+                        type: type,
+                        storageUrl: downloadURL,
+                        storagePath: path,
+                        timestamp: firebase.database.ServerValue.TIMESTAMP
+                    };
+                    
+                    newMsgRef.set(msg);
+                    
+                    const typeLabel = '🎥 Video';
+                    db.ref('chats/' + wallet + '/' + currentChat + '/lastMessage').set(typeLabel);
+                    db.ref('chats/' + currentChat + '/' + wallet + '/lastMessage').set(typeLabel);
+                });
+            }
+        );
+    } catch (e) {
+        console.error('Error upload:', e);
+        showToast('Error al enviar video');
+    }
 }
 
 // ============================================

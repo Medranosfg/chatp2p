@@ -304,20 +304,6 @@
                 <button class="copy-minimal" onclick="copyWallet()">Copiar</button>
             </div>
             
-            <!-- Notificaciones -->
-            <div class="notifications-section">
-                <div class="notification-toggle-row">
-                    <div class="notification-info">
-                        <span class="notification-label">Notificaciones</span>
-                        <span class="notification-desc">Recibe alertas de nuevos mensajes</span>
-                    </div>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="notificationToggle" onchange="toggleNotifications(this.checked)">
-                        <span class="toggle-slider"></span>
-                    </label>
-                </div>
-            </div>
-            
             <!-- Acción Destructiva - Separada y Clara -->
             <div class="danger-zone">
                 <button class="delete-account-minimal" onclick="openModal('deleteUserModal')">
@@ -2092,6 +2078,7 @@
     <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-storage-compat.js"></script>
     <script>
         // Timeout de seguridad: si Firebase no carga en 5 segundos, continuar sin él
         setTimeout(function() {
@@ -2338,119 +2325,6 @@
                 });
             }
         })();
-    </script>
-    
-    <!-- Notificaciones Push iOS -->
-    <script>
-        // Estado de notificaciones
-        let notificationsEnabled = localStorage.getItem('notificationsEnabled') === 'true';
-        
-        // Inicializar toggle al cargar
-        document.addEventListener('DOMContentLoaded', function() {
-            const toggle = document.getElementById('notificationToggle');
-            if (toggle) {
-                toggle.checked = notificationsEnabled;
-            }
-        });
-        
-        // Toggle notificaciones
-        async function toggleNotifications(enabled) {
-            if (enabled) {
-                // Solicitar permiso a iOS nativo
-                if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.requestNotificationPermission) {
-                    window.webkit.messageHandlers.requestNotificationPermission.postMessage({});
-                    // El resultado vendrá por callback
-                } else {
-                    // Fallback para web
-                    const permission = await requestNotificationPermission();
-                    handleNotificationPermission(permission === 'granted');
-                }
-            } else {
-                notificationsEnabled = false;
-                localStorage.setItem('notificationsEnabled', 'false');
-                await unregisterFCMToken();
-            }
-        }
-        
-        // Callback desde iOS nativo
-        window.onNotificationPermissionResult = function(granted) {
-            handleNotificationPermission(granted);
-        };
-        
-        function handleNotificationPermission(granted) {
-            const toggle = document.getElementById('notificationToggle');
-            if (granted) {
-                notificationsEnabled = true;
-                localStorage.setItem('notificationsEnabled', 'true');
-                registerFCMToken();
-            } else {
-                if (toggle) toggle.checked = false;
-                notificationsEnabled = false;
-                localStorage.setItem('notificationsEnabled', 'false');
-            }
-        }
-        
-        // Solicitar permiso de notificaciones (web fallback)
-        async function requestNotificationPermission() {
-            if ('Notification' in window) {
-                return await Notification.requestPermission();
-            }
-            return 'denied';
-        }
-        
-        // Registrar token FCM en Firebase
-        async function registerFCMToken() {
-            if (!window.firebaseReady || typeof firebase === 'undefined') return;
-            
-            // Para iOS nativo, solicitar token
-            if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.getFCMToken) {
-                window.webkit.messageHandlers.getFCMToken.postMessage({});
-                return;
-            }
-        }
-        
-        // Callback desde iOS con el token
-        window.onFCMToken = function(token) {
-            if (token) {
-                saveFCMToken(token);
-            }
-        };
-        
-        // Guardar token en Firebase
-        async function saveFCMToken(token) {
-            if (!window.firebaseReady || typeof firebase === 'undefined') return;
-            
-            try {
-                const db = firebase.database();
-                const wallet = localStorage.getItem('wallet');
-                if (wallet && token) {
-                    await db.ref('fcmTokens/' + wallet).set({
-                        token: token,
-                        platform: 'ios',
-                        updatedAt: Date.now()
-                    });
-                    console.log('✅ Token FCM guardado');
-                }
-            } catch (e) {
-                console.warn('Error guardando token:', e);
-            }
-        }
-        
-        // Eliminar token de Firebase
-        async function unregisterFCMToken() {
-            if (!window.firebaseReady || typeof firebase === 'undefined') return;
-            
-            try {
-                const db = firebase.database();
-                const wallet = localStorage.getItem('wallet');
-                if (wallet) {
-                    await db.ref('fcmTokens/' + wallet).remove();
-                    console.log('✅ Token FCM eliminado');
-                }
-            } catch (e) {
-                console.warn('Error eliminando token:', e);
-            }
-        }
     </script>
 </body>
 </html>

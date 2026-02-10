@@ -1,9 +1,10 @@
 {
   "rules": {
     "users": {
+      ".read": true,
+      ".indexOn": ["username"],
       "$wallet": {
-        ".read": true,
-        ".write": "$wallet === auth.uid || !data.exists() || true"
+        ".write": true
       }
     },
     "usernames": {
@@ -13,20 +14,38 @@
       }
     },
     "chats": {
+      ".read": true,
       "$wallet": {
-        ".read": true,
         ".write": true
       }
     },
     "messages": {
+      ".read": true,
       "$chatKey": {
-        ".read": true,
         ".write": true
       }
     },
     "fcmTokens": {
       "$wallet": {
         ".read": true,
+        ".write": true
+      }
+    },
+    "presence": {
+      ".read": true,
+      "$wallet": {
+        ".write": true
+      }
+    },
+    "typing": {
+      ".read": true,
+      "$chatKey": {
+        ".write": true
+      }
+    },
+    "readReceipts": {
+      ".read": true,
+      "$chatKey": {
         ".write": true
       }
     },
