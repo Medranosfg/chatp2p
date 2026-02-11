@@ -474,27 +474,109 @@
                                 <div class="chat-status">● En línea</div>
                             </div>
                         </div>
-                        <div class="chat-messages">
-                            <div class="message message-in" style="font-family: 'SF Mono', 'Courier New', monospace; font-size: 11px; color: #10b981; opacity: 0.7; word-break: break-all;">
-                                0x6a3f8b2c4e91d7f052a8
-                                <div class="message-time">10:42</div>
-                            </div>
-                            <div class="message message-out" style="font-family: 'SF Mono', 'Courier New', monospace; font-size: 11px; color: #10b981; opacity: 0.7; word-break: break-all;">
-                                0x9d2e7a1b5f83c6042e71
-                                <div class="message-time">10:43 <span style="color: #15803d; font-weight: 800;">✓✓</span></div>
-                            </div>
-                            <div class="message message-in" style="font-family: 'SF Mono', 'Courier New', monospace; font-size: 11px; color: #10b981; opacity: 0.7; word-break: break-all;">
-                                0x4b8f2d6e1a73c9508d3a
-                                <div class="message-time">10:44</div>
-                            </div>
-                            <div class="message message-out">
-                                Privacidad real por fin 🙌
-                                <div class="message-time">10:45 ✓</div>
-                            </div>
-                        </div>
+                        <div class="chat-messages" id="demoChat"></div>
                     </div>
                 </div>
             </div>
+
+            <script>
+            (function() {
+                const msgs = [
+                    { type: 'in', text: 'Hey, ¿probaste la app? 🔐', time: '10:42' },
+                    { type: 'out', text: 'Sí! Me encanta que no pida mi número', time: '10:43', check: true },
+                    { type: 'in', text: 'Y nadie puede hacer capturas 📵', time: '10:44' },
+                    { type: 'out', text: 'Privacidad real por fin 🙌', time: '10:45', check: true },
+                    { type: 'in', text: 'Los mensajes se cifran solos 🔒', time: '10:46' },
+                    { type: 'out', text: 'Increíble, nadie puede leerlos', time: '10:47', check: true }
+                ];
+
+                function genHash() {
+                    let h = '0x';
+                    for (let i = 0; i < 20; i++) h += Math.floor(Math.random() * 16).toString(16);
+                    return h;
+                }
+
+                function cipherEl(el) {
+                    const span = el.querySelector('.demo-text');
+                    if (!span || span.dataset.ciphered === '1') return;
+                    span.dataset.ciphered = '1';
+                    span.style.transition = 'all 0.4s';
+                    span.textContent = genHash();
+                    span.style.fontFamily = "'SF Mono', 'Courier New', monospace";
+                    span.style.fontSize = '10px';
+                    span.style.color = '#10b981';
+                    span.style.opacity = '0.7';
+                    span.style.wordBreak = 'break-all';
+                }
+
+                function runDemo() {
+                    const chat = document.getElementById('demoChat');
+                    if (!chat) return;
+                    chat.innerHTML = '';
+                    let i = 0;
+
+                    function addMsg() {
+                        if (i >= msgs.length) {
+                            // Esperar 2s y cifrar todos
+                            setTimeout(() => {
+                                const all = chat.querySelectorAll('.message');
+                                let c = 0;
+                                all.forEach((el, idx) => {
+                                    setTimeout(() => cipherEl(el), idx * 300);
+                                });
+                                // Esperar 5s y reiniciar
+                                setTimeout(runDemo, 5000);
+                            }, 2000);
+                            return;
+                        }
+
+                        const m = msgs[i];
+                        const div = document.createElement('div');
+                        div.className = 'message message-' + m.type;
+                        div.style.opacity = '0';
+                        div.style.transform = 'translateY(10px)';
+                        div.style.transition = 'all 0.3s ease';
+
+                        const span = document.createElement('span');
+                        span.className = 'demo-text';
+                        span.textContent = m.text;
+                        div.appendChild(span);
+
+                        const time = document.createElement('div');
+                        time.className = 'message-time';
+                        time.textContent = m.time;
+                        if (m.check) {
+                            time.innerHTML = m.time + ' <span style="color:#15803d;font-weight:800;">✓✓</span>';
+                        }
+                        div.appendChild(time);
+
+                        chat.appendChild(div);
+                        chat.scrollTop = chat.scrollHeight;
+
+                        setTimeout(() => {
+                            div.style.opacity = '1';
+                            div.style.transform = 'translateY(0)';
+                        }, 50);
+
+                        i++;
+                        setTimeout(addMsg, 800);
+                    }
+
+                    addMsg();
+                }
+
+                // Iniciar cuando sea visible
+                if ('IntersectionObserver' in window) {
+                    const obs = new IntersectionObserver((entries) => {
+                        if (entries[0].isIntersecting) { obs.disconnect(); runDemo(); }
+                    }, { threshold: 0.3 });
+                    const el = document.getElementById('demoChat');
+                    if (el) obs.observe(el.closest('.phone-mockup'));
+                } else {
+                    setTimeout(runDemo, 1000);
+                }
+            })();
+            </script>
         </div>
     </section>
 
