@@ -251,6 +251,12 @@ async function createUser() {
     localStorage.setItem('userName', userName);
     
     document.getElementById('createUserModal').style.display = 'none';
+    
+    // Mostrar pantalla principal
+    document.getElementById('homeScreen').style.display = 'flex';
+    document.getElementById('homeScreen').classList.add('active');
+    document.getElementById('chatScreen').style.display = 'none';
+    
     updateUI();
     loadChats();
 }
@@ -2972,6 +2978,10 @@ async function saveAccountWithPin() {
     currentChat = null;
     chats = {};
     
+    // Generar nueva wallet para la pantalla de bienvenido
+    wallet = generateWallet();
+    localStorage.setItem('wallet', wallet);
+    
     if (chatListenerRef) { chatListenerRef.off(); chatListenerRef = null; }
     if (messagesListenerRef) { messagesListenerRef.off(); messagesListenerRef = null; }
     
@@ -2979,6 +2989,11 @@ async function saveAccountWithPin() {
     document.getElementById('homeScreen').classList.remove('active');
     document.getElementById('homeScreen').style.display = 'none';
     document.getElementById('chatScreen').style.display = 'none';
+    
+    // Limpiar input del modal de crear usuario
+    const userInput = document.getElementById('userInput');
+    if (userInput) userInput.value = '';
+    
     showCreateUserModal();
 }
 
