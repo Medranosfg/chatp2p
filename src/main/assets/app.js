@@ -282,7 +282,7 @@ async function changeUser() {
     
     updateUI();
     closeModal('changeUserModal');
-    closeModal('settingsModal');
+    closeSettings();
 }
 
 async function deleteUser() {
@@ -335,7 +335,7 @@ async function deleteUser() {
     
     updateUI();
     closeModal('deleteUserModal');
-    closeModal('settingsModal');
+    closeSettings();
     showCreateUserModal();
 }
 
@@ -2976,7 +2976,7 @@ async function saveAccountWithPin() {
     }
     
     closeModal('savePinModal');
-    closeModal('settingsModal');
+    closeSettings();
     showToast('Cuenta guardada. Ingresa tu usuario para volver.');
     document.getElementById('pinInput1').value = '';
     document.getElementById('pinInput2').value = '';
@@ -3222,6 +3222,22 @@ function openModal(id) {
 function copyWallet() {
     navigator.clipboard.writeText(wallet);
     alert('Wallet copiada');
+}
+
+function openSettings() {
+    document.getElementById('homeScreen').style.display = 'none';
+    document.getElementById('homeScreen').classList.remove('active');
+    document.getElementById('settingsScreen').style.display = 'flex';
+    document.getElementById('settingsScreen').classList.add('active');
+    updateUI();
+    setTimeout(updateNotifToggleUI, 100);
+}
+
+function closeSettings() {
+    document.getElementById('settingsScreen').style.display = 'none';
+    document.getElementById('settingsScreen').classList.remove('active');
+    document.getElementById('homeScreen').style.display = 'flex';
+    document.getElementById('homeScreen').classList.add('active');
 }
 
 // ============================================

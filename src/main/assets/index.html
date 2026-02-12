@@ -137,7 +137,7 @@
                     <button class="icon-btn" onclick="openModal('newChatModal')" aria-label="Nuevo chat">
                         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                     </button>
-                    <button class="icon-btn" onclick="openModal('settingsModal')" aria-label="Configuración">
+                    <button class="icon-btn" onclick="openSettings()" aria-label="Configuración">
                         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a4 4 0 014-4h8a4 4 0 014 4v1"/></svg>
                     </button>
                 </div>
@@ -279,64 +279,76 @@
         </div>
     </div>
 
-    <!-- MODAL: Configuración - Estilo Minimalista Steve Jobs -->
-    <div class="modal" id="settingsModal">
-        <div class="modal-content settings-sheet">
-            <!-- Header minimalista -->
-            <div class="sheet-header">
-                <div class="drag-indicator"></div>
-                <button class="sheet-close" onclick="closeModal('settingsModal')">Listo</button>
-            </div>
+    <!-- PANTALLA: Perfil / Configuración - iOS 26 -->
+    <div class="screen" id="settingsScreen">
+        <div class="header" style="background: rgba(0,0,0,0.95); border-bottom: 1px solid var(--border-light); padding: 14px 20px;">
+            <button class="icon-btn" onclick="closeSettings()" aria-label="Volver" style="background: transparent;">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            </button>
+            <span style="font-size: 17px; font-weight: 600; letter-spacing: -0.02em;">Perfil</span>
+            <div style="width: 36px;"></div>
+        </div>
+        <div style="flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: calc(40px + env(safe-area-inset-bottom));">
             
-            <!-- Perfil Ultra Minimalista -->
-            <div class="profile-minimal">
-                <div class="profile-avatar-minimal" id="profileAvatar">
-                    <span class="avatar-letter" id="avatarLetter">?</span>
+            <!-- Avatar + Nombre -->
+            <div style="padding: 32px 24px 24px; display: flex; flex-direction: column; align-items: center; text-align: center;">
+                <div id="profileAvatar" style="width: 90px; height: 90px; border-radius: 50%; background: var(--gray-900); display: flex; align-items: center; justify-content: center; margin-bottom: 16px; border: 3px solid var(--green-primary);">
+                    <span class="avatar-letter" id="avatarLetter" style="font-size: 38px; font-weight: 600; color: var(--green-primary);">?</span>
                 </div>
-                <h2 class="profile-name-minimal" id="profileName">Usuario</h2>
-                <button class="edit-minimal" onclick="openModal('changeUserModal')">Editar nombre</button>
+                <h2 id="profileName" style="font-size: 24px; font-weight: 700; color: white; margin-bottom: 4px; letter-spacing: -0.02em;">Usuario</h2>
+                <button onclick="openModal('changeUserModal')" style="background: none; border: none; color: var(--green-primary); font-size: 15px; font-weight: 500; cursor: pointer; padding: 6px 12px;">Editar nombre</button>
             </div>
-            
-            <!-- Wallet - Simple y Claro -->
-            <div class="wallet-minimal">
-                <div class="wallet-label">Wallet</div>
-                <div class="wallet-value" id="walletSettings">0x...</div>
-                <button class="copy-minimal" onclick="copyWallet()">Copiar</button>
-            </div>
-            
-            <!-- Notificaciones -->
-            <div class="settings-section" style="margin: 0 16px 16px;">
-                <div class="settings-list">
-                    <div class="settings-item" style="cursor: pointer; justify-content: space-between;">
-                        <span style="display: flex; align-items: center; gap: 8px;">🔔 Notificaciones</span>
+
+            <!-- Secciones estilo iOS Settings -->
+            <div style="margin: 0 16px 12px;">
+                <div style="background: #1a1a1a; border-radius: 14px; overflow: hidden; border: 1px solid rgba(34,197,94,0.1);">
+                    <!-- Wallet -->
+                    <div onclick="copyWallet()" style="display: flex; align-items: center; padding: 14px 16px; cursor: pointer; gap: 12px; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                        <span style="width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, #8b5cf6, #7c3aed); display: flex; align-items: center; justify-content: center;">
+                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><rect x="2" y="6" width="20" height="12" rx="3"/><path d="M2 10h20"/></svg>
+                        </span>
+                        <div style="flex: 1; min-width: 0;">
+                            <div style="font-size: 15px; color: white;">Wallet</div>
+                            <div id="walletSettings" style="font-size: 11px; color: #8e8e93; font-family: 'SF Mono', monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">0x...</div>
+                        </div>
+                        <span style="font-size: 12px; color: var(--green-primary); font-weight: 500;">Copiar</span>
+                    </div>
+                    <!-- Notificaciones -->
+                    <div style="display: flex; align-items: center; padding: 14px 16px; gap: 12px;">
+                        <span style="width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, #ef4444, #dc2626); display: flex; align-items: center; justify-content: center;">
+                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+                        </span>
+                        <span style="flex: 1; font-size: 15px; color: white;">Notificaciones</span>
                         <div id="notifToggle" onclick="toggleNotifications()" style="width: 51px; height: 31px; border-radius: 16px; background: #333; position: relative; transition: background 0.3s; cursor: pointer;">
                             <div id="notifToggleKnob" style="width: 27px; height: 27px; border-radius: 50%; background: white; position: absolute; top: 2px; left: 2px; transition: transform 0.3s; box-shadow: 0 1px 3px rgba(0,0,0,0.3);"></div>
                         </div>
                     </div>
                 </div>
             </div>
-            
+
             <!-- Guardar Cuenta -->
-            <div class="settings-section" style="margin: 0 16px 16px;">
-                <div class="settings-list">
-                    <div class="settings-item" onclick="openSaveAccountModal()" style="cursor: pointer; justify-content: space-between;">
-                        <span style="display: flex; align-items: center; gap: 10px;">
-                            <span style="width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, #22c55e, #16a34a); display: flex; align-items: center; justify-content: center;">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-                            </span>
-                            Guardar cuenta
+            <div style="margin: 0 16px 12px;">
+                <div style="background: #1a1a1a; border-radius: 14px; overflow: hidden; border: 1px solid rgba(34,197,94,0.1);">
+                    <div onclick="openSaveAccountModal()" style="display: flex; align-items: center; padding: 14px 16px; cursor: pointer; gap: 12px;">
+                        <span style="width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, #22c55e, #16a34a); display: flex; align-items: center; justify-content: center;">
+                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
                         </span>
+                        <span style="flex: 1; font-size: 15px; color: white;">Guardar cuenta</span>
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2.5" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
                     </div>
                 </div>
             </div>
-            
-            <!-- Acción Destructiva - Separada y Clara -->
-            <div class="danger-zone">
-                <button class="delete-account-minimal" onclick="openModal('deleteUserModal')">
-                    Eliminar cuenta
-                </button>
+
+            <!-- Eliminar Cuenta -->
+            <div style="margin: 24px 16px 0;">
+                <div style="background: #1a1a1a; border-radius: 14px; overflow: hidden; border: 1px solid rgba(239,68,68,0.15);">
+                    <div onclick="openModal('deleteUserModal')" style="display: flex; align-items: center; justify-content: center; padding: 14px 16px; cursor: pointer; gap: 8px;">
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6"/></svg>
+                        <span style="font-size: 15px; color: #ef4444; font-weight: 500;">Eliminar cuenta</span>
+                    </div>
+                </div>
             </div>
+
         </div>
     </div>
 
