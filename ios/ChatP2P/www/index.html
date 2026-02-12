@@ -304,6 +304,16 @@
                 <button class="copy-minimal" onclick="copyWallet()">Copiar</button>
             </div>
             
+            <!-- Guardar Cuenta -->
+            <div class="settings-section" style="margin: 0 16px 16px;">
+                <div class="settings-list">
+                    <div class="settings-item" onclick="openSaveAccountModal()" style="cursor: pointer; justify-content: space-between;">
+                        <span style="display: flex; align-items: center; gap: 8px;">🔐 Guardar cuenta</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+                    </div>
+                </div>
+            </div>
+            
             <!-- Acción Destructiva - Separada y Clara -->
             <div class="danger-zone">
                 <button class="delete-account-minimal" onclick="openModal('deleteUserModal')">
@@ -334,6 +344,34 @@
             <div class="modal-actions">
                 <button class="apple-btn apple-btn-secondary" onclick="closeModal('deleteUserModal')">Cancelar</button>
                 <button class="apple-btn apple-btn-danger" onclick="deleteUser()">Sí, eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Crear PIN -->
+    <div class="modal" id="savePinModal">
+        <div class="modal-content modal-card">
+            <div class="modal-icon" style="font-size: 48px;">🔐</div>
+            <h2 class="modal-title">Guardar Cuenta</h2>
+            <p class="modal-subtitle" style="color: #aaa; margin-bottom: 16px;">Crea un PIN de 4 dígitos para proteger tu cuenta. Tu cuenta se mantendrá activa por 15 días.</p>
+            <input type="tel" id="pinInput1" class="apple-input" placeholder="PIN de 4 dígitos" maxlength="4" pattern="[0-9]*" inputmode="numeric" style="text-align: center; font-size: 24px; letter-spacing: 12px;">
+            <input type="tel" id="pinInput2" class="apple-input" placeholder="Confirmar PIN" maxlength="4" pattern="[0-9]*" inputmode="numeric" style="text-align: center; font-size: 24px; letter-spacing: 12px; margin-top: 8px;">
+            <div class="modal-actions">
+                <button class="apple-btn apple-btn-secondary" onclick="closeModal('savePinModal')">Cancelar</button>
+                <button class="apple-btn apple-btn-primary" onclick="saveAccountWithPin()">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Ingresar PIN al abrir -->
+    <div class="modal" id="enterPinModal">
+        <div class="modal-content modal-card">
+            <div class="modal-icon" style="font-size: 48px;">🔒</div>
+            <h2 class="modal-title">Ingresa tu PIN</h2>
+            <p class="modal-subtitle" style="color: #aaa; margin-bottom: 16px;">Ingresa tu PIN de 4 dígitos para acceder a tu cuenta.</p>
+            <input type="tel" id="pinVerifyInput" class="apple-input" placeholder="PIN" maxlength="4" pattern="[0-9]*" inputmode="numeric" style="text-align: center; font-size: 24px; letter-spacing: 12px;">
+            <div class="modal-actions">
+                <button class="apple-btn apple-btn-primary" onclick="verifyPin()" style="width: 100%;">Entrar</button>
             </div>
         </div>
     </div>

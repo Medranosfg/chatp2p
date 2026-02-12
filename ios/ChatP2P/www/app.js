@@ -129,7 +129,10 @@ function init() {
     if (!userName) {
         showCreateUserModal();
     } else {
-        loadChats();
+        const needsPin = checkPinOnLaunch();
+        if (!needsPin) {
+            loadChats();
+        }
     }
 }
 
@@ -895,10 +898,10 @@ function saveCipheredMessages() {
 
 function generateFakeHash(text) {
     let hash = '0x';
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 8; i++) {
         hash += Math.floor(Math.random() * 16).toString(16);
     }
-    return hash;
+    return hash + '...';
 }
 
 function applyCipherStyle(textSpan, hashText) {
@@ -926,7 +929,10 @@ function decipherTextElement(textSpan) {
     textSpan.style.fontSize = '';
     textSpan.style.color = '';
     textSpan.style.opacity = '';
-    textSpan.style.wordBreak = '';
+    textSpan.style.wordBreak = 'break-word';
+    textSpan.style.whiteSpace = 'pre-wrap';
+    textSpan.style.display = 'inline';
+    textSpan.style.lineHeight = '1.4';
 }
 
 function setupHoldToReveal(bubble, textSpan) {
@@ -1372,7 +1378,6 @@ function showTypingIndicator(isTyping) {
                 document.head.appendChild(style);
             }
         }
-        area.scrollTop = area.scrollHeight;
     } else {
         if (typingBubble) {
             typingBubble.remove();
@@ -2882,6 +2887,99 @@ function uploadToStorage(blob, type, key, id) {
     } catch (e) {
         console.error('Error upload:', e);
         showToast('Error al enviar video');
+    }
+}
+
+// ============================================
+// GUARDAR CUENTA CON PIN
+// ============================================
+function openSaveAccountModal() {
+    const isProtected = localStorage.getItem('accountPin');
+    if (isProtected) {
+        const savedAt = parseInt(localStorage.getItem('accountSavedAt') || '0');
+        const daysLeft = Math.max(0, 15 - Math.floor((Date.now() - savedAt) / 86400000));
+        showToast('Cuenta protegida (' + daysLeft + ' días restantes)');
+        return;
+    }
+    openModal('savePinModal');
+}
+
+async function saveAccountWithPin() {
+    const p1 = document.getElementById('pinInput1').value;
+    const p2 = document.getElementById('pinInput2').value;
+    if (p1.length !== 4 || !/^\d{4}$/.test(p1)) {
+        showToast('El PIN debe ser de 4 dígitos');
+        return;
+    }
+    if (p1 !== p2) {
+        showToast('Los PIN no coinciden');
+        return;
+    }
+    const pinHash = await hashPin(p1);
+    localStorage.setItem('accountPin', pinHash);
+    localStorage.setItem('accountSavedAt', Date.now().toString());
+    if (wallet && window.firebaseReady && typeof firebase !== 'undefined') {
+        try {
+            firebase.database().ref('users/' + wallet).update({
+                protected: true,
+                savedAt: firebase.database.ServerValue.TIMESTAMP
+            });
+        } catch (e) { console.warn('Error guardando protección:', e); }
+    }
+    closeModal('savePinModal');
+    showToast('Cuenta protegida con PIN');
+    document.getElementById('pinInput1').value = '';
+    document.getElementById('pinInput2').value = '';
+}
+
+async function hashPin(pin) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(pin + wallet);
+    const hash = await crypto.subtle.digest('SHA-256', data);
+    return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+function checkPinOnLaunch() {
+    const pinHash = localStorage.getItem('accountPin');
+    if (!pinHash) return false;
+    const savedAt = parseInt(localStorage.getItem('accountSavedAt') || '0');
+    if (Date.now() - savedAt > 15 * 86400000) {
+        localStorage.removeItem('accountPin');
+        localStorage.removeItem('accountSavedAt');
+        if (wallet && window.firebaseReady && typeof firebase !== 'undefined') {
+            try {
+                firebase.database().ref('users/' + wallet).update({ protected: false });
+            } catch (e) {}
+        }
+        return false;
+    }
+    openModal('enterPinModal');
+    return true;
+}
+
+async function verifyPin() {
+    const input = document.getElementById('pinVerifyInput').value;
+    if (input.length !== 4) {
+        showToast('Ingresa tu PIN de 4 dígitos');
+        return;
+    }
+    const pinHash = await hashPin(input);
+    const stored = localStorage.getItem('accountPin');
+    if (pinHash === stored) {
+        localStorage.setItem('accountSavedAt', Date.now().toString());
+        if (wallet && window.firebaseReady && typeof firebase !== 'undefined') {
+            try {
+                firebase.database().ref('users/' + wallet).update({
+                    savedAt: firebase.database.ServerValue.TIMESTAMP
+                });
+            } catch (e) {}
+        }
+        closeModal('enterPinModal');
+        document.getElementById('pinVerifyInput').value = '';
+        loadChats();
+    } else {
+        showToast('PIN incorrecto');
+        document.getElementById('pinVerifyInput').value = '';
     }
 }
 
