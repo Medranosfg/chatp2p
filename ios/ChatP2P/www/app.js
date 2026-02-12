@@ -3022,6 +3022,12 @@ async function verifyPin() {
             window._restoreAccount = null;
             closeModal('enterPinModal');
             document.getElementById('pinVerifyInput').value = '';
+            
+            // Mostrar pantalla principal
+            document.getElementById('homeScreen').style.display = 'flex';
+            document.getElementById('homeScreen').classList.add('active');
+            document.getElementById('chatScreen').style.display = 'none';
+            
             updateUI();
             initPresenceOnLoad();
             loadChats();
