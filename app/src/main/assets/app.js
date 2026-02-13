@@ -3220,8 +3220,36 @@ function openModal(id) {
 }
 
 function copyWallet() {
-    navigator.clipboard.writeText(wallet);
-    alert('Wallet copiada');
+    navigator.clipboard.writeText(wallet).catch(() => {
+        // Fallback for Android WebView
+        const ta = document.createElement('textarea');
+        ta.value = wallet;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+    });
+    showToast('✅ Wallet copiada');
+}
+
+function showToast(msg) {
+    let t = document.getElementById('kiroToast');
+    if (!t) {
+        t = document.createElement('div');
+        t.id = 'kiroToast';
+        t.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(34,197,94,0.95);color:#000;padding:12px 24px;border-radius:12px;font-size:15px;font-weight:600;z-index:9999;opacity:0;transition:all 0.3s ease;pointer-events:none;backdrop-filter:blur(10px);box-shadow:0 4px 20px rgba(34,197,94,0.4);';
+        document.body.appendChild(t);
+    }
+    t.textContent = msg;
+    t.style.opacity = '1';
+    t.style.transform = 'translateX(-50%) translateY(0)';
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => {
+        t.style.opacity = '0';
+        t.style.transform = 'translateX(-50%) translateY(20px)';
+    }, 2000);
 }
 
 function openSettings() {
