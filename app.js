@@ -984,9 +984,9 @@ function decipherTextElement(textSpan) {
     textSpan.style.opacity = '';
     textSpan.style.wordBreak = 'break-word';
     textSpan.style.whiteSpace = 'pre-wrap';
-    textSpan.style.display = 'inline-block';
-    textSpan.style.maxWidth = '100%';
-    textSpan.style.lineHeight = '1.4';
+    textSpan.style.display = 'inline';
+    textSpan.style.maxWidth = '';
+    textSpan.style.lineHeight = '';
     textSpan.style.overflowWrap = 'break-word';
 }
 

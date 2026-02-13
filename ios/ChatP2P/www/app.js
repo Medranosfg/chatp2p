@@ -969,7 +969,9 @@ function decipherTextElement(textSpan) {
     textSpan.style.wordBreak = 'break-word';
     textSpan.style.whiteSpace = 'pre-wrap';
     textSpan.style.display = 'inline';
-    textSpan.style.lineHeight = '1.4';
+    textSpan.style.maxWidth = '';
+    textSpan.style.lineHeight = '';
+    textSpan.style.overflowWrap = 'break-word';
 }
 
 function setupHoldToReveal(bubble, textSpan) {
