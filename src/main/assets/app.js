@@ -2914,7 +2914,9 @@ function toggleNotifications() {
         // Eliminar token de Firebase
         if (wallet && window.firebaseReady && typeof firebase !== 'undefined') {
             try {
-                firebase.database().ref('users/' + wallet + '/fcmToken').remove();
+                const db = firebase.database();
+                db.ref('users/' + wallet + '/fcmToken').remove();
+                db.ref('fcmTokens/' + wallet).remove();
             } catch (e) {}
         }
     }
@@ -2925,8 +2927,11 @@ function saveFCMToken(token) {
     if (!wallet || !window.firebaseReady || typeof firebase === 'undefined') return;
     if (!notificationsEnabled) return;
     try {
-        firebase.database().ref('users/' + wallet + '/fcmToken').set(token);
-        console.log('✅ Token FCM guardado en Firebase');
+        const db = firebase.database();
+        // Write to both paths - Cloud Function reads from fcmTokens/
+        db.ref('fcmTokens/' + wallet).set({ token: token, updatedAt: Date.now() });
+        db.ref('users/' + wallet + '/fcmToken').set(token);
+        console.log('✅ Token FCM guardado en Firebase (ambas rutas)');
     } catch (e) {
         console.warn('Error guardando token:', e);
     }
