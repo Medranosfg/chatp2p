@@ -238,6 +238,8 @@ async function createUser() {
     const existingData = await findProtectedUser(name);
     if (existingData) {
         window._restoreAccount = existingData;
+        window._pinBuffer = '';
+        updatePinDots('enterPinModal');
         document.getElementById('createUserModal').style.display = 'none';
         openModal('enterPinModal');
         return;
@@ -2940,21 +2942,109 @@ function openSaveAccountModal() {
         showToast('Cuenta protegida (' + daysLeft + ' días restantes)');
         return;
     }
+    window._pinBuffer = '';
+    window._pinStep = 'create';
+    window._pinFirst = '';
+    updatePinDots('savePinModal');
+    document.getElementById('savePinTitle').textContent = 'Guardar Cuenta';
+    document.getElementById('savePinSubtitle').textContent = 'Ingresa un PIN de 4 dígitos';
     openModal('savePinModal');
 }
 
-async function saveAccountWithPin() {
-    const p1 = document.getElementById('pinInput1').value;
-    const p2 = document.getElementById('pinInput2').value;
-    if (p1.length !== 4 || !/^\d{4}$/.test(p1)) {
-        showToast('El PIN debe ser de 4 dígitos');
-        return;
+function pinKeyPress(num) {
+    if (window._pinBuffer.length >= 4) return;
+    window._pinBuffer += num;
+    updatePinDots('savePinModal');
+    if (window._pinBuffer.length === 4) {
+        setTimeout(() => handlePinComplete(), 200);
     }
-    if (p1 !== p2) {
-        showToast('Los PIN no coinciden');
-        return;
+}
+
+function pinKeyDelete() {
+    if (window._pinBuffer.length === 0) return;
+    window._pinBuffer = window._pinBuffer.slice(0, -1);
+    updatePinDots('savePinModal');
+}
+
+function closeSavePinModal() {
+    window._pinBuffer = '';
+    window._pinStep = 'create';
+    window._pinFirst = '';
+    closeModal('savePinModal');
+}
+
+function updatePinDots(modalId) {
+    const prefix = modalId === 'savePinModal' ? 'pinDot' : 'enterPinDot';
+    const len = window._pinBuffer.length;
+    for (let i = 0; i < 4; i++) {
+        const dot = document.getElementById(prefix + i);
+        if (!dot) continue;
+        if (i < len) {
+            dot.style.background = modalId === 'savePinModal' ? '#22c55e' : '#3b82f6';
+            dot.style.borderColor = modalId === 'savePinModal' ? '#22c55e' : '#3b82f6';
+        } else {
+            dot.style.background = 'transparent';
+            dot.style.borderColor = 'rgba(255,255,255,0.3)';
+        }
     }
-    const pinHash = await hashPin(p1);
+}
+
+function shakePinDots(modalId) {
+    const container = modalId === 'savePinModal' ? document.getElementById('pinDotsContainer') : document.getElementById('enterPinDotsContainer');
+    if (!container) return;
+    container.style.animation = 'none';
+    container.offsetHeight;
+    container.style.animation = 'pinShake 0.5s ease';
+    setTimeout(() => { container.style.animation = 'none'; }, 500);
+}
+
+function handlePinComplete() {
+    if (window._pinStep === 'create') {
+        window._pinFirst = window._pinBuffer;
+        window._pinBuffer = '';
+        window._pinStep = 'confirm';
+        document.getElementById('savePinTitle').textContent = 'Confirmar PIN';
+        document.getElementById('savePinSubtitle').textContent = 'Repite tu PIN de 4 dígitos';
+        updatePinDots('savePinModal');
+    } else if (window._pinStep === 'confirm') {
+        if (window._pinBuffer === window._pinFirst) {
+            saveAccountWithPin(window._pinBuffer);
+        } else {
+            shakePinDots('savePinModal');
+            showToast('Los PIN no coinciden');
+            window._pinBuffer = '';
+            window._pinStep = 'create';
+            window._pinFirst = '';
+            document.getElementById('savePinTitle').textContent = 'Guardar Cuenta';
+            document.getElementById('savePinSubtitle').textContent = 'Ingresa un PIN de 4 dígitos';
+            updatePinDots('savePinModal');
+        }
+    }
+}
+
+function enterPinKeyPress(num) {
+    if (window._pinBuffer.length >= 4) return;
+    window._pinBuffer += num;
+    updatePinDots('enterPinModal');
+    if (window._pinBuffer.length === 4) {
+        setTimeout(() => verifyPin(), 200);
+    }
+}
+
+function enterPinKeyDelete() {
+    if (window._pinBuffer.length === 0) return;
+    window._pinBuffer = window._pinBuffer.slice(0, -1);
+    updatePinDots('enterPinModal');
+}
+
+function closeEnterPinModal() {
+    window._pinBuffer = '';
+    window._restoreAccount = null;
+    closeModal('enterPinModal');
+}
+
+async function saveAccountWithPin(pin) {
+    const pinHash = await hashPin(pin);
     
     if (wallet && window.firebaseReady && typeof firebase !== 'undefined') {
         try {
@@ -2966,13 +3056,10 @@ async function saveAccountWithPin() {
         } catch (e) { console.warn('Error guardando protección:', e); }
     }
     
-    closeModal('savePinModal');
+    closeSavePinModal();
     closeSettings();
     showToast('Cuenta guardada. Ingresa tu usuario para volver.');
-    document.getElementById('pinInput1').value = '';
-    document.getElementById('pinInput2').value = '';
     
-    // Limpiar sesión local
     localStorage.removeItem('userName');
     localStorage.removeItem('accountPin');
     localStorage.removeItem('accountSavedAt');
@@ -2980,7 +3067,6 @@ async function saveAccountWithPin() {
     currentChat = null;
     chats = {};
     
-    // Generar nueva wallet para la pantalla de bienvenido
     wallet = generateWallet();
     localStorage.setItem('wallet', wallet);
     
@@ -2992,7 +3078,6 @@ async function saveAccountWithPin() {
     document.getElementById('homeScreen').style.display = 'none';
     document.getElementById('chatScreen').style.display = 'none';
     
-    // Limpiar input del modal de crear usuario
     const userInput = document.getElementById('userInput');
     if (userInput) userInput.value = '';
     
@@ -3011,7 +3096,7 @@ function checkPinOnLaunch() {
 }
 
 async function verifyPin() {
-    const input = document.getElementById('pinVerifyInput').value;
+    const input = window._pinBuffer || '';
     if (input.length !== 4) {
         showToast('Ingresa tu PIN de 4 dígitos');
         return;
@@ -3037,10 +3122,9 @@ async function verifyPin() {
             }
             
             window._restoreAccount = null;
+            window._pinBuffer = '';
             closeModal('enterPinModal');
-            document.getElementById('pinVerifyInput').value = '';
             
-            // Mostrar pantalla principal
             document.getElementById('homeScreen').style.display = 'flex';
             document.getElementById('homeScreen').classList.add('active');
             document.getElementById('chatScreen').style.display = 'none';
@@ -3050,14 +3134,16 @@ async function verifyPin() {
             loadChats();
             showToast('Cuenta restaurada');
         } else {
+            shakePinDots('enterPinModal');
             showToast('PIN incorrecto');
-            document.getElementById('pinVerifyInput').value = '';
+            window._pinBuffer = '';
+            updatePinDots('enterPinModal');
         }
         return;
     }
     
+    window._pinBuffer = '';
     closeModal('enterPinModal');
-    document.getElementById('pinVerifyInput').value = '';
     loadChats();
 }
 
