@@ -2535,7 +2535,7 @@ function startVoiceNote() {
     
     // Fallback: grabación web (para navegador)
     if (isRecordingAudio) {
-        stopVoiceNote();
+        // Ya grabando — no hacer nada, el overlay controla
         return;
     }
     
@@ -2549,14 +2549,9 @@ function startVoiceNote() {
             audioChunks = [];
             isRecordingAudio = true;
             audioRecordingSeconds = 0;
+            window._voiceCancelled = false;
             
-            const micBtn = document.getElementById('micButton');
-            if (micBtn) {
-                micBtn.style.background = '#ef4444';
-                micBtn.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="white"><rect x="6" y="6" width="12" height="12" rx="3"/></svg>';
-            }
-            
-            showVoiceTimer();
+            showVoiceRecordingOverlay();
             
             let mimeType = 'audio/webm';
             try {
@@ -2571,20 +2566,20 @@ function startVoiceNote() {
             
             audioRecorder.onstop = () => {
                 stream.getTracks().forEach(t => t.stop());
-                if (audioChunks.length > 0) {
+                if (!window._voiceCancelled && audioChunks.length > 0) {
                     const blob = new Blob(audioChunks, { type: mimeType });
                     sendVoiceNote(blob);
                 }
                 resetMicButton();
-                hideVoiceTimer();
+                hideVoiceRecordingOverlay();
             };
             
             audioRecorder.start(250);
             
             audioRecordingTimer = setInterval(() => {
                 audioRecordingSeconds++;
-                updateVoiceTimer();
-                if (audioRecordingSeconds >= 60) stopVoiceNote();
+                updateVoiceOverlayTimer();
+                if (audioRecordingSeconds >= 60) sendVoiceFromOverlay();
             }, 1000);
         })
         .catch((e) => {
@@ -2603,41 +2598,131 @@ function stopVoiceNote() {
     audioRecorder.stop();
 }
 
-function showVoiceTimer() {
-    let timer = document.getElementById('voiceTimer');
-    if (!timer) {
-        timer = document.createElement('div');
-        timer.id = 'voiceTimer';
-        timer.style.cssText = 'position: fixed; top: 100px; left: 50%; transform: translateX(-50%); background: rgba(239,68,68,0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); color: white; padding: 10px 20px; border-radius: 25px; font-size: 15px; font-weight: 600; z-index: 1000; display: flex; align-items: center; gap: 10px; font-variant-numeric: tabular-nums; box-shadow: 0 4px 20px rgba(239,68,68,0.3);';
-        document.body.appendChild(timer);
+function cancelVoiceNote() {
+    if (!isRecordingAudio) {
+        hideVoiceRecordingOverlay();
+        return;
     }
-    timer.innerHTML = '<span style="width:8px;height:8px;background:#ff6b6b;border-radius:50%;animation:pulse 1s infinite;"></span> 0:00';
-    timer.style.display = 'flex';
-    timer.style.opacity = '0';
-    timer.style.transform = 'translateX(-50%) scale(0.9)';
+    window._voiceCancelled = true;
+    stopVoiceNote();
+}
+
+function sendVoiceFromOverlay() {
+    if (!isRecordingAudio) return;
+    window._voiceCancelled = false;
+    stopVoiceNote();
+}
+
+// ============================================
+// VOICE RECORDING OVERLAY - iOS Style
+// ============================================
+function showVoiceRecordingOverlay() {
+    let overlay = document.getElementById('voiceRecordOverlay');
+    if (overlay) overlay.remove();
+    
+    overlay = document.createElement('div');
+    overlay.id = 'voiceRecordOverlay';
+    overlay.style.cssText = 'position:fixed;bottom:0;left:0;right:0;z-index:9999;background:rgba(0,0,0,0.95);backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);border-top:1px solid rgba(34,197,94,0.2);padding:0 20px;padding-bottom:max(env(safe-area-inset-bottom,20px),20px);display:flex;flex-direction:column;align-items:center;gap:20px;transform:translateY(100%);transition:transform 0.35s cubic-bezier(0.32,0.72,0,1);';
+    
+    overlay.innerHTML = `
+        <div style="width:36px;height:4px;border-radius:2px;background:rgba(255,255,255,0.15);margin-top:10px;"></div>
+        
+        <!-- Waveform visual -->
+        <div style="display:flex;align-items:center;gap:16px;width:100%;padding:16px 0;">
+            <div style="width:48px;height:48px;border-radius:50%;background:rgba(239,68,68,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <div id="voiceRecPulse" style="width:12px;height:12px;border-radius:50%;background:#ef4444;animation:voiceRecPulse 1.2s ease-in-out infinite;"></div>
+            </div>
+            <div style="flex:1;display:flex;flex-direction:column;gap:6px;">
+                <div style="font-size:17px;font-weight:600;color:white;">Grabando...</div>
+                <div id="voiceRecTimer" style="font-size:28px;font-weight:300;color:white;font-variant-numeric:tabular-nums;letter-spacing:2px;">0:00</div>
+            </div>
+            <div id="voiceWaveform" style="display:flex;align-items:center;gap:2px;height:40px;"></div>
+        </div>
+        
+        <!-- Action buttons -->
+        <div style="display:flex;align-items:center;justify-content:center;gap:32px;width:100%;padding-bottom:8px;">
+            <button onclick="cancelVoiceNote()" style="width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,0.08);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform 0.15s,background 0.15s;" onpointerdown="this.style.transform='scale(0.9)'" onpointerup="this.style.transform='scale(1)'" onpointerleave="this.style.transform='scale(1)'">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6"/></svg>
+            </button>
+            <button onclick="sendVoiceFromOverlay()" style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#22c55e,#16a34a);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 24px rgba(34,197,94,0.4);transition:transform 0.15s;" onpointerdown="this.style.transform='scale(0.9)'" onpointerup="this.style.transform='scale(1)'" onpointerleave="this.style.transform='scale(1)'">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+                    <path d="M22 2L11 13" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+                    <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+            <div style="width:56px;height:56px;"></div>
+        </div>
+    `;
+    
+    document.body.appendChild(overlay);
+    
+    // Iniciar waveform
+    startWaveformAnimation();
+    
     requestAnimationFrame(() => {
-        timer.style.transition = 'opacity 0.2s, transform 0.2s';
-        timer.style.opacity = '1';
-        timer.style.transform = 'translateX(-50%) scale(1)';
+        overlay.style.transform = 'translateY(0)';
     });
 }
 
-function updateVoiceTimer() {
-    const timer = document.getElementById('voiceTimer');
+function hideVoiceRecordingOverlay() {
+    const overlay = document.getElementById('voiceRecordOverlay');
+    if (!overlay) return;
+    stopWaveformAnimation();
+    overlay.style.transform = 'translateY(100%)';
+    setTimeout(() => overlay.remove(), 350);
+}
+
+function updateVoiceOverlayTimer() {
+    const timer = document.getElementById('voiceRecTimer');
     if (timer) {
         const mins = Math.floor(audioRecordingSeconds / 60);
         const secs = audioRecordingSeconds % 60;
-        timer.innerHTML = `<span style="width:8px;height:8px;background:#ff6b6b;border-radius:50%;animation:pulse 1s infinite;"></span> ${mins}:${secs.toString().padStart(2, '0')}`;
+        timer.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
     }
 }
 
-function hideVoiceTimer() {
-    const timer = document.getElementById('voiceTimer');
-    if (timer) {
-        timer.style.opacity = '0';
-        timer.style.transform = 'translateX(-50%) scale(0.9)';
-        setTimeout(() => timer.style.display = 'none', 200);
+// Waveform animation
+let waveformInterval = null;
+function startWaveformAnimation() {
+    const container = document.getElementById('voiceWaveform');
+    if (!container) return;
+    
+    // Create bars
+    container.innerHTML = '';
+    for (let i = 0; i < 20; i++) {
+        const bar = document.createElement('div');
+        bar.style.cssText = `width:3px;border-radius:2px;background:#22c55e;transition:height 0.15s ease;height:4px;`;
+        container.appendChild(bar);
     }
+    
+    waveformInterval = setInterval(() => {
+        const bars = container.children;
+        for (let i = 0; i < bars.length; i++) {
+            const h = 4 + Math.random() * 32;
+            bars[i].style.height = h + 'px';
+            bars[i].style.opacity = 0.4 + (h / 36) * 0.6;
+        }
+    }, 120);
+}
+
+function stopWaveformAnimation() {
+    if (waveformInterval) {
+        clearInterval(waveformInterval);
+        waveformInterval = null;
+    }
+}
+
+// Old timer functions kept for compatibility
+function showVoiceTimer() {
+    // Now handled by overlay
+}
+
+function updateVoiceTimer() {
+    updateVoiceOverlayTimer();
+}
+
+function hideVoiceTimer() {
+    // Now handled by overlay
 }
 
 function resetMicButton() {
