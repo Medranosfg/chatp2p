@@ -2366,20 +2366,17 @@ window.onIOSRecordingStarted = function() {
     console.log('🎤 iOS: Grabación iniciada');
     isRecordingAudio = true;
     audioRecordingSeconds = 0;
+    window._voiceCancelled = false;
+    window._iosVoicePending = null;
     
-    const micBtn = document.getElementById('micButton');
-    if (micBtn) {
-        micBtn.style.background = '#ef4444';
-        micBtn.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="white"><rect x="6" y="6" width="12" height="12" rx="3"/></svg>';
-    }
-    
-    showVoiceTimer();
+    showVoiceRecordingOverlay();
     
     audioRecordingTimer = setInterval(() => {
         audioRecordingSeconds++;
-        updateVoiceTimer();
+        updateVoiceOverlayTimer();
         if (audioRecordingSeconds >= 60) {
-            stopVoiceNote();
+            // Auto-enviar al llegar a 60s
+            sendVoiceFromOverlayIOS();
         }
     }, 1000);
 };
@@ -2394,12 +2391,26 @@ window.onIOSRecordingComplete = function(audioDataURL, duration) {
     }
     
     resetMicButton();
-    hideVoiceTimer();
     
-    // Enviar nota de voz
-    if (currentChat && audioDataURL) {
-        sendVoiceNoteFromData(audioDataURL, duration || audioRecordingSeconds);
+    // Si fue cancelada, descartar
+    if (window._voiceCancelled) {
+        window._voiceCancelled = false;
+        hideVoiceRecordingOverlay();
+        return;
     }
+    
+    // Si se pidió enviar directamente (botón enviar presionado)
+    if (window._iosSendRequested) {
+        window._iosSendRequested = false;
+        hideVoiceRecordingOverlay();
+        if (currentChat && audioDataURL) {
+            sendVoiceNoteFromData(audioDataURL, duration || audioRecordingSeconds);
+        }
+        return;
+    }
+    
+    // Guardar datos para enviar cuando el usuario presione enviar
+    window._iosVoicePending = { data: audioDataURL, duration: duration || audioRecordingSeconds };
 };
 
 window.sendVoiceNoteFromIOS = function(audioDataURL, duration) {
@@ -2450,8 +2461,12 @@ function startVoiceNote() {
     if (isIOSNative) {
         console.log('🎤 Usando grabación nativa iOS');
         if (isRecordingAudio) {
-            window.webkit.messageHandlers.iosNative.postMessage({ action: 'stopVoiceRecording' });
+            // Ya grabando, no hacer nada — el overlay controla
+            return;
         } else {
+            window._voiceCancelled = false;
+            window._iosSendRequested = false;
+            window._iosVoicePending = null;
             window.webkit.messageHandlers.iosNative.postMessage({ action: 'startVoiceRecording' });
         }
         return;
@@ -2537,6 +2552,19 @@ function stopVoiceNote() {
 }
 
 function cancelVoiceNote() {
+    // iOS nativo
+    if (isIOSNative) {
+        window._voiceCancelled = true;
+        window._iosVoicePending = null;
+        if (isRecordingAudio) {
+            window.webkit.messageHandlers.iosNative.postMessage({ action: 'stopVoiceRecording' });
+        }
+        isRecordingAudio = false;
+        if (audioRecordingTimer) { clearInterval(audioRecordingTimer); audioRecordingTimer = null; }
+        resetMicButton();
+        hideVoiceRecordingOverlay();
+        return;
+    }
     if (!isRecordingAudio) {
         hideVoiceRecordingOverlay();
         return;
@@ -2546,9 +2574,32 @@ function cancelVoiceNote() {
 }
 
 function sendVoiceFromOverlay() {
+    // iOS nativo
+    if (isIOSNative) {
+        if (window._iosVoicePending) {
+            // Grabación ya terminó, enviar datos guardados
+            hideVoiceRecordingOverlay();
+            if (currentChat && window._iosVoicePending.data) {
+                sendVoiceNoteFromData(window._iosVoicePending.data, window._iosVoicePending.duration);
+            }
+            window._iosVoicePending = null;
+        } else if (isRecordingAudio) {
+            // Aún grabando, pedir a Swift que pare y enviar
+            window._iosSendRequested = true;
+            window.webkit.messageHandlers.iosNative.postMessage({ action: 'stopVoiceRecording' });
+        }
+        return;
+    }
     if (!isRecordingAudio) return;
     window._voiceCancelled = false;
     stopVoiceNote();
+}
+
+function sendVoiceFromOverlayIOS() {
+    if (isIOSNative && isRecordingAudio) {
+        window._iosSendRequested = true;
+        window.webkit.messageHandlers.iosNative.postMessage({ action: 'stopVoiceRecording' });
+    }
 }
 
 function showVoiceRecordingOverlay() {
@@ -3277,22 +3328,20 @@ window.onVoiceRecordingStarted = function() {
     window.isRecordingVoice = true;
     isRecordingAudio = true;
     audioRecordingSeconds = 0;
-    showVoiceTimer();
-    const btn = document.getElementById('micButton');
-    if (btn) {
-        btn.style.background = '#ef4444';
-        btn.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="white"><rect x="6" y="6" width="12" height="12" rx="3"/></svg>';
-    }
+    window._voiceCancelled = false;
+    showVoiceRecordingOverlay();
+    audioRecordingTimer = setInterval(() => {
+        audioRecordingSeconds++;
+        updateVoiceOverlayTimer();
+    }, 1000);
 };
 
 window.onVoiceRecordingStopped = function() {
     window.isRecordingVoice = false;
     isRecordingAudio = false;
-    const btn = document.getElementById('micButton');
-    if (btn) {
-        btn.style.background = '';
-        btn.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 2C10.34 2 9 3.34 9 5V12C9 13.66 10.34 15 12 15C13.66 15 15 13.66 15 12V5C15 3.34 13.66 2 12 2Z" fill="currentColor"/><path d="M17 10V12C17 14.76 14.76 17 12 17C9.24 17 7 14.76 7 12V10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M12 17V21M12 21H9M12 21H15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-    }
+    if (audioRecordingTimer) { clearInterval(audioRecordingTimer); audioRecordingTimer = null; }
+    resetMicButton();
+    // Don't hide overlay yet — wait for saveRecordedVoice or cancel
 };
 
 window.saveRecordedVoice = function(audioDataURL, duration) {

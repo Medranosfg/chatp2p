@@ -3460,22 +3460,19 @@ window.onVoiceRecordingStarted = function() {
     window.isRecordingVoice = true;
     isRecordingAudio = true;
     audioRecordingSeconds = 0;
-    showVoiceTimer();
-    const btn = document.getElementById('micButton');
-    if (btn) {
-        btn.style.background = '#ef4444';
-        btn.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="white"><rect x="6" y="6" width="12" height="12" rx="3"/></svg>';
-    }
+    window._voiceCancelled = false;
+    showVoiceRecordingOverlay();
+    audioRecordingTimer = setInterval(() => {
+        audioRecordingSeconds++;
+        updateVoiceOverlayTimer();
+    }, 1000);
 };
 
 window.onVoiceRecordingStopped = function() {
     window.isRecordingVoice = false;
     isRecordingAudio = false;
-    const btn = document.getElementById('micButton');
-    if (btn) {
-        btn.style.background = '';
-        btn.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 2C10.34 2 9 3.34 9 5V12C9 13.66 10.34 15 12 15C13.66 15 15 13.66 15 12V5C15 3.34 13.66 2 12 2Z" fill="currentColor"/><path d="M17 10V12C17 14.76 14.76 17 12 17C9.24 17 7 14.76 7 12V10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M12 17V21M12 21H9M12 21H15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-    }
+    if (audioRecordingTimer) { clearInterval(audioRecordingTimer); audioRecordingTimer = null; }
+    resetMicButton();
 };
 
 window.saveRecordedVoice = function(audioDataURL, duration) {

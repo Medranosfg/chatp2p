@@ -646,7 +646,7 @@ class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, WKSc
         return .portrait
     }
     
-    deinit {1
+    deinit {
         NotificationCenter.default.removeObserver(self)
     }
 }
