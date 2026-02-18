@@ -2513,6 +2513,8 @@ function startVoiceNote() {
                 audioRecorder = new MediaRecorder(stream);
             }
             
+            window._webMediaRecorder = audioRecorder;
+            
             audioRecorder.ondataavailable = (e) => {
                 if (e.data && e.data.size > 0) audioChunks.push(e.data);
             };
@@ -2606,34 +2608,25 @@ function showVoiceRecordingOverlay() {
     let overlay = document.getElementById('voiceRecordOverlay');
     if (overlay) overlay.remove();
     
+    window._voicePaused = false;
+    
     overlay = document.createElement('div');
     overlay.id = 'voiceRecordOverlay';
-    overlay.style.cssText = 'position:fixed;bottom:0;left:0;right:0;z-index:9999;background:rgba(0,0,0,0.95);backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);border-top:1px solid rgba(34,197,94,0.2);padding:0 20px;padding-bottom:max(env(safe-area-inset-bottom,20px),20px);display:flex;flex-direction:column;align-items:center;gap:20px;transform:translateY(100%);transition:transform 0.35s cubic-bezier(0.32,0.72,0,1);';
+    overlay.style.cssText = 'position:fixed;bottom:0;left:0;right:0;z-index:9999;background:#000;padding:8px 12px;padding-bottom:max(env(safe-area-inset-bottom,8px),8px);display:flex;align-items:center;gap:8px;transform:translateY(100%);transition:transform 0.25s cubic-bezier(0.32,0.72,0,1);border-top:1px solid rgba(255,255,255,0.08);';
     
     overlay.innerHTML = `
-        <div style="width:36px;height:4px;border-radius:2px;background:rgba(255,255,255,0.15);margin-top:10px;"></div>
-        <div style="display:flex;align-items:center;gap:16px;width:100%;padding:16px 0;">
-            <div style="width:48px;height:48px;border-radius:50%;background:rgba(239,68,68,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                <div id="voiceRecPulse" style="width:12px;height:12px;border-radius:50%;background:#ef4444;animation:voiceRecPulse 1.2s ease-in-out infinite;"></div>
-            </div>
-            <div style="flex:1;display:flex;flex-direction:column;gap:6px;">
-                <div style="font-size:17px;font-weight:600;color:white;">Grabando...</div>
-                <div id="voiceRecTimer" style="font-size:28px;font-weight:300;color:white;font-variant-numeric:tabular-nums;letter-spacing:2px;">0:00</div>
-            </div>
-            <div id="voiceWaveform" style="display:flex;align-items:center;gap:2px;height:40px;"></div>
-        </div>
-        <div style="display:flex;align-items:center;justify-content:center;gap:32px;width:100%;padding-bottom:8px;">
-            <button onclick="cancelVoiceNote()" style="width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,0.08);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform 0.15s,background 0.15s;" onpointerdown="this.style.transform='scale(0.9)'" onpointerup="this.style.transform='scale(1)'" onpointerleave="this.style.transform='scale(1)'">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6"/></svg>
-            </button>
-            <button onclick="sendVoiceFromOverlay()" style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#22c55e,#16a34a);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 24px rgba(34,197,94,0.4);transition:transform 0.15s;" onpointerdown="this.style.transform='scale(0.9)'" onpointerup="this.style.transform='scale(1)'" onpointerleave="this.style.transform='scale(1)'">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-                    <path d="M22 2L11 13" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
-                    <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </button>
-            <div style="width:56px;height:56px;"></div>
-        </div>
+        <button id="voiceCancelBtn" onclick="cancelVoiceNote()" style="width:36px;height:36px;border-radius:50%;background:rgba(239,68,68,0.15);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent;" ontouchstart="this.style.transform='scale(0.85)'" ontouchend="this.style.transform='scale(1)'">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6"/></svg>
+        </button>
+        <button id="voicePauseBtn" onclick="toggleVoicePause()" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.08);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent;" ontouchstart="this.style.transform='scale(0.85)'" ontouchend="this.style.transform='scale(1)'">
+            <svg id="pauseIcon" width="18" height="18" viewBox="0 0 24 24" fill="white"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
+        </button>
+        <div id="voiceRecPulse" style="width:8px;height:8px;border-radius:50%;background:#ef4444;animation:voiceRecPulse 1.2s ease-in-out infinite;flex-shrink:0;"></div>
+        <div id="voiceRecTimer" style="font-size:15px;font-weight:600;color:white;font-variant-numeric:tabular-nums;min-width:36px;flex-shrink:0;">0:00</div>
+        <div id="voiceWaveform" style="display:flex;align-items:center;gap:1.5px;height:28px;flex:1;overflow:hidden;"></div>
+        <button id="voiceSendBtn" onclick="sendVoiceFromOverlay()" style="width:36px;height:36px;border-radius:50%;background:#22c55e;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent;" ontouchstart="this.style.transform='scale(0.85)'" ontouchend="this.style.transform='scale(1)'">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M22 2L11 13" stroke="white" stroke-width="2.5" stroke-linecap="round"/><path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
     `;
     
     document.body.appendChild(overlay);
@@ -2663,17 +2656,18 @@ function startWaveformAnimation() {
     const container = document.getElementById('voiceWaveform');
     if (!container) return;
     container.innerHTML = '';
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 24; i++) {
         const bar = document.createElement('div');
-        bar.style.cssText = 'width:3px;border-radius:2px;background:#22c55e;transition:height 0.15s ease;height:4px;';
+        bar.style.cssText = 'width:2px;border-radius:1px;background:#22c55e;transition:height 0.12s ease;height:3px;';
         container.appendChild(bar);
     }
     waveformInterval = setInterval(() => {
+        if (window._voicePaused) return;
         const bars = container.children;
         for (let i = 0; i < bars.length; i++) {
-            const h = 4 + Math.random() * 32;
+            const h = 3 + Math.random() * 22;
             bars[i].style.height = h + 'px';
-            bars[i].style.opacity = 0.4 + (h / 36) * 0.6;
+            bars[i].style.opacity = 0.4 + (h / 25) * 0.6;
         }
     }, 120);
 }
@@ -2685,6 +2679,62 @@ function stopWaveformAnimation() {
 function showVoiceTimer() {}
 function updateVoiceTimer() { updateVoiceOverlayTimer(); }
 function hideVoiceTimer() {}
+
+function toggleVoicePause() {
+    if (window._voicePaused) {
+        // Resume
+        window._voicePaused = false;
+        if (isIOSNative) {
+            window.webkit.messageHandlers.iosNative.postMessage({ action: 'resumeVoiceRecording' });
+        } else if (window._webMediaRecorder && window._webMediaRecorder.state === 'paused') {
+            window._webMediaRecorder.resume();
+            audioRecordingTimer = setInterval(() => {
+                audioRecordingSeconds++;
+                updateVoiceOverlayTimer();
+            }, 1000);
+        }
+        // Update UI
+        const pulse = document.getElementById('voiceRecPulse');
+        if (pulse) { pulse.style.animation = 'voiceRecPulse 1.2s ease-in-out infinite'; pulse.style.background = '#ef4444'; }
+        const pauseBtn = document.getElementById('pauseIcon');
+        if (pauseBtn) pauseBtn.outerHTML = '<svg id="pauseIcon" width="18" height="18" viewBox="0 0 24 24" fill="white"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>';
+    } else {
+        // Pause
+        window._voicePaused = true;
+        if (isIOSNative) {
+            window.webkit.messageHandlers.iosNative.postMessage({ action: 'pauseVoiceRecording' });
+        } else if (window._webMediaRecorder && window._webMediaRecorder.state === 'recording') {
+            window._webMediaRecorder.pause();
+            if (audioRecordingTimer) { clearInterval(audioRecordingTimer); audioRecordingTimer = null; }
+        }
+        // Update UI - show play icon, stop pulse
+        const pulse = document.getElementById('voiceRecPulse');
+        if (pulse) { pulse.style.animation = 'none'; pulse.style.background = '#666'; }
+        const pauseBtn = document.getElementById('pauseIcon');
+        if (pauseBtn) pauseBtn.outerHTML = '<svg id="pauseIcon" width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>';
+        // Flatten waveform
+        const container = document.getElementById('voiceWaveform');
+        if (container) {
+            for (let i = 0; i < container.children.length; i++) {
+                container.children[i].style.height = '3px';
+                container.children[i].style.opacity = '0.3';
+            }
+        }
+    }
+}
+
+window.onVoiceRecordingPaused = function() {
+    window._voicePaused = true;
+    if (audioRecordingTimer) { clearInterval(audioRecordingTimer); audioRecordingTimer = null; }
+};
+
+window.onVoiceRecordingResumed = function() {
+    window._voicePaused = false;
+    audioRecordingTimer = setInterval(() => {
+        audioRecordingSeconds++;
+        updateVoiceOverlayTimer();
+    }, 1000);
+};
 
 function resetMicButton() {
     const micBtn = document.getElementById('micButton');
