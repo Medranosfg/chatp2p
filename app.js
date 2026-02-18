@@ -2626,20 +2626,24 @@ function showVoiceRecordingOverlay() {
     
     overlay = document.createElement('div');
     overlay.id = 'voiceRecordOverlay';
-    overlay.style.cssText = 'position:fixed;bottom:0;left:0;right:0;z-index:9999;background:#000;padding:8px 12px;padding-bottom:max(env(safe-area-inset-bottom,8px),8px);display:flex;align-items:center;gap:8px;transform:translateY(100%);transition:transform 0.25s cubic-bezier(0.32,0.72,0,1);border-top:1px solid rgba(255,255,255,0.08);';
+    overlay.style.cssText = 'position:fixed;bottom:0;left:0;right:0;z-index:9999;background:#000;padding:6px 10px;padding-bottom:max(env(safe-area-inset-bottom,6px),6px);display:flex;align-items:center;gap:6px;transform:translateY(100%);transition:transform 0.25s cubic-bezier(0.32,0.72,0,1);border-top:1px solid rgba(255,255,255,0.06);';
     
     overlay.innerHTML = `
-        <button id="voiceCancelBtn" onclick="cancelVoiceNote()" style="width:36px;height:36px;border-radius:50%;background:rgba(239,68,68,0.15);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent;" ontouchstart="this.style.transform='scale(0.85)'" ontouchend="this.style.transform='scale(1)'">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6"/></svg>
+        <button id="voiceCancelBtn" onclick="cancelVoiceNote()" style="width:32px;height:32px;border-radius:50%;background:rgba(239,68,68,0.12);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
         </button>
-        <button id="voicePauseBtn" onclick="toggleVoicePause()" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.08);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent;" ontouchstart="this.style.transform='scale(0.85)'" ontouchend="this.style.transform='scale(1)'">
-            <svg id="pauseIcon" width="18" height="18" viewBox="0 0 24 24" fill="white"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
-        </button>
-        <div id="voiceRecPulse" style="width:8px;height:8px;border-radius:50%;background:#ef4444;animation:voiceRecPulse 1.2s ease-in-out infinite;flex-shrink:0;"></div>
-        <div id="voiceRecTimer" style="font-size:15px;font-weight:600;color:white;font-variant-numeric:tabular-nums;min-width:36px;flex-shrink:0;">0:00</div>
-        <div id="voiceWaveform" style="display:flex;align-items:center;gap:1.5px;height:28px;flex:1;overflow:hidden;"></div>
-        <button id="voiceSendBtn" onclick="sendVoiceFromOverlay()" style="width:36px;height:36px;border-radius:50%;background:#22c55e;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent;" ontouchstart="this.style.transform='scale(0.85)'" ontouchend="this.style.transform='scale(1)'">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M22 2L11 13" stroke="white" stroke-width="2.5" stroke-linecap="round"/><path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div style="flex:1;display:flex;align-items:center;gap:8px;background:#1c1c1e;border-radius:20px;padding:6px 10px;min-height:40px;">
+            <button id="voicePauseBtn" onclick="toggleVoicePause()" style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.1);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent;">
+                <svg id="pauseIcon" width="14" height="14" viewBox="0 0 24 24" fill="white"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
+            </button>
+            <div id="voiceWaveform" style="display:flex;align-items:center;gap:1.5px;height:24px;flex:1;overflow:hidden;"></div>
+            <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
+                <div id="voiceRecPulse" style="width:6px;height:6px;border-radius:50%;background:#ef4444;animation:voiceRecPulse 1.2s ease-in-out infinite;"></div>
+                <div id="voiceRecTimer" style="font-size:13px;font-weight:500;color:#aaa;font-variant-numeric:tabular-nums;">0:00</div>
+            </div>
+        </div>
+        <button id="voiceSendBtn" onclick="sendVoiceFromOverlay()" style="width:32px;height:32px;border-radius:50%;background:#22c55e;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M22 2L11 13" stroke="white" stroke-width="2.5" stroke-linecap="round"/><path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
     `;
     
@@ -2671,18 +2675,18 @@ function startWaveformAnimation() {
     const container = document.getElementById('voiceWaveform');
     if (!container) return;
     container.innerHTML = '';
-    for (let i = 0; i < 24; i++) {
+    for (let i = 0; i < 28; i++) {
         const bar = document.createElement('div');
-        bar.style.cssText = 'width:2px;border-radius:1px;background:#22c55e;transition:height 0.12s ease;height:3px;';
+        bar.style.cssText = 'width:2px;border-radius:1px;background:#22c55e;transition:height 0.12s ease;height:2px;';
         container.appendChild(bar);
     }
     waveformInterval = setInterval(() => {
         if (window._voicePaused) return;
         const bars = container.children;
         for (let i = 0; i < bars.length; i++) {
-            const h = 3 + Math.random() * 22;
+            const h = 2 + Math.random() * 18;
             bars[i].style.height = h + 'px';
-            bars[i].style.opacity = 0.4 + (h / 25) * 0.6;
+            bars[i].style.opacity = 0.4 + (h / 20) * 0.6;
         }
     }, 120);
 }
@@ -2740,7 +2744,7 @@ function toggleVoicePause() {
         const container = document.getElementById('voiceWaveform');
         if (container) {
             for (let i = 0; i < container.children.length; i++) {
-                container.children[i].style.height = '3px';
+                container.children[i].style.height = '2px';
                 container.children[i].style.opacity = '0.3';
             }
         }
