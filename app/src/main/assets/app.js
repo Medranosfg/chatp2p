@@ -2523,8 +2523,12 @@ function startVoiceNote() {
         console.log('🎤 Usando grabación nativa Android');
         try {
             if (window.isRecordingVoice) {
-                AndroidNative.stopVoiceNote();
+                // Ya grabando — el overlay controla cancelar/enviar
+                return;
             } else {
+                window._voiceCancelled = false;
+                window._iosSendRequested = false;
+                window._iosVoicePending = null;
                 AndroidNative.startVoiceNote();
             }
         } catch (e) {
@@ -2601,6 +2605,30 @@ function stopVoiceNote() {
 }
 
 function cancelVoiceNote() {
+    // Android nativo
+    if ((typeof AndroidNative !== 'undefined' || window.isAndroidApp) && window.isRecordingVoice) {
+        window._voiceCancelled = true;
+        try { AndroidNative.stopVoiceNote(); } catch(e) {}
+        isRecordingAudio = false;
+        window.isRecordingVoice = false;
+        if (audioRecordingTimer) { clearInterval(audioRecordingTimer); audioRecordingTimer = null; }
+        resetMicButton();
+        hideVoiceRecordingOverlay();
+        return;
+    }
+    // iOS nativo
+    if (isIOSNative) {
+        window._voiceCancelled = true;
+        window._iosVoicePending = null;
+        if (isRecordingAudio) {
+            window.webkit.messageHandlers.iosNative.postMessage({ action: 'stopVoiceRecording' });
+        }
+        isRecordingAudio = false;
+        if (audioRecordingTimer) { clearInterval(audioRecordingTimer); audioRecordingTimer = null; }
+        resetMicButton();
+        hideVoiceRecordingOverlay();
+        return;
+    }
     if (!isRecordingAudio) {
         hideVoiceRecordingOverlay();
         return;
@@ -2610,6 +2638,27 @@ function cancelVoiceNote() {
 }
 
 function sendVoiceFromOverlay() {
+    // Android nativo
+    if ((typeof AndroidNative !== 'undefined' || window.isAndroidApp) && window.isRecordingVoice) {
+        window._voiceCancelled = false;
+        try { AndroidNative.stopVoiceNote(); } catch(e) {}
+        hideVoiceRecordingOverlay();
+        return;
+    }
+    // iOS nativo
+    if (isIOSNative) {
+        if (window._iosVoicePending) {
+            hideVoiceRecordingOverlay();
+            if (currentChat && window._iosVoicePending.data) {
+                sendVoiceNoteFromData(window._iosVoicePending.data, window._iosVoicePending.duration);
+            }
+            window._iosVoicePending = null;
+        } else if (isRecordingAudio) {
+            window._iosSendRequested = true;
+            window.webkit.messageHandlers.iosNative.postMessage({ action: 'stopVoiceRecording' });
+        }
+        return;
+    }
     if (!isRecordingAudio) return;
     window._voiceCancelled = false;
     stopVoiceNote();
@@ -3573,6 +3622,12 @@ window.sendVoiceNoteFromAndroid = function(base64Data, duration) {
 
 window.receiveMediaFromAndroid = function(base64Data, mediaType, duration) {
     if (mediaType === 'voice') {
+        // Si fue cancelada desde el overlay, descartar
+        if (window._voiceCancelled) {
+            console.log('🎤 Nota de voz cancelada, descartando');
+            window._voiceCancelled = false;
+            return;
+        }
         sendVoiceNoteFromAndroid(base64Data, duration);
     } else if (typeof sendMedia === 'function') {
         const byteString = atob(base64Data);
