@@ -1440,7 +1440,7 @@ function showTypingIndicator(isTyping) {
     if (typingEl) {
         if (isTyping) {
             typingEl.textContent = 'escribiendo...';
-            typingEl.style.cssText = 'display: block !important; color: #4ade80 !important; font-size: 13px; font-weight: 600; margin-top: 2px; animation: pulse 1s infinite;';
+            typingEl.style.cssText = 'display: block !important; color: #8e8e93 !important; font-size: 11px; font-weight: 400; margin-top: 1px; font-style: italic;';
         } else {
             typingEl.style.display = 'none';
         }
@@ -1471,11 +1471,11 @@ function showTypingIndicator(isTyping) {
             typingBubble.id = 'typingBubble';
             typingBubble.className = 'message other';
             typingBubble.innerHTML = `
-                <div class="bubble" style="padding: 12px 16px; min-width: 60px;">
-                    <div class="typing-dots" style="display: flex; gap: 4px; align-items: center;">
-                        <span style="width: 8px; height: 8px; background: #4ade80; border-radius: 50%; animation: typingDot 1.4s infinite ease-in-out;"></span>
-                        <span style="width: 8px; height: 8px; background: #4ade80; border-radius: 50%; animation: typingDot 1.4s infinite ease-in-out 0.2s;"></span>
-                        <span style="width: 8px; height: 8px; background: #4ade80; border-radius: 50%; animation: typingDot 1.4s infinite ease-in-out 0.4s;"></span>
+                <div class="bubble" style="padding: 10px 14px; min-width: 52px; border-radius: 18px;">
+                    <div class="typing-dots" style="display: flex; gap: 5px; align-items: center;">
+                        <span style="width: 6px; height: 6px; background: rgba(255,255,255,0.5); border-radius: 50%; animation: typingDot 1.4s infinite ease-in-out;"></span>
+                        <span style="width: 6px; height: 6px; background: rgba(255,255,255,0.5); border-radius: 50%; animation: typingDot 1.4s infinite ease-in-out 0.2s;"></span>
+                        <span style="width: 6px; height: 6px; background: rgba(255,255,255,0.5); border-radius: 50%; animation: typingDot 1.4s infinite ease-in-out 0.4s;"></span>
                     </div>
                 </div>
             `;
@@ -1487,8 +1487,8 @@ function showTypingIndicator(isTyping) {
                 style.id = 'typingAnimation';
                 style.textContent = `
                     @keyframes typingDot {
-                        0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
-                        30% { transform: translateY(-4px); opacity: 1; }
+                        0%, 60%, 100% { transform: translateY(0); opacity: 0.3; }
+                        30% { transform: translateY(-3px); opacity: 0.8; }
                     }
                 `;
                 document.head.appendChild(style);
@@ -3461,6 +3461,8 @@ window.onVoiceRecordingStarted = function() {
     isRecordingAudio = true;
     audioRecordingSeconds = 0;
     window._voiceCancelled = false;
+    window._iosSendRequested = false;
+    window._iosVoicePending = null;
     showVoiceRecordingOverlay();
     audioRecordingTimer = setInterval(() => {
         audioRecordingSeconds++;
@@ -3477,15 +3479,26 @@ window.onVoiceRecordingStopped = function() {
 
 window.saveRecordedVoice = function(audioDataURL, duration) {
     console.log('🎤 Guardando audio grabado, duración:', duration);
-    window.recordedVoiceData = audioDataURL;
-    window.recordedVoiceDuration = duration;
     
-    // Mostrar indicador de audio listo para enviar
-    const inputField = document.getElementById('messageInput');
-    if (inputField) {
-        inputField.placeholder = `🎤 Audio listo (${safeFormatTime(duration)}) - Presiona enviar`;
-        inputField.style.background = 'rgba(34, 197, 94, 0.1)';
+    // Si fue cancelada, descartar
+    if (window._voiceCancelled) {
+        window._voiceCancelled = false;
+        hideVoiceRecordingOverlay();
+        return;
     }
+    
+    // Si se pidió enviar directamente (botón enviar del overlay presionado)
+    if (window._iosSendRequested) {
+        window._iosSendRequested = false;
+        hideVoiceRecordingOverlay();
+        if (currentChat && audioDataURL) {
+            sendVoiceNoteFromData(audioDataURL, duration || audioRecordingSeconds);
+        }
+        return;
+    }
+    
+    // Guardar datos para enviar cuando el usuario presione enviar en el overlay
+    window._iosVoicePending = { data: audioDataURL, duration: duration || audioRecordingSeconds };
 };
 
 window.updateVoiceTimer = function(seconds) {
@@ -3493,18 +3506,8 @@ window.updateVoiceTimer = function(seconds) {
     if (typeof seconds !== 'number' || isNaN(seconds) || seconds < 0) {
         seconds = 0;
     }
-    
-    let timer = document.getElementById('voiceTimer');
-    if (!timer) {
-        timer = document.createElement('div');
-        timer.id = 'voiceTimer';
-        timer.style.cssText = 'position: fixed; top: 100px; left: 50%; transform: translateX(-50%); background: rgba(239,68,68,0.95); color: white; padding: 10px 20px; border-radius: 25px; font-size: 16px; font-weight: 600; z-index: 1000; font-variant-numeric: tabular-nums;';
-        document.body.appendChild(timer);
-    }
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    timer.innerHTML = '🎙 ' + mins + ':' + (secs < 10 ? '0' : '') + secs;
-    timer.style.display = 'block';
+    audioRecordingSeconds = seconds;
+    updateVoiceOverlayTimer();
 };
 
 window.hideVoiceTimer = function() {
