@@ -454,8 +454,6 @@ class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, WKSc
         decisionHandler(.grant)
     }
     
-
-    
     // MARK: - Native Video Recording
     func openNativeVideoRecorder() {
         print("📹 Abriendo grabador de video nativo")
@@ -573,9 +571,7 @@ class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, WKSc
     @objc func screenCaptureChanged() {
         if UIScreen.main.isCaptured {
             showRecordingBlocker()
-        } else
-            jkj
-            
+        } else {
             hideRecordingBlocker()
         }
     }

@@ -2,281 +2,297 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChatP2P - Privacidad Sin Compromisos</title>
-    <meta name="description" content="Chat privado con encriptación de extremo a extremo. Sin número de teléfono. Sin rastreo. Control total sobre tus conversaciones.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>ChatP2P - Privacidad. Redefinida.</title>
+    <meta name="description" content="Chat privado con encriptación de extremo a extremo. Sin número de teléfono. Sin rastreo. Control total.">
     <meta name="theme-color" content="#000000">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%2330D158' rx='22' width='100' height='100'/><text x='50' y='67' font-size='38' text-anchor='middle' fill='black' font-weight='700' font-family='system-ui'>P2P</text></svg>">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         
         :root {
-            --green: #00D26A;
-            --green-dark: #00a854;
-            --green-glow: rgba(0, 210, 106, 0.15);
-            --bg: #000;
-            --bg-card: #0a0a0a;
-            --bg-card-hover: #111;
-            --text: #fff;
-            --text-muted: #888;
-            --border: rgba(255,255,255,0.1);
+            --sf-pro: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            --sf-mono: "SF Mono", SFMono-Regular, ui-monospace, Menlo, Monaco, monospace;
+            
+            --green-500: #30d158;
+            --green-400: #34c759;
+            --blue-500: #0071e3;
+            --red-500: #ff3b30;
+            
+            --gray-50: #fbfbfd;
+            --gray-100: #f5f5f7;
+            --gray-200: #e8e8ed;
+            --gray-300: #d2d2d7;
+            --gray-400: #86868b;
+            --gray-500: #6e6e73;
+            --gray-600: #424245;
+            --gray-700: #333336;
+            --gray-800: #1d1d1f;
+            --gray-900: #000000;
+            
+            --nav-height: 44px;
+            --section-padding: 100px;
         }
         
-        html { scroll-behavior: smooth; }
+        html {
+            font-size: 106.25%;
+            scroll-behavior: smooth;
+            -webkit-text-size-adjust: 100%;
+        }
         
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            line-height: 1.6;
-            overflow-x: hidden;
+            font-family: var(--sf-pro);
+            font-size: 17px;
+            line-height: 1.47059;
+            font-weight: 400;
+            letter-spacing: -.022em;
+            background-color: var(--gray-900);
+            color: var(--gray-100);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
         }
         
-        /* Navbar */
-        nav {
+        /* ===== GLOBAL NAV ===== */
+        .globalnav {
             position: fixed;
             top: 0;
             left: 0;
-            right: 0;
-            z-index: 100;
-            padding: 20px 40px;
+            width: 100%;
+            height: var(--nav-height);
+            z-index: 9999;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+        }
+        
+        .globalnav-content {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 0 22px;
+            height: 100%;
             display: flex;
+            align-items: center;
             justify-content: space-between;
-            align-items: center;
-            background: rgba(0,0,0,0.8);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--border);
         }
         
-        .nav-logo {
+        .globalnav-link {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 8px;
             text-decoration: none;
-            color: var(--text);
-        }
-        
-        .nav-logo-icon {
-            width: 36px;
-            height: 36px;
-            background: var(--green);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
+            color: var(--gray-100);
             font-size: 14px;
-            color: #000;
+            font-weight: 400;
+            opacity: 0.8;
+            transition: opacity 0.3s cubic-bezier(0.4, 0, 0.6, 1);
         }
         
-        .nav-logo span {
-            font-weight: 700;
-            font-size: 18px;
+        .globalnav-link:hover {
+            opacity: 1;
         }
         
-        .nav-links {
+        .globalnav-logo {
+            width: 30px;
+            height: 30px;
+            background: var(--green-500);
+            border-radius: 7px;
+            display: grid;
+            place-items: center;
+        }
+        
+        .globalnav-logo svg {
+            width: 18px;
+            height: 18px;
+            stroke: var(--gray-900);
+            fill: none;
+        }
+        
+        .globalnav-title {
+            font-size: 21px;
+            font-weight: 600;
+            letter-spacing: .007em;
+            color: var(--gray-100);
+        }
+        
+        .globalnav-list {
             display: flex;
-            gap: 32px;
             align-items: center;
+            gap: 30px;
+            list-style: none;
         }
         
-        .nav-links a {
-            color: var(--text-muted);
+        .globalnav-list a {
+            font-size: 12px;
+            color: var(--gray-400);
             text-decoration: none;
-            font-size: 14px;
-            font-weight: 500;
-            transition: color 0.2s;
+            transition: color 0.3s;
         }
         
-        .nav-links a:hover { color: var(--text); }
-        
-        .nav-cta {
-            background: var(--green) !important;
-            color: #000 !important;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-weight: 600 !important;
+        .globalnav-list a:hover {
+            color: var(--gray-100);
         }
         
-        .nav-cta:hover { opacity: 0.9; }
+        .globalnav-cta {
+            background: var(--green-500);
+            color: var(--gray-900) !important;
+            padding: 4px 14px;
+            border-radius: 980px;
+            font-weight: 400;
+        }
         
-        /* Hero */
-        .hero {
+        /* ===== HERO SECTION ===== */
+        .section-hero {
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             text-align: center;
-            padding: 120px 24px 80px;
-            position: relative;
+            padding: calc(var(--nav-height) + 60px) 24px 60px;
+            background: var(--gray-900);
             overflow: hidden;
         }
         
-        /* Animated background */
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 800px;
-            height: 800px;
-            background: radial-gradient(circle, var(--green-glow) 0%, transparent 70%);
-            animation: pulse 4s ease-in-out infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { opacity: 0.5; transform: translateX(-50%) scale(1); }
-            50% { opacity: 0.8; transform: translateX(-50%) scale(1.1); }
-        }
-        
-        .hero-content { position: relative; z-index: 1; max-width: 900px; }
-        
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            padding: 8px 16px;
-            border-radius: 100px;
-            font-size: 13px;
-            color: var(--text-muted);
-            margin-bottom: 32px;
-        }
-        
-        .badge-dot {
-            width: 8px;
-            height: 8px;
-            background: var(--green);
-            border-radius: 50%;
-            animation: blink 2s infinite;
-        }
-        
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
-        }
-        
-        h1 {
-            font-size: clamp(48px, 8vw, 80px);
-            font-weight: 800;
-            line-height: 1.1;
-            margin-bottom: 24px;
-            letter-spacing: -2px;
-        }
-        
-        h1 span { color: var(--green); }
-        
-        .hero-subtitle {
-            font-size: clamp(18px, 2.5vw, 22px);
-            color: var(--text-muted);
-            max-width: 600px;
-            margin: 0 auto 48px;
-        }
-        
-        .hero-buttons {
-            display: flex;
-            gap: 16px;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-bottom: 64px;
-        }
-        
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            padding: 16px 28px;
-            border-radius: 12px;
-            font-size: 16px;
+        .hero-eyebrow {
+            font-size: 24px;
             font-weight: 600;
+            letter-spacing: .009em;
+            line-height: 1.16667;
+            color: var(--green-500);
+            margin-bottom: 6px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: heroFadeUp 1s cubic-bezier(0.4, 0, 0.2, 1) 0.1s forwards;
+        }
+        
+        .hero-headline {
+            font-size: 80px;
+            font-weight: 700;
+            letter-spacing: -.015em;
+            line-height: 1.05;
+            margin-bottom: 6px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: heroFadeUp 1s cubic-bezier(0.4, 0, 0.2, 1) 0.2s forwards;
+        }
+        
+        .hero-subhead {
+            font-size: 28px;
+            font-weight: 400;
+            letter-spacing: .007em;
+            line-height: 1.14286;
+            color: var(--gray-400);
+            margin-bottom: 18px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: heroFadeUp 1s cubic-bezier(0.4, 0, 0.2, 1) 0.3s forwards;
+        }
+        
+        .hero-cta-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 56px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: heroFadeUp 1s cubic-bezier(0.4, 0, 0.2, 1) 0.4s forwards;
+        }
+        
+        .hero-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 21px;
+            font-weight: 400;
+            letter-spacing: .011em;
+            color: var(--green-500);
             text-decoration: none;
-            transition: all 0.3s;
-            border: none;
-            cursor: pointer;
         }
         
-        .btn-primary {
-            background: var(--green);
-            color: #000;
+        .hero-cta:hover {
+            text-decoration: underline;
         }
         
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 20px 40px rgba(0, 210, 106, 0.3);
+        .hero-cta svg {
+            width: 0.6em;
+            height: 0.6em;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
-        .btn-secondary {
-            background: var(--bg-card);
-            color: var(--text);
-            border: 1px solid var(--border);
+        .hero-cta:hover svg {
+            transform: translateX(4px);
         }
         
-        .btn-secondary:hover {
-            background: var(--bg-card-hover);
-            border-color: rgba(255,255,255,0.2);
+        .hero-cta-secondary {
+            color: var(--gray-400);
         }
         
-        .btn svg { width: 20px; height: 20px; }
-        
-        .btn-disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
+        @keyframes heroFadeUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         
-        .btn-disabled:hover {
-            transform: none;
-            box-shadow: none;
-        }
-        
-        .footer-coming-soon {
-            display: block;
-            color: var(--text-muted);
-            font-size: 15px;
-            margin-bottom: 12px;
-            opacity: 0.6;
-        }
-        
-        /* Phone mockup */
-        .phone-mockup {
+        /* Hero Device */
+        .hero-device {
             position: relative;
-            width: 280px;
-            height: 560px;
-            background: #1a1a1a;
-            border-radius: 40px;
-            padding: 12px;
-            box-shadow: 0 50px 100px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.1);
-            margin: 0 auto;
+            opacity: 0;
+            transform: translateY(30px) scale(0.98);
+            animation: deviceFadeUp 1.2s cubic-bezier(0.4, 0, 0.2, 1) 0.5s forwards;
         }
         
-        .phone-screen {
+        @keyframes deviceFadeUp {
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        .device-iphone {
+            width: 270px;
+            height: 548px;
+            background: linear-gradient(160deg, #3a3a3c 0%, #1c1c1e 100%);
+            border-radius: 47px;
+            padding: 11px;
+            box-shadow: 
+                0 0 0 1px rgba(255,255,255,0.08),
+                0 40px 80px -20px rgba(0,0,0,0.7),
+                inset 0 0 0 1px rgba(255,255,255,0.05);
+        }
+        
+        .device-screen {
             width: 100%;
             height: 100%;
-            background: #000;
-            border-radius: 32px;
+            background: var(--gray-900);
+            border-radius: 38px;
             overflow: hidden;
             position: relative;
         }
         
-        .phone-notch {
+        .device-dynamic-island {
             position: absolute;
-            top: 0;
+            top: 11px;
             left: 50%;
             transform: translateX(-50%);
-            width: 120px;
-            height: 28px;
-            background: #000;
-            border-radius: 0 0 20px 20px;
+            width: 84px;
+            height: 25px;
+            background: var(--gray-900);
+            border-radius: 14px;
             z-index: 10;
         }
         
-        .phone-content {
-            padding: 40px 16px 16px;
+        .device-ui {
             height: 100%;
+            padding: 48px 12px 12px;
             display: flex;
             flex-direction: column;
         }
@@ -284,788 +300,985 @@
         .chat-header {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid var(--border);
+            gap: 10px;
+            padding-bottom: 10px;
+            border-bottom: 0.5px solid rgba(255,255,255,0.1);
         }
         
         .chat-avatar {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            width: 34px;
+            height: 34px;
+            background: linear-gradient(135deg, var(--green-500), #00a86b);
             border-radius: 50%;
+            display: grid;
+            place-items: center;
         }
         
-        .chat-name { font-weight: 600; font-size: 15px; }
-        .chat-status { font-size: 12px; color: var(--green); }
+        .chat-avatar svg {
+            width: 18px;
+            height: 18px;
+            stroke: var(--gray-900);
+        }
+        
+        .chat-name {
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: -.01em;
+        }
+        
+        .chat-status {
+            font-size: 11px;
+            color: var(--green-500);
+            font-weight: 400;
+        }
         
         .chat-messages {
             flex: 1;
-            padding: 16px 0;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 6px;
+            padding: 12px 0;
+            overflow: hidden;
         }
         
-        .message {
-            max-width: 80%;
-            padding: 10px 14px;
-            border-radius: 16px;
-            font-size: 14px;
-            animation: fadeIn 0.5s ease;
+        .bubble {
+            max-width: 76%;
+            padding: 8px 12px;
+            border-radius: 17px;
+            font-size: 15px;
+            line-height: 1.33;
+            letter-spacing: -.01em;
+            opacity: 0;
+            transform: translateY(8px);
         }
         
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .message-in {
-            background: #1a1a1a;
+        .bubble-in {
+            background: #3a3a3c;
             align-self: flex-start;
             border-bottom-left-radius: 4px;
         }
         
-        .message-out {
-            background: var(--green);
-            color: #000;
+        .bubble-out {
+            background: var(--green-500);
+            color: var(--gray-900);
             align-self: flex-end;
             border-bottom-right-radius: 4px;
         }
         
-        .message-time {
-            font-size: 10px;
-            opacity: 0.6;
-            margin-top: 4px;
+        .bubble.show {
+            animation: bubbleIn 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
         
-        /* Features */
-        .features {
-            padding: 120px 24px;
-            background: linear-gradient(180deg, var(--bg) 0%, #050505 100%);
+        @keyframes bubbleIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
+        .bubble .cipher {
+            font-family: var(--sf-mono);
+            font-size: 9px;
+            letter-spacing: 0;
+            color: var(--green-500);
+            word-break: break-all;
         }
         
-        .section-header {
-            text-align: center;
-            margin-bottom: 64px;
-        }
-        
-        .section-label {
-            color: var(--green);
-            font-size: 14px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 16px;
-        }
-        
-        h2 {
-            font-size: clamp(32px, 5vw, 48px);
-            font-weight: 700;
-            letter-spacing: -1px;
-        }
-        
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 24px;
-        }
-        
-        .feature-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 32px;
-            transition: all 0.3s;
-        }
-        
-        .feature-card:hover {
-            background: var(--bg-card-hover);
-            border-color: rgba(0, 210, 106, 0.3);
-            transform: translateY(-4px);
-        }
-        
-        .feature-icon {
-            width: 56px;
-            height: 56px;
-            background: var(--green-glow);
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            margin-bottom: 20px;
-        }
-        
-        .feature-icon svg {
-            width: 28px;
-            height: 28px;
-            color: var(--green);
-            stroke: var(--green);
-        }
-        
-        .feature-card h3 {
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 12px;
-        }
-        
-        .feature-card p {
-            color: var(--text-muted);
-            font-size: 15px;
+        .bubble-out .cipher {
+            color: rgba(0,0,0,0.5);
         }
 </style>
 </head>
 <body>
-    <!-- Navbar -->
-    <nav>
-        <a href="#" class="nav-logo">
-            <div class="nav-logo-icon">P2P</div>
-            <span>ChatP2P</span>
-        </a>
-        <div class="nav-links">
-            <a href="#features">Funciones</a>
-            <a href="#how-it-works">Cómo funciona</a>
-            <a href="#security">Seguridad</a>
-            <a href="#download" class="nav-cta">Descargar</a>
+    <!-- Global Nav -->
+    <nav class="globalnav">
+        <div class="globalnav-content">
+            <a href="#" class="globalnav-link">
+                <div class="globalnav-logo">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+                    </svg>
+                </div>
+                <span class="globalnav-title">ChatP2P</span>
+            </a>
+            <ul class="globalnav-list">
+                <li><a href="#features">Funciones</a></li>
+                <li><a href="#privacy">Privacidad</a></li>
+                <li><a href="#security">Seguridad</a></li>
+                <li><a href="https://play.google.com/store/apps/details?id=com.chatp2p.app" class="globalnav-cta">Descargar</a></li>
+            </ul>
         </div>
     </nav>
 
     <!-- Hero -->
-    <section class="hero">
-        <div class="hero-content">
-            <div class="badge">
-                <span class="badge-dot"></span>
-                Encriptación de extremo a extremo
-            </div>
-            
-            <h1>Privacidad <span>sin compromisos</span></h1>
-            
-            <p class="hero-subtitle">
-                Chat privado donde tú tienes el control. Sin número de teléfono. 
-                Sin capturas. Sin rastro. Solo conversaciones seguras.
-            </p>
-            
-            <div class="hero-buttons">
-                <a href="https://play.google.com/store/apps/details?id=com.chatp2p.app" class="btn btn-primary">
-                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 0 1-.61-.92V2.734a1 1 0 0 1 .609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.198l2.807 1.626a1 1 0 0 1 0 1.73l-2.808 1.626L15.206 12l2.492-2.491zM5.864 2.658L16.8 8.99l-2.302 2.302-8.634-8.634z"/></svg>
-                    Descargar en Android
-                </a>
-                <span class="btn btn-secondary btn-disabled">
-                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
-                    iOS - Próximamente
-                </span>
-            </div>
-            
-            <!-- Phone mockup -->
-            <div class="phone-mockup">
-                <div class="phone-screen">
-                    <div class="phone-notch"></div>
-                    <div class="phone-content">
+    <section class="section-hero">
+        <span class="hero-eyebrow">ChatP2P</span>
+        <h1 class="hero-headline">Privacidad. Redefinida.</h1>
+        <h2 class="hero-subhead">Encriptación de extremo a extremo.</h2>
+        
+        <div class="hero-cta-group">
+            <a href="https://play.google.com/store/apps/details?id=com.chatp2p.app" class="hero-cta">
+                Descargar para Android
+                <svg viewBox="0 0 12 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 2l8 8-8 8"/></svg>
+            </a>
+            <a href="#" class="hero-cta hero-cta-secondary">
+                iOS próximamente
+                <svg viewBox="0 0 12 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 2l8 8-8 8"/></svg>
+            </a>
+        </div>
+        
+        <div class="hero-device">
+            <div class="device-iphone">
+                <div class="device-screen">
+                    <div class="device-dynamic-island"></div>
+                    <div class="device-ui">
                         <div class="chat-header">
-                            <div class="chat-avatar"></div>
+                            <div class="chat-avatar">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="8" r="4"/>
+                                    <path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
+                                </svg>
+                            </div>
                             <div>
                                 <div class="chat-name">Alex</div>
                                 <div class="chat-status">● En línea</div>
                             </div>
                         </div>
-                        <div class="chat-messages" id="demoChat"></div>
-                    </div>
-                </div>
-            </div>
-
-            <script>
-            (function() {
-                const msgs = [
-                    { type: 'in', text: 'Hey, ¿probaste la app? 🔐', time: '10:42' },
-                    { type: 'out', text: 'Sí! Me encanta que no pida mi número', time: '10:43', check: true },
-                    { type: 'in', text: 'Y nadie puede hacer capturas 📵', time: '10:44' },
-                    { type: 'out', text: 'Privacidad real por fin 🙌', time: '10:45', check: true },
-                    { type: 'in', text: 'Los mensajes se cifran solos 🔒', time: '10:46' },
-                    { type: 'out', text: 'Increíble, nadie puede leerlos', time: '10:47', check: true }
-                ];
-
-                function genHash() {
-                    let h = '0x';
-                    for (let i = 0; i < 20; i++) h += Math.floor(Math.random() * 16).toString(16);
-                    return h;
-                }
-
-                function cipherEl(el) {
-                    const span = el.querySelector('.demo-text');
-                    if (!span || span.dataset.ciphered === '1') return;
-                    span.dataset.ciphered = '1';
-                    span.style.transition = 'all 0.4s';
-                    span.textContent = genHash();
-                    span.style.fontFamily = "'SF Mono', 'Courier New', monospace";
-                    span.style.fontSize = '10px';
-                    span.style.color = '#10b981';
-                    span.style.opacity = '0.7';
-                    span.style.wordBreak = 'break-all';
-                }
-
-                function runDemo() {
-                    const chat = document.getElementById('demoChat');
-                    if (!chat) return;
-                    chat.innerHTML = '';
-                    let i = 0;
-
-                    function addMsg() {
-                        if (i >= msgs.length) {
-                            // Esperar 2s y cifrar todos
-                            setTimeout(() => {
-                                const all = chat.querySelectorAll('.message');
-                                let c = 0;
-                                all.forEach((el, idx) => {
-                                    setTimeout(() => cipherEl(el), idx * 300);
-                                });
-                                // Esperar 5s y reiniciar
-                                setTimeout(runDemo, 5000);
-                            }, 2000);
-                            return;
-                        }
-
-                        const m = msgs[i];
-                        const div = document.createElement('div');
-                        div.className = 'message message-' + m.type;
-                        div.style.opacity = '0';
-                        div.style.transform = 'translateY(10px)';
-                        div.style.transition = 'all 0.3s ease';
-
-                        const span = document.createElement('span');
-                        span.className = 'demo-text';
-                        span.textContent = m.text;
-                        div.appendChild(span);
-
-                        const time = document.createElement('div');
-                        time.className = 'message-time';
-                        time.textContent = m.time;
-                        if (m.check) {
-                            time.innerHTML = m.time + ' <span style="color:#15803d;font-weight:800;">✓✓</span>';
-                        }
-                        div.appendChild(time);
-
-                        chat.appendChild(div);
-                        chat.scrollTop = chat.scrollHeight;
-
-                        setTimeout(() => {
-                            div.style.opacity = '1';
-                            div.style.transform = 'translateY(0)';
-                        }, 50);
-
-                        i++;
-                        setTimeout(addMsg, 800);
-                    }
-
-                    addMsg();
-                }
-
-                // Iniciar cuando sea visible
-                if ('IntersectionObserver' in window) {
-                    const obs = new IntersectionObserver((entries) => {
-                        if (entries[0].isIntersecting) { obs.disconnect(); runDemo(); }
-                    }, { threshold: 0.3 });
-                    const el = document.getElementById('demoChat');
-                    if (el) obs.observe(el.closest('.phone-mockup'));
-                } else {
-                    setTimeout(runDemo, 1000);
-                }
-            })();
-            </script>
-        </div>
-    </section>
-
-    <!-- Features -->
-    <section class="features" id="features">
-        <div class="container">
-            <div class="section-header">
-                <p class="section-label">Funciones</p>
-                <h2>Todo lo que necesitas, nada que no</h2>
-            </div>
-            
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon" style="background: linear-gradient(135deg, rgba(0,210,106,0.2), rgba(0,210,106,0.05));">
-                        <span style="font-size: 28px;">🔐</span>
-                    </div>
-                    <h3>Encriptación E2E</h3>
-                    <p>Tus mensajes están encriptados de extremo a extremo con AES-256. Ni siquiera nosotros podemos leerlos.</p>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon" style="background: linear-gradient(135deg, rgba(239,68,68,0.2), rgba(239,68,68,0.05));">
-                        <span style="font-size: 28px;">📵</span>
-                    </div>
-                    <h3>Sin capturas</h3>
-                    <p>Las capturas de pantalla están bloqueadas. Si alguien lo intenta, la app se cierra automáticamente.</p>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon" style="background: linear-gradient(135deg, rgba(59,130,246,0.2), rgba(59,130,246,0.05));">
-                        <span style="font-size: 28px;">👤</span>
-                    </div>
-                    <h3>Sin número</h3>
-                    <p>No necesitas dar tu número de teléfono ni email. Cero datos personales. Solo un nombre de usuario.</p>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon" style="background: linear-gradient(135deg, rgba(168,85,247,0.2), rgba(168,85,247,0.05));">
-                        <span style="font-size: 28px;">🤝</span>
-                    </div>
-                    <h3>Control compartido</h3>
-                    <p>Cualquiera puede borrar el chat y desaparece para ambos. Sin rastros, sin historial.</p>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon" style="background: linear-gradient(135deg, rgba(245,158,11,0.2), rgba(245,158,11,0.05));">
-                        <span style="font-size: 28px;">🖼️</span>
-                    </div>
-                    <h3>Fotos protegidas</h3>
-                    <p>Las imágenes no se pueden guardar en la galería. Se quedan solo en el chat, en alta calidad.</p>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon" style="background: linear-gradient(135deg, rgba(236,72,153,0.2), rgba(236,72,153,0.05));">
-                        <span style="font-size: 28px;">🔔</span>
-                    </div>
-                    <h3>Notificaciones privadas</h3>
-                    <p>Recibe notificaciones push sin revelar el contenido. Solo ves "Nuevo mensaje". Tu privacidad intacta.</p>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon" style="background: linear-gradient(135deg, rgba(16,185,129,0.2), rgba(16,185,129,0.05));">
-                        <span style="font-size: 28px;">🧬</span>
-                    </div>
-                    <h3>Cifrado visual</h3>
-                    <p>Los mensajes se transforman en hashes criptográficos después de leerlos. Mantén presionado para descifrar.</p>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon" style="background: linear-gradient(135deg, rgba(34,197,94,0.2), rgba(34,197,94,0.05));">
-                        <span style="font-size: 28px;">💾</span>
-                    </div>
-                    <h3>Guardar cuenta</h3>
-                    <p>Protege tu cuenta con un PIN de 4 dígitos. Si cambias de dispositivo, restaura tu identidad en 15 días.</p>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon" style="background: linear-gradient(135deg, rgba(99,102,241,0.2), rgba(99,102,241,0.05));">
-                        <span style="font-size: 28px;">🎤</span>
-                    </div>
-                    <h3>Notas de voz</h3>
-                    <p>Envía mensajes de voz encriptados. Graba hasta 60 segundos con un solo toque.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-
-    <!-- How it works -->
-    <section class="how-it-works" id="how-it-works">
-        <div class="container">
-            <div class="section-header">
-                <p class="section-label">Cómo funciona</p>
-                <h2>Tres pasos. Cero complicaciones.</h2>
-            </div>
-            
-            <div class="steps">
-                <div class="step">
-                    <div class="step-number">1</div>
-                    <div class="step-content">
-                        <h3>Crea tu usuario</h3>
-                        <p>Elige un nombre único. Se genera automáticamente tu wallet privada. Sin formularios, sin verificaciones.</p>
-                    </div>
-                </div>
-                
-                <div class="step">
-                    <div class="step-number">2</div>
-                    <div class="step-content">
-                        <h3>Comparte tu código</h3>
-                        <p>Tu wallet es tu identificador. Compártelo solo con quien tú quieras. Tú decides quién te encuentra.</p>
-                    </div>
-                </div>
-                
-                <div class="step">
-                    <div class="step-number">3</div>
-                    <div class="step-content">
-                        <h3>Chatea seguro</h3>
-                        <p>Mensajes, fotos, audios. Todo encriptado. Todo protegido. Todo bajo tu control.</p>
+                        <div class="chat-messages" id="chatDemo"></div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Security -->
-    <section class="security" id="security">
-        <div class="container">
-            <div class="security-content">
-                <div class="security-text">
-                    <p class="section-label">Seguridad</p>
-                    <h2>Diseñado para la privacidad desde el día uno</h2>
-                    <p class="security-desc">
-                        No recopilamos datos. No vendemos información. No hay anuncios. 
-                        ChatP2P existe para una sola cosa: darte un espacio seguro para comunicarte.
-                    </p>
-                    
-                    <ul class="security-list">
-                        <li>
-                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
-                            Encriptación AES-256 de grado militar
-                        </li>
-                        <li>
-                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
-                            Sin almacenamiento de metadatos
-                        </li>
-                        <li>
-                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
-                            Código abierto y auditable
-                        </li>
-                        <li>
-                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
-                            Eliminación completa de datos al borrar
-                        </li>
-                    </ul>
-                </div>
-                
-                <div class="security-visual">
-                    <div class="shield">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                            <path d="M9 12l2 2 4-4" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Section: Features -->
+    <section class="section-features" id="features">
+        <!-- Feature 1: Encryption -->
+        <div class="feature-tile feature-tile-dark">
+            <div class="tile-content">
+                <h2 class="tile-headline">Tus mensajes.<br>Solo tuyos.</h2>
+                <p class="tile-copy">Encriptación AES-256 de extremo a extremo. Cada mensaje se cifra antes de salir de tu dispositivo.</p>
+            </div>
+            <div class="tile-visual">
+                <div class="visual-encrypt">
+                    <div class="encrypt-icon">
+                        <svg viewBox="0 0 56 56" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="10" y="26" width="36" height="24" rx="3" stroke-width="1.5"/>
+                            <path d="M17 26v-8a11 11 0 0 1 22 0v8" stroke-width="1.5"/>
+                            <circle cx="28" cy="38" r="2" fill="currentColor" stroke="none"/>
+                            <path d="M28 40v4" stroke-width="2"/>
                         </svg>
                     </div>
+                    <div class="encrypt-demo">
+                        <span class="encrypt-plain">Hola, ¿cómo estás?</span>
+                        <span class="encrypt-arrow">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16m-6-6l6 6 6-6"/></svg>
+                        </span>
+                        <span class="encrypt-hash">0x7f3a9b2c4d8e1f6a...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Feature 2: No Screenshots -->
+        <div class="feature-tile feature-tile-light">
+            <div class="tile-content">
+                <h2 class="tile-headline">Capturas bloqueadas.<br>Siempre.</h2>
+                <p class="tile-copy">Las capturas de pantalla están deshabilitadas a nivel de sistema. Si alguien lo intenta, la app se cierra.</p>
+            </div>
+            <div class="tile-visual">
+                <div class="visual-block">
+                    <svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="12" y="12" width="56" height="56" rx="6" stroke-width="1.5"/>
+                        <circle cx="40" cy="40" r="10" stroke-width="1.5"/>
+                        <circle cx="40" cy="40" r="3" fill="currentColor" stroke="none"/>
+                        <path d="M12 12l56 56" stroke-width="2.5"/>
+                    </svg>
+                    </svg>
+                    <span>Captura bloqueada</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Feature 3: Anonymous -->
+        <div class="feature-tile feature-tile-dark">
+            <div class="tile-content">
+                <h2 class="tile-headline">Sin número.<br>Sin email.<br>Sin datos.</h2>
+                <p class="tile-copy">Solo necesitas un nombre de usuario. Se genera automáticamente una wallet única. Cero información personal.</p>
+            </div>
+            <div class="tile-visual">
+                <div class="visual-wallet">
+                    <div class="wallet-avatar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="8" r="4"/>
+                            <path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
+                        </svg>
+                    </div>
+                    <span class="wallet-user">@usuario</span>
+                    <span class="wallet-address">0x1a2b...9f8e</span>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- CTA -->
-    <section class="cta" id="download">
-        <div class="container">
-            <div class="cta-content">
-                <h2>Empieza a chatear con privacidad real</h2>
-                <p>Descarga gratis. Sin anuncios. Sin trucos.</p>
-                
-                <div class="cta-buttons">
-                    <a href="https://play.google.com/store/apps/details?id=com.chatp2p.app" class="btn btn-primary btn-large">
-                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 0 1-.61-.92V2.734a1 1 0 0 1 .609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.198l2.807 1.626a1 1 0 0 1 0 1.73l-2.808 1.626L15.206 12l2.492-2.491zM5.864 2.658L16.8 8.99l-2.302 2.302-8.634-8.634z"/></svg>
-                        Descargar en Android
-                    </a>
-                    <span class="btn btn-secondary btn-large btn-disabled">
-                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
-                        iOS - Próximamente
-                    </span>
+    <!-- Section: Privacy -->
+    <section class="section-privacy" id="privacy">
+        <div class="section-header">
+            <h2 class="section-headline">Diseñado para protegerte.</h2>
+        </div>
+        
+        <div class="privacy-grid">
+            <div class="privacy-card">
+                <div class="card-icon">
+                    <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="9" y="22" width="30" height="20" rx="3"/>
+                        <path d="M15 22v-6a9 9 0 0 1 18 0v6"/>
+                        <circle cx="24" cy="32" r="2" fill="currentColor" stroke="none"/>
+                    </svg>
+                </div>
+                <h3 class="card-title">E2E por defecto</h3>
+                <p class="card-copy">Todos los mensajes están encriptados automáticamente.</p>
+            </div>
+            
+            <div class="privacy-card">
+                <div class="card-icon">
+                    <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M8 14h32"/>
+                        <path d="M18 14V9a6 6 0 0 1 12 0v5"/>
+                        <path d="M12 14v26a4 4 0 0 0 4 4h16a4 4 0 0 0 4-4V14"/>
+                        <path d="M20 24v10M28 24v10"/>
+                    </svg>
+                </div>
+                <h3 class="card-title">Borrado mutuo</h3>
+                <p class="card-copy">Cualquiera puede borrar el chat. Desaparece para ambos.</p>
+            </div>
+            
+            <div class="privacy-card">
+                <div class="card-icon">
+                    <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="8" y="8" width="32" height="32" rx="4"/>
+                        <circle cx="17" cy="17" r="3"/>
+                        <path d="M40 32l-10-10-22 22"/>
+                    </svg>
+                </div>
+                <h3 class="card-title">Fotos protegidas</h3>
+                <p class="card-copy">Las imágenes no se pueden guardar en la galería.</p>
+            </div>
+            
+            <div class="privacy-card">
+                <div class="card-icon">
+                    <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M24 6a8 8 0 0 0-8 8c0 12-6 16-6 16h28s-6-4-6-16a8 8 0 0 0-8-8"/>
+                        <path d="M21 38a3 3 0 0 0 6 0"/>
+                        <circle cx="24" cy="14" r="1.5" fill="currentColor" stroke="none"/>
+                    </svg>
+                </div>
+                <h3 class="card-title">Notificaciones privadas</h3>
+                <p class="card-copy">Solo ves "Nuevo mensaje". Contenido oculto.</p>
+            </div>
+            
+            <div class="privacy-card">
+                <div class="card-icon">
+                    <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 24c0 0 7-12 18-12s18 12 18 12-7 12-18 12S6 24 6 24z"/>
+                        <circle cx="24" cy="24" r="5"/>
+                        <circle cx="24" cy="24" r="2" fill="currentColor" stroke="none"/>
+                        <path d="M6 6l36 36" stroke-width="2"/>
+                    </svg>
+                </div>
+                <h3 class="card-title">Cifrado visual</h3>
+                <p class="card-copy">Los mensajes se transforman en hashes después de leerlos.</p>
+            </div>
+            
+            <div class="privacy-card">
+                <div class="card-icon">
+                    <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="16" y="6" width="16" height="20" rx="8"/>
+                        <path d="M10 22v2a14 14 0 0 0 28 0v-2"/>
+                        <path d="M24 38v6"/>
+                        <path d="M16 44h16"/>
+                    </svg>
+                </div>
+                <h3 class="card-title">Audio encriptado</h3>
+                <p class="card-copy">Notas de voz con la misma protección que el texto.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section: Security -->
+    <section class="section-security" id="security">
+        <div class="security-content">
+            <div class="security-icon">
+                <svg viewBox="0 0 96 96" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M48 8L16 22v24c0 22 32 38 32 38s32-16 32-38V22L48 8z" stroke-width="2"/>
+                    <path d="M34 48l10 10 18-18" stroke-width="3"/>
+                </svg>
+            </div>
+            <h2 class="security-headline">Seguridad de grado militar.</h2>
+            <p class="security-copy">AES-256. El mismo estándar que usan los gobiernos y las instituciones financieras más importantes del mundo.</p>
+            
+            <ul class="security-list">
+                <li>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+                    <span>Encriptación de extremo a extremo</span>
+                </li>
+                <li>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+                    <span>Sin almacenamiento de metadatos</span>
+                </li>
+                <li>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+                    <span>Código abierto y auditable</span>
+                </li>
+                <li>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+                    <span>Eliminación completa al borrar</span>
+                </li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- Section: CTA -->
+    <section class="section-cta">
+        <h2 class="cta-headline">Empieza hoy.</h2>
+        <p class="cta-copy">Descarga gratis. Sin anuncios. Sin trucos.</p>
+        
+        <div class="cta-buttons">
+            <a href="https://play.google.com/store/apps/details?id=com.chatp2p.app" class="btn-store">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 01-.61-.92V2.734a1 1 0 01.609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.198l2.807 1.626a1 1 0 010 1.73l-2.808 1.626L15.206 12l2.492-2.491zM5.864 2.658L16.8 8.99l-2.302 2.302-8.634-8.634z"/>
+                </svg>
+                <div class="btn-text">
+                    <span>Disponible en</span>
+                    <strong>Google Play</strong>
+                </div>
+            </a>
+            <div class="btn-store btn-disabled">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+                </svg>
+                <div class="btn-text">
+                    <span>Próximamente en</span>
+                    <strong>App Store</strong>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer>
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-brand">
-                    <a href="#" class="nav-logo">
-                        <div class="nav-logo-icon">P2P</div>
-                        <span>ChatP2P</span>
-                    </a>
-                    <p>Privacidad sin compromisos.</p>
+    <footer class="site-footer">
+        <div class="footer-content">
+            <div class="footer-directory">
+                <div class="footer-column">
+                    <h3 class="footer-column-title">Producto</h3>
+                    <ul class="footer-column-list">
+                        <li><a href="#features">Funciones</a></li>
+                        <li><a href="#privacy">Privacidad</a></li>
+                        <li><a href="#security">Seguridad</a></li>
+                    </ul>
                 </div>
-                
-                <div class="footer-links">
-                    <div class="footer-column">
-                        <h4>Legal</h4>
-                        <a href="privacy-policy.html">Política de Privacidad</a>
-                        <a href="terms.html">Términos de Servicio</a>
-                        <a href="csae-standards.html">Estándares EASI</a>
-                    </div>
-                    <div class="footer-column">
-                        <h4>Descargar</h4>
-                        <a href="https://play.google.com/store/apps/details?id=com.chatp2p.app">Descargar en Android</a>
-                        <span class="footer-coming-soon">iOS - Próximamente</span>
-                    </div>
-                    <div class="footer-column">
-                        <h4>Contacto</h4>
-                        <a href="mailto:elchamomedrano@gmail.com">elchamomedrano@gmail.com</a>
-                        <a href="https://x.com/chatp2papp" target="_blank" style="display: flex; align-items: center; gap: 6px;">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-                            @chatp2papp
-                        </a>
-                    </div>
+                <div class="footer-column">
+                    <h3 class="footer-column-title">Legal</h3>
+                    <ul class="footer-column-list">
+                        <li><a href="privacy-policy.html">Política de Privacidad</a></li>
+                        <li><a href="terms.html">Términos de Servicio</a></li>
+                        <li><a href="csae-standards.html">Estándares EASI</a></li>
+                    </ul>
                 </div>
             </div>
-            
-            <div class="footer-bottom">
-                <p>© 2026 ChatP2P. Todos los derechos reservados.</p>
+            <div class="footer-legal">
+                <p>Copyright © 2026 ChatP2P. Todos los derechos reservados.</p>
             </div>
         </div>
     </footer>
 
     <style>
-        /* How it works */
-        .how-it-works {
-            padding: 120px 24px;
-            background: #050505;
-        }
-        
-        .steps {
+        /* ===== FEATURE TILES ===== */
+        .section-features {
             display: flex;
             flex-direction: column;
-            gap: 32px;
-            max-width: 700px;
-            margin: 0 auto;
         }
         
-        .step {
-            display: flex;
-            gap: 24px;
-            align-items: flex-start;
-        }
-        
-        .step-number {
-            width: 56px;
-            height: 56px;
-            background: var(--green);
-            color: #000;
-            border-radius: 16px;
+        .feature-tile {
+            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
+            padding: 80px 24px;
+            gap: 80px;
+        }
+        
+        .feature-tile-dark {
+            background: var(--gray-900);
+        }
+        
+        .feature-tile-light {
+            background: var(--gray-800);
+        }
+        
+        .feature-tile:nth-child(even) {
+            flex-direction: row-reverse;
+        }
+        
+        .tile-content {
+            max-width: 420px;
+        }
+        
+        .tile-headline {
+            font-size: 56px;
             font-weight: 700;
-            flex-shrink: 0;
+            letter-spacing: -.015em;
+            line-height: 1.07143;
+            margin-bottom: 16px;
         }
         
-        .step-content h3 {
-            font-size: 20px;
+        .tile-copy {
+            font-size: 21px;
+            font-weight: 400;
+            letter-spacing: .011em;
+            line-height: 1.381;
+            color: var(--gray-400);
+        }
+        
+        /* Visual Elements */
+        .tile-visual {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .visual-encrypt {
+            background: rgba(48, 209, 88, 0.08);
+            border: 1px solid rgba(48, 209, 88, 0.15);
+            border-radius: 24px;
+            padding: 40px 48px;
+            text-align: center;
+        }
+        
+        .encrypt-icon {
+            width: 56px;
+            height: 56px;
+            color: var(--green-500);
+            margin: 0 auto 28px;
+        }
+        
+        .encrypt-icon svg {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .encrypt-demo {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .encrypt-plain {
+            font-size: 21px;
+            font-weight: 500;
+            letter-spacing: -.01em;
+        }
+        
+        .encrypt-arrow {
+            width: 24px;
+            height: 24px;
+            color: var(--green-500);
+            animation: arrowPulse 2s ease-in-out infinite;
+        }
+        
+        .encrypt-arrow svg {
+            width: 100%;
+            height: 100%;
+        }
+        
+        @keyframes arrowPulse {
+            0%, 100% { transform: translateY(0); opacity: 1; }
+            50% { transform: translateY(6px); opacity: 0.6; }
+        }
+        
+        .encrypt-hash {
+            font-family: var(--sf-mono);
+            font-size: 14px;
+            letter-spacing: 0;
+            color: var(--green-500);
+            background: rgba(0,0,0,0.3);
+            padding: 10px 18px;
+            border-radius: 10px;
+        }
+        
+        .visual-block {
+            width: 260px;
+            height: 260px;
+            background: var(--gray-900);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 28px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+        }
+        
+        .visual-block svg {
+            width: 72px;
+            height: 72px;
+            color: var(--red-500);
+        }
+        
+        .visual-block span {
+            font-size: 17px;
             font-weight: 600;
-            margin-bottom: 8px;
+            color: var(--red-500);
         }
         
-        .step-content p {
-            color: var(--text-muted);
-            font-size: 16px;
+        .visual-wallet {
+            background: var(--gray-800);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 24px;
+            padding: 40px 56px;
+            text-align: center;
         }
         
-        /* Security */
-        .security {
-            padding: 120px 24px;
-            background: linear-gradient(180deg, #050505 0%, var(--bg) 100%);
+        .wallet-avatar {
+            width: 72px;
+            height: 72px;
+            background: linear-gradient(135deg, var(--green-500), #00a86b);
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            margin: 0 auto 16px;
+        }
+        
+        .wallet-avatar svg {
+            width: 40px;
+            height: 40px;
+            stroke: var(--gray-900);
+        }
+        
+        .wallet-user {
+            display: block;
+            font-size: 28px;
+            font-weight: 600;
+            letter-spacing: -.02em;
+            margin-bottom: 6px;
+        }
+        
+        .wallet-address {
+            font-family: var(--sf-mono);
+            font-size: 14px;
+            letter-spacing: 0;
+            color: var(--gray-500);
+        }
+        
+        /* ===== PRIVACY SECTION ===== */
+        .section-privacy {
+            padding: 100px 24px;
+            background: var(--gray-900);
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 56px;
+        }
+        
+        .section-headline {
+            font-size: 64px;
+            font-weight: 700;
+            letter-spacing: -.015em;
+            line-height: 1.0625;
+        }
+        
+        .privacy-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .privacy-card {
+            background: var(--gray-800);
+            border-radius: 18px;
+            padding: 28px 24px;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s;
+        }
+        
+        .privacy-card:hover {
+            transform: scale(1.02);
+            background: #2c2c2e;
+        }
+        
+        .card-icon {
+            width: 44px;
+            height: 44px;
+            color: var(--green-500);
+            margin-bottom: 14px;
+        }
+        
+        .card-icon svg {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .card-title {
+            font-size: 19px;
+            font-weight: 600;
+            letter-spacing: .012em;
+            margin-bottom: 6px;
+        }
+        
+        .card-copy {
+            font-size: 14px;
+            font-weight: 400;
+            letter-spacing: -.016em;
+            line-height: 1.42859;
+            color: var(--gray-400);
+        }
+        
+        /* ===== SECURITY SECTION ===== */
+        .section-security {
+            padding: 100px 24px;
+            background: var(--gray-800);
+            text-align: center;
         }
         
         .security-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 80px;
-            align-items: center;
+            max-width: 600px;
+            margin: 0 auto;
         }
         
-        .security-desc {
-            color: var(--text-muted);
-            font-size: 18px;
-            margin: 24px 0 32px;
+        .security-icon {
+            width: 80px;
+            height: 80px;
+            color: var(--green-500);
+            margin: 0 auto 24px;
+        }
+        
+        .security-icon svg {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .security-headline {
+            font-size: 56px;
+            font-weight: 700;
+            letter-spacing: -.015em;
+            line-height: 1.07143;
+            margin-bottom: 16px;
+        }
+        
+        .security-copy {
+            font-size: 19px;
+            font-weight: 400;
+            letter-spacing: .012em;
+            line-height: 1.42105;
+            color: var(--gray-400);
+            margin-bottom: 40px;
         }
         
         .security-list {
             list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
+            text-align: left;
+            max-width: 340px;
+            margin: 0 auto;
         }
         
         .security-list li {
             display: flex;
             align-items: center;
-            gap: 12px;
-            font-size: 16px;
+            gap: 10px;
+            font-size: 17px;
+            font-weight: 400;
+            letter-spacing: -.022em;
+            margin-bottom: 12px;
         }
         
         .security-list svg {
-            width: 24px;
-            height: 24px;
-            color: var(--green);
+            width: 20px;
+            height: 20px;
+            color: var(--green-500);
             flex-shrink: 0;
         }
         
-        .security-visual {
-            display: flex;
-            justify-content: center;
-        }
-        
-        .shield {
-            width: 200px;
-            height: 200px;
-            background: var(--green-glow);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            animation: float 3s ease-in-out infinite;
-        }
-        
-        .shield svg {
-            width: 100px;
-            height: 100px;
-            color: var(--green);
-        }
-        
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-        
-        /* CTA */
-        .cta {
-            padding: 120px 24px;
+        /* ===== CTA SECTION ===== */
+        .section-cta {
+            padding: 100px 24px;
+            background: var(--gray-900);
             text-align: center;
-            background: radial-gradient(ellipse at center, var(--green-glow) 0%, transparent 70%);
         }
         
-        .cta h2 {
-            margin-bottom: 16px;
+        .cta-headline {
+            font-size: 64px;
+            font-weight: 700;
+            letter-spacing: -.015em;
+            line-height: 1.0625;
+            margin-bottom: 10px;
         }
         
-        .cta p {
-            color: var(--text-muted);
-            font-size: 18px;
+        .cta-copy {
+            font-size: 21px;
+            font-weight: 400;
+            letter-spacing: .011em;
+            color: var(--gray-400);
             margin-bottom: 40px;
         }
         
         .cta-buttons {
             display: flex;
-            gap: 16px;
+            gap: 14px;
             justify-content: center;
             flex-wrap: wrap;
         }
         
-        .btn-large {
-            padding: 20px 36px;
-            font-size: 18px;
+        .btn-store {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--gray-100);
+            color: var(--gray-900);
+            padding: 12px 24px;
+            border-radius: 12px;
+            text-decoration: none;
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s;
         }
         
-        /* Footer */
-        footer {
-            padding: 80px 24px 40px;
-            border-top: 1px solid var(--border);
+        .btn-store:hover {
+            transform: scale(1.04);
+            box-shadow: 0 8px 30px rgba(255,255,255,0.1);
+        }
+        
+        .btn-store.btn-disabled {
+            background: var(--gray-700);
+            color: var(--gray-500);
+            cursor: not-allowed;
+        }
+        
+        .btn-store.btn-disabled:hover {
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .btn-store svg {
+            width: 26px;
+            height: 26px;
+        }
+        
+        .btn-text span {
+            display: block;
+            font-size: 10px;
+            font-weight: 400;
+            opacity: 0.7;
+            letter-spacing: .01em;
+        }
+        
+        .btn-text strong {
+            display: block;
+            font-size: 17px;
+            font-weight: 600;
+            letter-spacing: -.01em;
+        }
+        
+        /* ===== FOOTER ===== */
+        .site-footer {
+            background: var(--gray-800);
+            padding: 20px 24px;
+            border-top: 1px solid rgba(255,255,255,0.08);
         }
         
         .footer-content {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 60px;
+            max-width: 980px;
+            margin: 0 auto;
         }
         
-        .footer-brand p {
-            color: var(--text-muted);
-            margin-top: 16px;
-        }
-        
-        .footer-links {
+        .footer-directory {
             display: flex;
             gap: 80px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            margin-bottom: 16px;
         }
         
-        .footer-column h4 {
-            font-size: 14px;
+        .footer-column-title {
+            font-size: 12px;
             font-weight: 600;
-            margin-bottom: 20px;
-            color: var(--text-muted);
+            letter-spacing: -.01em;
+            color: var(--gray-400);
+            margin-bottom: 10px;
         }
         
-        .footer-column a {
-            display: block;
-            color: var(--text);
+        .footer-column-list {
+            list-style: none;
+        }
+        
+        .footer-column-list li {
+            margin-bottom: 8px;
+        }
+        
+        .footer-column-list a {
+            font-size: 12px;
+            font-weight: 400;
+            letter-spacing: -.01em;
+            color: var(--gray-500);
             text-decoration: none;
-            font-size: 15px;
-            margin-bottom: 12px;
             transition: color 0.2s;
         }
         
-        .footer-column a:hover {
-            color: var(--green);
+        .footer-column-list a:hover {
+            color: var(--gray-100);
         }
         
-        .footer-bottom {
-            padding-top: 40px;
-            border-top: 1px solid var(--border);
+        .footer-legal {
             text-align: center;
         }
         
-        .footer-bottom p {
-            color: var(--text-muted);
-            font-size: 14px;
+        .footer-legal p {
+            font-size: 12px;
+            font-weight: 400;
+            letter-spacing: -.01em;
+            color: var(--gray-500);
         }
         
-        /* Responsive */
-        @media (max-width: 900px) {
-            .security-content {
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1068px) {
+            .hero-headline { font-size: 64px; }
+            .hero-subhead { font-size: 24px; }
+            .tile-headline { font-size: 48px; }
+            .section-headline { font-size: 48px; }
+            .security-headline { font-size: 48px; }
+            .cta-headline { font-size: 48px; }
+        }
+        
+        @media (max-width: 834px) {
+            .feature-tile {
+                flex-direction: column !important;
+                gap: 48px;
+                min-height: auto;
+                padding: 80px 24px;
+            }
+            
+            .tile-content { text-align: center; }
+            
+            .privacy-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .globalnav-list { display: none; }
+        }
+        
+        @media (max-width: 600px) {
+            .hero-headline { font-size: 48px; }
+            .hero-subhead { font-size: 19px; }
+            .tile-headline { font-size: 40px; }
+            .section-headline { font-size: 40px; }
+            .security-headline { font-size: 40px; }
+            .cta-headline { font-size: 40px; }
+            
+            .privacy-grid {
                 grid-template-columns: 1fr;
-                gap: 40px;
             }
             
-            .security-visual {
-                order: -1;
+            .device-iphone {
+                width: 230px;
+                height: 468px;
+                border-radius: 40px;
             }
             
-            .shield {
-                width: 150px;
-                height: 150px;
-            }
-            
-            .shield svg {
-                width: 70px;
-                height: 70px;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            nav {
-                padding: 16px 20px;
-            }
-            
-            .nav-links {
-                display: none;
-            }
-            
-            .hero {
-                padding: 100px 20px 60px;
-            }
-            
-            .phone-mockup {
-                width: 240px;
-                height: 480px;
-            }
-            
-            .features, .how-it-works, .security, .cta {
-                padding: 80px 20px;
-            }
-            
-            .footer-content {
-                flex-direction: column;
-                gap: 40px;
-            }
-            
-            .footer-links {
-                gap: 40px;
-            }
+            .device-screen { border-radius: 32px; }
             
             .cta-buttons {
                 flex-direction: column;
                 align-items: center;
             }
             
-            .btn-large {
+            .btn-store {
                 width: 100%;
-                max-width: 300px;
+                max-width: 240px;
                 justify-content: center;
+            }
+            
+            .footer-directory {
+                flex-direction: column;
+                gap: 24px;
             }
         }
     </style>
+
+    <script>
+    (function() {
+        const messages = [
+            { type: 'in', text: 'Hey, ¿probaste la app? 🔐' },
+            { type: 'out', text: 'Sí! Me encanta que no pida mi número' },
+            { type: 'in', text: 'Y nadie puede hacer capturas 📵' },
+            { type: 'out', text: 'Privacidad real por fin 🙌' },
+            { type: 'in', text: 'Los mensajes se cifran solos 🔒' },
+            { type: 'out', text: 'Increíble, nadie puede leerlos' }
+        ];
+
+        function generateHash() {
+            let hash = '0x';
+            for (let i = 0; i < 12; i++) hash += Math.floor(Math.random() * 16).toString(16);
+            return hash + '...';
+        }
+
+        function runChatDemo() {
+            const container = document.getElementById('chatDemo');
+            if (!container) return;
+            container.innerHTML = '';
+            
+            let index = 0;
+            
+            function addMessage() {
+                if (index >= messages.length) {
+                    setTimeout(() => {
+                        container.querySelectorAll('.bubble').forEach((bubble, i) => {
+                            setTimeout(() => {
+                                const textEl = bubble.querySelector('.bubble-text');
+                                if (textEl) {
+                                    textEl.innerHTML = '<span class="cipher">' + generateHash() + '</span>';
+                                }
+                            }, i * 150);
+                        });
+                        setTimeout(runChatDemo, 3500);
+                    }, 1500);
+                    return;
+                }
+                
+                const msg = messages[index];
+                const bubble = document.createElement('div');
+                bubble.className = 'bubble bubble-' + msg.type;
+                bubble.innerHTML = '<span class="bubble-text">' + msg.text + '</span>';
+                container.appendChild(bubble);
+                
+                setTimeout(() => bubble.classList.add('show'), 20);
+                
+                index++;
+                setTimeout(addMessage, 600);
+            }
+            
+            addMessage();
+        }
+
+        // Start demo when visible
+        const observer = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting) {
+                observer.disconnect();
+                runChatDemo();
+            }
+        }, { threshold: 0.2 });
+        
+        const chatEl = document.getElementById('chatDemo');
+        if (chatEl) observer.observe(chatEl.closest('.hero-device'));
+
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) target.scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    })();
+    </script>
 </body>
 </html>
