@@ -185,44 +185,6 @@ public class MainActivity extends AppCompatActivity {
             "window.isAndroidApp = true;" +
             "window.capturePhoto = function() { console.log('📷 capturePhoto llamado'); if (!currentChat) { console.log('📷 Sin chat activo'); return; } try { AndroidNative.takePhoto(); } catch(e) { console.error('📷 Error:', e); } };" +
             "window.openVideoRecorder = function() { console.log('📹 openVideoRecorder llamado'); if (!currentChat) return; try { AndroidNative.recordVideo(); } catch(e) { console.error('📹 Error:', e); } };" +
-            "window.startVoiceNote = function() {" +
-            "  console.log('🎤 startVoiceNote llamado desde Android');" +
-            "  console.log('🎤 currentChat:', currentChat);" +
-            "  console.log('🎤 AndroidNative:', typeof AndroidNative);" +
-            "  if (!currentChat) { console.log('🎤 Sin chat activo'); return; }" +
-            "  try {" +
-            "    if (window.isRecordingVoice) {" +
-            "      console.log('🎤 Deteniendo grabación...');" +
-            "      AndroidNative.stopVoiceNote();" +
-            "    } else {" +
-            "      console.log('🎤 Iniciando grabación nativa...');" +
-            "      AndroidNative.startVoiceNote();" +
-            "    }" +
-            "  } catch(e) {" +
-            "    console.error('🎤 Error en startVoiceNote:', e);" +
-            "    alert('Error al grabar: ' + e.message);" +
-            "  }" +
-            "};" +
-            "window.receiveMediaFromAndroid = function(base64Data, mediaType, duration) {" +
-            "  console.log('📥 receiveMediaFromAndroid:', mediaType, 'duration:', duration);" +
-            "  if (mediaType === 'voice') { sendVoiceNoteFromAndroid(base64Data, duration); }" +
-            "  else if (typeof sendMedia === 'function') {" +
-            "    var byteString = atob(base64Data); var ab = new ArrayBuffer(byteString.length); var ia = new Uint8Array(ab);" +
-            "    for (var i = 0; i < byteString.length; i++) { ia[i] = byteString.charCodeAt(i); }" +
-            "    var mimeType = mediaType === 'photo' ? 'image/jpeg' : 'video/mp4';" +
-            "    var blob = new Blob([ab], {type: mimeType}); sendMedia(blob, mediaType);" +
-            "  }" +
-            "};" +
-            "window.sendVoiceNoteFromAndroid = function(base64Data, duration) {" +
-            "  console.log('📤 sendVoiceNoteFromAndroid, duration:', duration);" +
-            "  if (!currentChat || !window.firebaseReady) { console.log('📤 Sin chat o Firebase'); return; }" +
-            "  var key = [wallet, currentChat].sort().join('_'); var db = firebase.database();" +
-            "  var newMsgRef = db.ref('messages/' + key).push();" +
-            "  var msg = { from: wallet, type: 'voice', data: 'data:audio/mp4;base64,' + base64Data, duration: duration || 0, timestamp: firebase.database.ServerValue.TIMESTAMP };" +
-            "  newMsgRef.set(msg).then(function() { console.log('📤 Nota de voz enviada!'); }).catch(function(e) { console.error('📤 Error:', e); });" +
-            "  db.ref('chats/' + wallet + '/' + currentChat).update({ lastMessage: '🎤 Nota de voz', timestamp: Date.now() });" +
-            "  db.ref('chats/' + currentChat + '/' + wallet).update({ lastMessage: '🎤 Nota de voz', timestamp: Date.now() });" +
-            "};" +
             "console.log('✅ Funciones nativas Android inyectadas correctamente');";
         webView.evaluateJavascript(js, null);
         Log.d(TAG, "✅ Funciones nativas inyectadas en WebView");

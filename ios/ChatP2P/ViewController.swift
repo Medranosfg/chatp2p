@@ -278,6 +278,10 @@ class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, WKSc
                 startNativeRecording()
             case "stopVoiceRecording":
                 stopNativeRecording()
+            case "pauseVoiceRecording":
+                pauseNativeRecording()
+            case "resumeVoiceRecording":
+                resumeNativeRecording()
             case "recordVideo":
                 openNativeVideoRecorder()
             default:
@@ -423,6 +427,27 @@ class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, WKSc
         try? AVAudioSession.sharedInstance().setActive(false)
     }
     
+    func pauseNativeRecording() {
+        guard isRecording, let recorder = audioRecorder else { return }
+        recorder.pause()
+        recordingTimer?.invalidate()
+        recordingTimer = nil
+        webView.evaluateJavaScript("window.onVoiceRecordingPaused && window.onVoiceRecordingPaused()", completionHandler: nil)
+        print("🎤 Grabación pausada")
+    }
+    
+    func resumeNativeRecording() {
+        guard let recorder = audioRecorder, isRecording else { return }
+        recorder.record()
+        recordingTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+            guard let self = self, self.isRecording else { return }
+            self.recordingSeconds += 1
+            self.webView.evaluateJavaScript("window.updateVoiceTimer && window.updateVoiceTimer(\(self.recordingSeconds))", completionHandler: nil)
+        }
+        webView.evaluateJavaScript("window.onVoiceRecordingResumed && window.onVoiceRecordingResumed()", completionHandler: nil)
+        print("🎤 Grabación reanudada")
+    }
+    
     // MARK: - WKUIDelegate Media Capture (iOS 15+)
     @available(iOS 15.0, *)
     func webView(_ webView: WKWebView, requestMediaCapturePermissionFor origin: WKSecurityOrigin, initiatedByFrame frame: WKFrameInfo, type: WKMediaCaptureType, decisionHandler: @escaping (WKPermissionDecision) -> Void) {
@@ -548,7 +573,9 @@ class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, WKSc
     @objc func screenCaptureChanged() {
         if UIScreen.main.isCaptured {
             showRecordingBlocker()
-        } else {
+        } else
+            jkj
+            
             hideRecordingBlocker()
         }
     }
